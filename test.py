@@ -72,7 +72,19 @@ class AppiumBasics(BaseTest):
         self.scroll_to_end()
         sleep(5)
 
-
+    def test_SwipeDemo(self):
+        driver = self.driver
+        driver.find_element(by=AppiumBy.ACCESSIBILITY_ID, value='Views').click()
+        driver.find_element(by=AppiumBy.ACCESSIBILITY_ID, value='Gallery').click()
+        driver.find_element(by=AppiumBy.XPATH, value='//android.widget.TextView[@content-desc="1. Photos"]').click()
+        print(driver.find_element(by=By.XPATH, value="(//android.widget.ImageView)[1]").get_attribute(
+            "focusable"))
+        assert driver.find_element(by=By.XPATH, value="(//android.widget.ImageView)[1]").get_attribute(
+            "focusable") == 'true'
+        e = driver.find_element(by=AppiumBy.XPATH, value='(//android.widget.ImageView)[1]')
+        driver.execute_script("mobile: swipeGesture", {'elementId': e, 'direction': 'left', 'percent': 0.75})
+        assert driver.find_element(by=By.XPATH, value="(//android.widget.ImageView)[1]").get_attribute(
+            "focusable") == 'false'
 
 
 if __name__ == '__main__':
