@@ -7,7 +7,8 @@ class BaseTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         options = UiAutomator2Options()
-        options.avd = "Pixel_3a_API_34_extension_level_7_x86_64"
+        # options.avd = "Pixel_3a_API_34_extension_level_7_x86_64"
+        options.udid = '54da5eee'
         options.app = "D:/resources/ApiDemos-debug.apk"
         cls.driver = webdriver.Remote("http://127.0.0.1:4723", options=options)
 
