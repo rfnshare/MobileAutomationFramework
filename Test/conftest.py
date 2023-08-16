@@ -10,8 +10,10 @@ def setup(request):
     # service = AppiumService()
     options = UiAutomator2Options()
     # service.start()
-    options.avd = "Pixel_3a_API_34_extension_level_7_x86_64"
-    options.app = "D:/resources/ApiDemos-debug.apk"
+    # options.avd = "Pixel_3a_API_34_extension_level_7_x86_64"
+    options.udid = '54da5eee'
+    options.app = "D:/resources/upay.apk"
+    options.auto_grant_permissions = True
     driver = webdriver.Remote("http://127.0.0.1:4723", options=options)
     request.cls.driver = driver
     yield
