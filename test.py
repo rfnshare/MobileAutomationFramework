@@ -9,6 +9,22 @@ from main import BaseTest
 
 
 class AppiumBasics(BaseTest):
+    def scroll(self, txt):
+        scroll_expression = f'new UiScrollable(new UiSelector().scrollable(true)).scrollIntoView(' \
+                            f'new UiSelector().text("{txt}"))'
+        self.driver.find_element(AppiumBy.ANDROID_UIAUTOMATOR, scroll_expression)
+
+    def scroll_to_end(self):
+        scroll_ = True
+        # Scroll Until End [Make reusable funtion also for scroll till some element for specific element]
+        while scroll_ is True:
+            scroll_ = self.driver.execute_script('mobile: scrollGesture', {
+                'left': 100, 'top': 100, 'width': 200, 'height': 200,
+                'direction': 'down',
+                'percent': 3.0
+            })
+        print(scroll_)
+
     def test_WiFiSettingsName(self):
         self.driver.implicitly_wait(10)
         self.driver.find_element(by=AppiumBy.ACCESSIBILITY_ID, value='Preference').click()
@@ -43,6 +59,17 @@ class AppiumBasics(BaseTest):
         print(toast_msg.text)
         # self.assertEqual(toast_msg.text, 'People Names: Group 0 clicked')
         self.assertIn('Group 0 clicked', toast_msg.text)
+        sleep(5)
+
+    def test_ScrollDemo(self):
+        driver = self.driver
+        driver.implicitly_wait(10)
+        driver.find_element(by=AppiumBy.ACCESSIBILITY_ID, value='Views').click()
+        # scroll_expression = 'new UiScrollable(new UiSelector().scrollable(true)).scrollIntoView(' \
+        #                     'new UiSelector().text("WebView"))'
+        # driver.find_element(AppiumBy.ANDROID_UIAUTOMATOR, scroll_expression)
+        # self.scroll("WebView")
+        self.scroll_to_end()
         sleep(5)
 
 
