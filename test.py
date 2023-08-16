@@ -1,3 +1,4 @@
+import time
 from time import sleep
 from appium.webdriver.common.appiumby import AppiumBy
 import unittest
@@ -85,6 +86,18 @@ class AppiumBasics(BaseTest):
         driver.execute_script("mobile: swipeGesture", {'elementId': e, 'direction': 'left', 'percent': 0.75})
         assert driver.find_element(by=By.XPATH, value="(//android.widget.ImageView)[1]").get_attribute(
             "focusable") == 'false'
+
+    def test_DragAndDrop(self):
+        driver = self.driver
+        driver.find_element(by=AppiumBy.ACCESSIBILITY_ID, value='Views').click()
+        driver.find_element(by=AppiumBy.ACCESSIBILITY_ID, value='Drag and Drop').click()
+        src_element = driver.find_element(by=By.ID, value='io.appium.android.apis:id/drag_dot_1')
+        dst_element = driver.find_element(by=By.ID, value='io.appium.android.apis:id/drag_dot_2')
+        driver.execute_script("mobile: dragGesture", {"elementId": src_element, "endX": 654,
+                                                      "endY": 584})
+        txt = driver.find_element(by=By.ID, value='io.appium.android.apis:id/drag_result_text').text
+        assert txt == 'Dropped!', f"Expected: {txt}, Actual: 'Dropped!'"
+        time.sleep(5)
 
 
 if __name__ == '__main__':
