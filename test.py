@@ -99,6 +99,26 @@ class AppiumBasics(BaseTest):
         assert txt == 'Dropped!', f"Expected: {txt}, Actual: 'Dropped!'"
         time.sleep(5)
 
+    def test_Miscellaneous(self):
+        self.driver.implicitly_wait(10)
+        self.driver.find_element(by=AppiumBy.ACCESSIBILITY_ID, value='Preference').click()
+        self.driver.find_element(by=By.XPATH, value='//android.widget.TextView[@content-desc="3. Preference '
+                                                    'dependencies"]').click()
+        self.driver.find_element(by=By.ID, value='android:id/checkbox').click()
+        self.driver.orientation = 'LANDSCAPE'
+        # self.driver.orientation = 'PORTRAIT'
+        self.driver.find_element(by=By.XPATH, value='(//android.widget.RelativeLayout)[2]').click()
+        title = self.driver.find_element(by=By.ID, value='android:id/alertTitle').text
+        assert "WiFi settings" in title
+        self.assertEqual(title, "WiFi settings")
+
+        self.driver.set_clipboard_text("Testing")
+        self.driver.find_element(by=By.ID, value='android:id/edit').send_keys(self.driver.get_clipboard_text())
+        self.driver.press_keycode(4)  # Android device's "BACK" button
+        self.driver.press_keycode(66)  # Android device's "ENTER" button
+        # self.driver.hide_keyboard()
+        ((self.driver.find_elements(by=AppiumBy.CLASS_NAME, value='android.widget.Button'))[1]).click()
+
 
 if __name__ == '__main__':
     unittest.main()
