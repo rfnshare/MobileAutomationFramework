@@ -11,7 +11,7 @@ class BaseTest(unittest.TestCase):
         options.udid = '54da5eee'
         # options.app = "D:/resources/ApiDemos-debug.apk"
         options.app_package = "io.appium.android.apis"
-        options.app_activity = "io.appium.android.apis.preference.PreferenceDependencies"
+        options.app_activity = "io.appium.android.apis.ApiDemos"
         cls.driver = webdriver.Remote("http://127.0.0.1:4723", options=options)
 
     @classmethod

@@ -33,6 +33,7 @@ class AppiumBasics(BaseTest):
         # self.driver.find_element(by=AppiumBy.ACCESSIBILITY_ID, value='Preference').click()
         # self.driver.find_element(by=By.XPATH, value='//android.widget.TextView[@content-desc="3. Preference '
         #                                             'dependencies"]').click()
+        self.driver.start_activity("io.appium.android.apis", "io.appium.android.apis.preference.PreferenceDependencies")
         self.driver.find_element(by=By.ID, value='android:id/checkbox').click()
         self.driver.find_element(by=By.XPATH, value='(//android.widget.RelativeLayout)[2]').click()
         title = self.driver.find_element(by=By.ID, value='android:id/alertTitle').text
