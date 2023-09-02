@@ -42,8 +42,13 @@ class TestHomePage:
     def test_shopping(self):
         self.test_fill_form()
         self.scroll_to_text("Jordan 6 Rings")
-        self.driver.find_element(by=By.XPATH, value="//android.widget.TextView[@text='Jordan 6 "
-                                                    "Rings']/parent::android.widget.LinearLayout//android.widget.TextView[@text='ADD TO CART']").click()
+        # self.driver.find_element(by=By.XPATH, value="//android.widget.TextView[@text='Jordan 6 "
+        #                                             "Rings']/parent::android.widget.LinearLayout//android.widget.TextView[@text='ADD TO CART']").click()
+        products = self.driver.find_elements(by=By.ID, value="com.androidsample.generalstore:id/productName")
+        for i in range(0, len(products)):
+            print("->", products[i].text)
+            if products[i].text == "Jordan 6 Rings":
+                (self.driver.find_elements(by=By.ID, value="com.androidsample.generalstore:id/productAddCart"))[i].click()
         self.driver.find_element(by=By.ID, value='com.androidsample.generalstore:id/appbar_btn_cart').click()
         p_n = self.driver.find_element(by=By.ID, value="com.androidsample.generalstore:id/totalAmountLbl").text
         print(p_n)
