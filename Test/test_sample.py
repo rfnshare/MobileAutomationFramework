@@ -22,3 +22,16 @@ class TestHomePage:
         driver.find_element(by=By.XPATH, value="//android.widget.RadioButton[@resource-id='com.androidsample.generalstore:id/radioFemale']").click()
         driver.find_element(by=By.ID, value='com.androidsample.generalstore:id/btnLetsShop').click()
         time.sleep(5)
+
+    def test_error_msg(self):
+        driver = self.driver
+        driver.implicitly_wait(10)
+        driver.find_element(by=By.ID, value='com.androidsample.generalstore:id/spinnerCountry').click()
+        self.scroll_to_text("Bangladesh")
+        driver.find_element(by=By.XPATH, value="//android.widget.TextView[@text='Bangladesh']").click()
+        driver.find_element(by=By.XPATH, value="//android.widget.RadioButton[@resource-id='com.androidsample.generalstore:id/radioFemale']").click()
+        driver.find_element(by=By.ID, value='com.androidsample.generalstore:id/btnLetsShop').click()
+        err_msg = driver.find_element(by=By.XPATH, value="//android.widget.Toast[1]").text
+        print(err_msg)
+        assert "Please enter your name" in err_msg
+        time.sleep(5)
