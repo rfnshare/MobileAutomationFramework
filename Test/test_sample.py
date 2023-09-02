@@ -3,7 +3,8 @@ from time import sleep
 import pytest
 from appium.webdriver.common.appiumby import AppiumBy
 from selenium.webdriver.common.by import By
-
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 @pytest.mark.usefixtures("setup")
 class TestHomePage:
@@ -50,6 +51,18 @@ class TestHomePage:
             if products[i].text == "Jordan 6 Rings":
                 (self.driver.find_elements(by=By.ID, value="com.androidsample.generalstore:id/productAddCart"))[i].click()
         self.driver.find_element(by=By.ID, value='com.androidsample.generalstore:id/appbar_btn_cart').click()
-        p_n = self.driver.find_element(by=By.ID, value="com.androidsample.generalstore:id/totalAmountLbl").text
+
+        # validating product name
+        cart = (By.XPATH, "//android.widget.TextView[@text='Cart']")
+        wait = WebDriverWait(self.driver, 10)
+        wait.until(EC.text_to_be_present_in_element(cart, "Cart"))
+        print(self.driver.find_element(*cart).text)
+
+        p_n = self.driver.find_element(by=By.ID, value="com.androidsample.generalstore:id/productName").text
         print(p_n)
-        assert "165.0" in p_n
+        assert "Jordan 6 Rings" in p_n
+        # validating product price
+        p_p = self.driver.find_element(by=By.ID, value="com.androidsample.generalstore:id/totalAmountLbl").text
+        print(p_p)
+        assert "165.0" in p_p
+
