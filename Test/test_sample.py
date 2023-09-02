@@ -105,6 +105,16 @@ class TestHomePage:
         total_price = self.driver.find_element(by=By.ID, value="com.androidsample.generalstore:id/totalAmountLbl").text
         print(total_price)
         assert count == self.clear_amount(total_price)
-
+        terms_and_conditions = self.driver.find_element(by=By.ID, value="com.androidsample.generalstore:id/termsButton")
+        self.driver.execute_script('mobile: longClickGesture', {'elementId': terms_and_conditions, 'duration': 2000})
+        alert_title = self.driver.find_element(by=By.ID, value="com.androidsample.generalstore:id/alertTitle").text
+        assert "Terms Of Conditions" == alert_title
+        self.driver.find_element(by=By.ID, value="android:id/button1").click()
+        self.driver.find_element(by=By.CLASS_NAME, value="android.widget.CheckBox").click()
+        self.driver.find_element(by=By.ID, value="com.androidsample.generalstore:id/btnProceed").click()
+        web_view = (By.ID, "com.androidsample.generalstore:id/webView")
+        wait.until(EC.presence_of_element_located(web_view))
+        print(self.driver.find_element(*web_view).is_displayed())
+        assert self.driver.find_element(*web_view).is_displayed()
         time.sleep(5)
 
