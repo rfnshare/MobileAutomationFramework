@@ -14,6 +14,7 @@ def setup(request):
     options.udid = '54da5eee'
     options.app = f'{Path(__file__).parent.parent / "app/General-Store.apk"}'
     options.auto_grant_permissions = True
+    # options.chromedriver_executable_dir = f'{Path(__file__).parent.parent / "app/chromedriver.exe"}'
     driver = webdriver.Remote("http://127.0.0.1:4723", options=options)
     request.cls.driver = driver
     yield

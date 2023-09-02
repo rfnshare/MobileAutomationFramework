@@ -2,6 +2,7 @@ import time
 from time import sleep
 import pytest
 from appium.webdriver.common.appiumby import AppiumBy
+from selenium.webdriver import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -114,7 +115,18 @@ class TestHomePage:
         self.driver.find_element(by=By.ID, value="com.androidsample.generalstore:id/btnProceed").click()
         web_view = (By.ID, "com.androidsample.generalstore:id/webView")
         wait.until(EC.presence_of_element_located(web_view))
-        print(self.driver.find_element(*web_view).is_displayed())
-        assert self.driver.find_element(*web_view).is_displayed()
+        # print(self.driver.find_element(*web_view).is_displayed())
+        # assert self.driver.find_element(*web_view).is_displayed()
+        # Python
+        webview = self.driver.contexts[1]
+        self.driver.switch_to.context(webview)
+        time.sleep(1)
+        self.driver.find_element(By.XPATH, "//*[@name='q']").send_keys("Hello Appium !!!")
+        self.driver.find_element(By.XPATH, "//*[@name='q']").send_keys(Keys.ENTER)
+        self.driver.press_keycode(4)
+        self.driver.switch_to.context("NATIVE_APP")
+
+        self.driver.find_element(by=By.XPATH,
+                            value="//android.widget.RadioButton[@resource-id='com.androidsample.generalstore:id/radioFemale']").click()
         time.sleep(5)
 
