@@ -3,7 +3,7 @@ from utils.data import TestData
 
 
 class CommonLocator(object):
-    pass
+    TOAST_MESSAGE = (By.XPATH, "//android.widget.Toast[1]")
 
 
 class LoginPageLocator(object):
@@ -17,4 +17,15 @@ class LoginPageLocator(object):
 
 
 class HomePageLocator(object):
-    pass
+    PRODUCT_ADD_TO_CART = (
+        By.XPATH,
+        "//android.widget.TextView[@text='{}']/parent::android.widget.LinearLayout//android.widget.TextView["
+        "@text='ADD TO CART']")
+
+    CART_BUTTON = (By.ID, "com.androidsample.generalstore:id/appbar_btn_cart")
+    CART_TITLE = (By.XPATH, "//android.widget.TextView[@text='Cart']")
+    PRODUCT_NAME = (By.ID, "com.androidsample.generalstore:id/productName")
+    TOTAL_AMOUNT = (By.ID, "com.androidsample.generalstore:id/totalAmountLbl")
+    @classmethod
+    def product_add_to_cart(cls, product_name):
+        return cls.PRODUCT_ADD_TO_CART[1].format(product_name)

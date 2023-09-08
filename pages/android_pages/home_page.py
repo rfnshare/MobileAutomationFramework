@@ -19,6 +19,7 @@ class HomePage:
         self.driver = driver
         self.home_locator = HomePageLocator
         self.login_locator = LoginPageLocator
+        self.common_locator = CommonLocator
 
     def wait(self, method, locator):
         """
@@ -114,24 +115,12 @@ class HomePage:
     def validating_blank_name_error_message(self):
         driver = self.driver
         log = get_logger()
-        driver.find_element(
-            by=By.ID, value="com.androidsample.generalstore:id/spinnerCountry"
-        ).click()
+        driver.find_element(*self.login_locator.COUNTRY_DROPDOWN).click()
         self.scroll_to_text(TestData.COUNTRY)
-        driver.find_element(
-            by=By.XPATH, value="//android.widget.TextView[@text='Bangladesh']"
-        ).click()
-        driver.find_element(
-            by=By.XPATH,
-            value="//android.widget.RadioButton[@resource-id='com.androidsample.generalstore:id/radioFemale']",
-        ).click()
-        driver.find_element(
-            by=By.ID, value="com.androidsample.generalstore:id/btnLetsShop"
-        ).click()
-        err_msg = driver.find_element(
-            by=By.XPATH, value="//android.widget.Toast[1]"
-        ).text
-        print(err_msg)
+        driver.find_element(*self.login_locator.COUNTRY).click()
+        driver.find_element(*self.login_locator.GENDER).click()
+        driver.find_element(*self.login_locator.LETS_SHOP).click()
+        err_msg = driver.find_element(*self.common_locator.TOAST_MESSAGE).text
         assert TestData.ERR_MSG in err_msg
         log.info(f"Successfully Validated, {err_msg}")
 
@@ -139,41 +128,31 @@ class HomePage:
         log = get_logger()
         self.filling_form()
         self.scroll_to_text(TestData.PRODUCT_ONE)
-        # self.driver.find_element(by=By.XPATH, value="//android.widget.TextView[@text='Jordan 6 "
-        #                                             "Rings']/parent::android.widget.LinearLayout//android.widget.TextView[@text='ADD TO CART']").click()
-        products = self.driver.find_elements(
-            by=By.ID, value="com.androidsample.generalstore:id/productName"
-        )
-        for i in range(0, len(products)):
-            print("->", products[i].text)
-            if products[i].text == TestData.PRODUCT_ONE:
-                (
-                    self.driver.find_elements(
-                        by=By.ID,
-                        value="com.androidsample.generalstore:id/productAddCart",
-                    )
-                )[i].click()
-        self.driver.find_element(
-            by=By.ID, value="com.androidsample.generalstore:id/appbar_btn_cart"
-        ).click()
+        # products = self.driver.find_elements(
+        #     by=By.ID, value="com.androidsample.generalstore:id/productName"
+        # )
+        # for i in range(0, len(products)):
+        #     print("->", products[i].text)
+        #     if products[i].text == TestData.PRODUCT_ONE:
+        #         (
+        #             self.driver.find_elements(
+        #                 by=By.ID,
+        #                 value="com.androidsample.generalstore:id/productAddCart",
+        #             )
+        #         )[i].click()
+        self.driver.find_element(By.XPATH, self.home_locator.product_add_to_cart(TestData.PRODUCT_ONE)).click()
+        self.driver.find_element(*self.home_locator.CART_BUTTON).click()
+        wait = WebDriverWait(self.driver, 10)
+        wait.until(EC.text_to_be_present_in_element(self.home_locator.CART_TITLE, "Cart"))
 
         # validating product name
-        cart = (By.XPATH, "//android.widget.TextView[@text='Cart']")
-        wait = WebDriverWait(self.driver, 10)
-        wait.until(EC.text_to_be_present_in_element(cart, "Cart"))
-        print(self.driver.find_element(*cart).text)
+        product_name = self.driver.find_element(*self.home_locator.PRODUCT_NAME).text
+        assert TestData.PRODUCT_ONE in product_name
 
-        p_n = self.driver.find_element(
-            by=By.ID, value="com.androidsample.generalstore:id/productName"
-        ).text
-        assert TestData.PRODUCT_ONE in p_n
         # validating product price
-        p_p = self.driver.find_element(
-            by=By.ID, value="com.androidsample.generalstore:id/totalAmountLbl"
-        ).text
-        print(p_p)
-        assert TestData.PRODUCT_ONE_PRICE in p_p
-        log.info(f"Successfully Added Product, {p_n}, Price: {p_p}")
+        product_price = self.driver.find_element(*self.home_locator.TOTAL_AMOUNT).text
+        assert TestData.PRODUCT_ONE_PRICE in product_price
+        log.info(f"Successfully Added Product, {product_name}, Price: {product_price}")
 
     def validating_cart_price(self):
         log = get_logger()
