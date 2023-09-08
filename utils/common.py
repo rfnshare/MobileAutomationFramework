@@ -9,8 +9,10 @@ import os
 
 def get_logger():
     config_file_path = Path(__file__).parent.parent / 'config/logging.conf'
+    project_path = Path(__file__).parent.parent
     # Define a custom log filename
-    log_filename = "reports/logs/logfile.log"
+    log_filename = project_path.as_posix() + '/' + "reports/logs/logfile.log"
+
     # Check if the log directory exists; if not, create it
     log_directory = os.path.dirname(log_filename)
     if not os.path.exists(log_directory):
@@ -46,5 +48,3 @@ def get_html_reports():
     except Exception as e:
         print("Report not ready, Error", e)
     return reports
-LOGGING_CONFIG = Path(__file__).parent.parent / 'config/logging.conf'
-print(LOGGING_CONFIG)
