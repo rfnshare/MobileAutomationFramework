@@ -5,3 +5,6 @@ app/chromedriver.exe
 trash.py
 reports/screenshots/passed/*.png
 reports/logs/*.log
+.env
+reports/htmlreport/assets/
+reports/htmlreport/*.html
