@@ -42,7 +42,6 @@ def run_pytest_tests(test_files):
 if __name__ == "__main__":
     clean_directory(Path(__file__).parent.parent / "reports")
     test_files_to_run = ['-k'] + [
-        # 'test_uat_cash_out.py::TestCashOutPage::test_cash_out_from_agent',
         'test_sample.py'
     ]
     run_pytest_tests(test_files_to_run)
