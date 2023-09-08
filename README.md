@@ -116,6 +116,7 @@ Contributions are what make the open source community such an amazing place to b
 
 Abdullah Al Faroque - [@rfnshare](https://twitter.com/rfnshare) - aalfaroque@gmail.com
 
+Portfolio: - [Abdullah Al Faroque](https://rfnshare.github.io/)
 Project Link: [Android Automation](https://github.com/rfnshare/MobileAutomationFramework.git)
 
 
