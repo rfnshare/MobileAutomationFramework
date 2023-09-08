@@ -52,6 +52,35 @@ Dependency Software List:
 - Android SDK
 - ADB (Android Debug Bridge)
 - WebDriver Library (Appium-Python-Client)
+**Download JDK**
+
+Download From https://www.oracle.com/java/technologies/downloads/
+
+Install the JDK on your machine
+
+Also, set Environment Variables 
+
+**Download ANDROID SDK**
+
+Download sdk  From https://developer.android.com/studio
+
+Set ANDROID_HOME as environment variable by adding mentioned path in .bashrc file
+
+          - export ANDROID_HOME=/home/user/Android/Sdk
+ 
+Also set path variables by following by adding :
+
+         - export PATH=${PATH}:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools
+
+**Appium Installation:**
+
+You can follow following link for installation https://medium.com/@syamsasi/setting-up-appium-on-windows-and-ubuntu-ea9a73ab989
+ 
+**Pycharm Installation:**
+
+Download the Pycharm from their official website.
+
+Install the Pycharm on your machine.
 
 1. Clone this repository
     ```
