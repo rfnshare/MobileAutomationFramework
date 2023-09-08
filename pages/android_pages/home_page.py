@@ -2,7 +2,7 @@ import datetime
 import inspect
 import time
 from pathlib import Path
-
+from seleniumpagefactory.Pagefactory import PageFactory
 from appium.webdriver.common.appiumby import AppiumBy
 from selenium.webdriver import Keys
 from selenium.webdriver.common.by import By
@@ -14,8 +14,9 @@ from utils.common import get_logger
 from utils.data import TestData
 
 
-class HomePage:
+class HomePage(PageFactory):
     def __init__(self, driver):
+        super().__init__()
         self.driver = driver
         self.home_locator = HomePageLocator
         self.login_locator = LoginPageLocator
@@ -102,16 +103,21 @@ class HomePage:
 
     def filling_form(self, country, name, gender):
         driver = self.driver
+        self.driver.double_click()
         log = get_logger()
         driver.find_element(*self.login_locator.COUNTRY_DROPDOWN).click()
         # self.scroll_to_text(TestData.COUNTRY)
         self.scroll_to_text(country)
         # driver.find_element(*self.login_locator.COUNTRY).click()
-        self.driver.find_element(By.XPATH, self.login_locator.select_country(country)).click()
+        self.driver.find_element(
+            By.XPATH, self.login_locator.select_country(country)
+        ).click()
         driver.find_element(*self.login_locator.NAME_FIELD).send_keys(name)
         driver.hide_keyboard()
         # driver.find_element(*self.login_locator.GENDER).click()
-        self.driver.find_element(By.XPATH, self.login_locator.select_gender(gender)).click()
+        self.driver.find_element(
+            By.XPATH, self.login_locator.select_gender(gender)
+        ).click()
         driver.find_element(*self.login_locator.LETS_SHOP).click()
         log.info("Successfully Filled The Form & Proceed To Shopping")
 
@@ -143,10 +149,14 @@ class HomePage:
         #                 value="com.androidsample.generalstore:id/productAddCart",
         #             )
         #         )[i].click()
-        self.driver.find_element(By.XPATH, self.home_locator.product_add_to_cart(TestData.PRODUCT_ONE)).click()
+        self.driver.find_element(
+            By.XPATH, self.home_locator.product_add_to_cart(TestData.PRODUCT_ONE)
+        ).click()
         self.driver.find_element(*self.home_locator.CART_BUTTON).click()
         wait = WebDriverWait(self.driver, 10)
-        wait.until(EC.text_to_be_present_in_element(self.home_locator.CART_TITLE, "Cart"))
+        wait.until(
+            EC.text_to_be_present_in_element(self.home_locator.CART_TITLE, "Cart")
+        )
 
         # validating product name
         product_name = self.driver.find_element(*self.home_locator.PRODUCT_NAME).text
@@ -161,9 +171,13 @@ class HomePage:
         log = get_logger()
         self.filling_form()
         self.scroll_to_text(TestData.PRODUCT_ONE)
-        self.driver.find_element(By.XPATH, self.home_locator.product_add_to_cart(TestData.PRODUCT_ONE)).click()
+        self.driver.find_element(
+            By.XPATH, self.home_locator.product_add_to_cart(TestData.PRODUCT_ONE)
+        ).click()
         self.scroll_to_text(TestData.PRODUCT_TWO)
-        self.driver.find_element(By.XPATH, self.home_locator.product_add_to_cart(TestData.PRODUCT_TWO)).click()
+        self.driver.find_element(
+            By.XPATH, self.home_locator.product_add_to_cart(TestData.PRODUCT_TWO)
+        ).click()
         log.info(
             f"Successfully Added Product, {TestData.PRODUCT_ONE} & {TestData.PRODUCT_TWO} into Cart"
         )
@@ -171,7 +185,9 @@ class HomePage:
         self.driver.find_element(*self.home_locator.CART_BUTTON).click()
 
         wait = WebDriverWait(self.driver, 10)
-        wait.until(EC.text_to_be_present_in_element(self.home_locator.CART_TITLE, "Cart"))
+        wait.until(
+            EC.text_to_be_present_in_element(self.home_locator.CART_TITLE, "Cart")
+        )
         prices = self.driver.find_elements(*self.home_locator.PRODUCT_PRICE)
         count = 0
         for price in prices:
@@ -185,12 +201,16 @@ class HomePage:
         log.info(f"Validated Total Price: {total_price} with count: {count}")
         self.capture_screenshot()
 
-        terms_and_conditions = self.driver.find_element(*self.home_locator.TERMS_AND_CONDITIONS_BUTTON)
+        terms_and_conditions = self.driver.find_element(
+            *self.home_locator.TERMS_AND_CONDITIONS_BUTTON
+        )
         self.driver.execute_script(
             "mobile: longClickGesture",
             {"elementId": terms_and_conditions, "duration": 2000},
         )
-        alert_title = self.driver.find_element(*self.home_locator.TERMS_AND_CONDITIONS_BUTTON_TITLE).text
+        alert_title = self.driver.find_element(
+            *self.home_locator.TERMS_AND_CONDITIONS_BUTTON_TITLE
+        ).text
         assert TestData.TOC_TITLE == alert_title
         log.info(f"Validated Terms Of Conditions, {alert_title}")
         self.capture_screenshot()
