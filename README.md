@@ -11,7 +11,7 @@
     <img src="logo.png" alt="Logo" height="225">
   </a>
 
-  <h3 align="center">Mobile App Automation Framework Template</h3>
+  <h3 align="center">Test Automation Framework Template (Mobile)</h3>
 
   <p align="center">
     ...
@@ -25,9 +25,7 @@
     ·
     <a href="#">Request Feature</a>
   </p>
-Introduction
 
-This is an appium based framework that interacts with Green Cart Android App and can be used to automate some scenarios to build template.
 
 # Project Structure
 The project structure follows POM and is organized as follows:
