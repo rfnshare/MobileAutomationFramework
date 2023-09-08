@@ -1,13 +1,14 @@
-import smtplib
-from email.mime.multipart import MIMEMultipart
-from email.mime.application import MIMEApplication
-from email.mime.text import MIMEText
-from email.header import Header
 import datetime
-import os
-from datetime import datetime
 import imaplib
+import os
 import re
+import smtplib
+from datetime import datetime
+from email.header import Header
+from email.mime.application import MIMEApplication
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
 from dotenv import dotenv_values
 
 envs = dotenv_values(".env")
@@ -15,6 +16,7 @@ envs = dotenv_values(".env")
 api_key = envs["API_KEY"]
 db_url = envs["DB_URL"]
 debug_mode = envs.get("DEBUG", False)
+
 
 def send_report(receiver_email, reports, project_name):
     sender = "rfnshare@gmail.com"
@@ -58,6 +60,8 @@ def send_report(receiver_email, reports, project_name):
         print("Failed to send mail!!!, Error:", e)
 
     # function to read last email message
+
+
 def get_otp_from_email(email_credentials=None):
     mail = imaplib.IMAP4_SSL("imap.gmail.com", 993)
     mail.login(email_credentials["email"], email_credentials["password"])

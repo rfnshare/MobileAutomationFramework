@@ -8,5 +8,3 @@ class LoginPageLocator(object):
 
 class HomePageLocator(object):
     pass
-
-

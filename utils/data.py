@@ -1,6 +1,3 @@
-from pathlib import Path
-
-
 class TestData:
     NAME = "Faroque"
     COUNTRY = "Bangladesh"

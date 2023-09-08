@@ -1,18 +1,18 @@
-import inspect
-from pathlib import Path
-import logging.config
-import pytest
-import pandas as pd
 import glob
+import inspect
+import logging.config
 import os
 from datetime import datetime
+from pathlib import Path
+
+import pandas as pd
 
 
 def get_logger():
-    config_file_path = Path(__file__).parent.parent / 'config/logging.conf'
+    config_file_path = Path(__file__).parent.parent / "config/logging.conf"
     project_path = Path(__file__).parent.parent
     # Define a custom log filename
-    log_filename = project_path.as_posix() + '/' + "reports/logs/logfile.log"
+    log_filename = project_path.as_posix() + "/" + "reports/logs/logfile.log"
 
     # Check if the log directory exists; if not, create it
     log_directory = os.path.dirname(log_filename)
@@ -20,7 +20,7 @@ def get_logger():
         os.makedirs(log_directory)
         print(f"Log File Created in {log_directory}")
 
-    logging.config.fileConfig(config_file_path, defaults={'log_filename': log_filename})
+    logging.config.fileConfig(config_file_path, defaults={"log_filename": log_filename})
     # logger_name = inspect.stack()[1][3]
     # Get the caller's frame
     caller_frame = inspect.currentframe().f_back
@@ -41,10 +41,8 @@ def get_test_data(sheet_name):
 def get_html_reports():
     reports = []
     try:
-        path = Path(__file__).parent.parent / f'reports/htmlreport/regression_*.html'
-        report = os.path.abspath(
-            glob.glob(f'{path}')[-1]
-        )
+        path = Path(__file__).parent.parent / f"reports/htmlreport/regression_*.html"
+        report = os.path.abspath(glob.glob(f"{path}")[-1])
         reports.append(report)
     except Exception as e:
         print("Report not ready, Error", e)
