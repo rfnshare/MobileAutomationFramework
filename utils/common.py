@@ -3,6 +3,8 @@ from pathlib import Path
 import logging.config
 import pytest
 import pandas as pd
+import glob
+import os
 
 
 def get_logger():
@@ -27,3 +29,16 @@ def get_test_data(sheet_name):
     df = pd.read_excel(excel_path, sheet_name=sheet_name, dtype=str)
     df_filled = df.fillna("")
     return df_filled.to_dict(orient="records")
+
+
+def get_html_reports():
+    reports = []
+    try:
+        path = Path(__file__).parent.parent / f'reports/htmlreport/regression_*.html'
+        report = os.path.abspath(
+            glob.glob(f'{path}')[-1]
+        )
+        reports.append(report)
+    except Exception as e:
+        print("Report not ready, Error", e)
+    return reports
