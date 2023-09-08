@@ -42,9 +42,8 @@ def run_pytest_tests(test_files):
 if __name__ == "__main__":
     clean_directory(Path(__file__).parent.parent / "reports")
     test_files_to_run = ['-k'] + [
-        'test_sample.py'
     ]
-    run_pytest_tests(test_files_to_run)
+    run_pytest_tests([])
 
 # run by marker -m
 # run by keyword search -k
