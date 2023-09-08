@@ -26,7 +26,9 @@ def run_pytest_tests(test_files):
 
 if __name__ == "__main__":
     clean_directory(Path(__file__).parent.parent / "reports")
-    test_files_to_run = ["test_android/test_sample.py::TestHomePage::test_fill_form"]
+    test_files_to_run = [
+        "test_android/test_sample.py::TestHomePage::test_fill_form"
+    ]
     run_pytest_tests(test_files_to_run)
 
 # run by marker -m
