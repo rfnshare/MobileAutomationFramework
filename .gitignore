@@ -3,3 +3,5 @@
 __pycache__/
 app/chromedriver.exe
 trash.py
+reports/screenshots/passed/*.png
+reports/logs/*.log
