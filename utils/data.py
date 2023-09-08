@@ -7,3 +7,4 @@ class TestData:
     PRODUCT_TWO = "PG 3"
     PRODUCT_TWO_PRICE = ""
     TOC_TITLE = "Terms Of Conditions"
+    GENDER = "Female"

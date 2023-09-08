@@ -9,7 +9,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
-from utils.android_locators import *
+from utils.locators.android_locators import *
 from utils.common import get_logger
 from utils.data import TestData
 
@@ -102,25 +102,14 @@ class HomePage:
     def filling_form(self):
         driver = self.driver
         log = get_logger()
-        driver.find_element(
-            by=By.ID, value="com.androidsample.generalstore:id/spinnerCountry"
-        ).click()
-        self.scroll_to_text("Bangladesh")
-        driver.find_element(
-            by=By.XPATH, value="//android.widget.TextView[@text='Bangladesh']"
-        ).click()
-        driver.find_element(
-            by=By.ID, value="com.androidsample.generalstore:id/nameField"
-        ).send_keys(TestData.NAME)
+        driver.find_element(*self.login_locator.COUNTRY_DROPDOWN).click()
+        self.scroll_to_text(TestData.COUNTRY)
+        driver.find_element(*self.login_locator.COUNTRY).click()
+        driver.find_element(*self.login_locator.NAME_FIELD).send_keys(TestData.NAME)
         driver.hide_keyboard()
-        driver.find_element(
-            by=By.XPATH,
-            value="//android.widget.RadioButton[@resource-id='com.androidsample.generalstore:id/radioFemale']",
-        ).click()
-        driver.find_element(
-            by=By.ID, value="com.androidsample.generalstore:id/btnLetsShop"
-        ).click()
-        log.info("Successfully Filled The Form")
+        driver.find_element(*self.login_locator.GENDER).click()
+        driver.find_element(*self.login_locator.LETS_SHOP).click()
+        log.info("Successfully Filled The Form & Proceed To Shopping")
 
     def validating_blank_name_error_message(self):
         driver = self.driver
