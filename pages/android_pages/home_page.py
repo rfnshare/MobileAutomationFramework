@@ -25,7 +25,6 @@ class HomePage:
         self.driver = driver
         self.home_locator = HomePageLocator
         self.login_locator = LoginPageLocator
-        self.log = get_logger()
 
     def wait(self, method, locator):
         """
@@ -104,6 +103,7 @@ class HomePage:
 
     def filling_form(self):
         driver = self.driver
+        log = get_logger()
         driver.find_element(by=By.ID, value='com.androidsample.generalstore:id/spinnerCountry').click()
         self.scroll_to_text("Bangladesh")
         driver.find_element(by=By.XPATH, value="//android.widget.TextView[@text='Bangladesh']").click()
@@ -112,10 +112,11 @@ class HomePage:
         driver.find_element(by=By.XPATH,
                             value="//android.widget.RadioButton[@resource-id='com.androidsample.generalstore:id/radioFemale']").click()
         driver.find_element(by=By.ID, value='com.androidsample.generalstore:id/btnLetsShop').click()
-        self.log.info("Successfully Filled The Form")
+        log.info("Successfully Filled The Form")
 
     def validating_blank_name_error_message(self):
         driver = self.driver
+        log = get_logger()
         driver.find_element(by=By.ID, value='com.androidsample.generalstore:id/spinnerCountry').click()
         self.scroll_to_text(TestData.COUNTRY)
         driver.find_element(by=By.XPATH, value="//android.widget.TextView[@text='Bangladesh']").click()
@@ -125,9 +126,10 @@ class HomePage:
         err_msg = driver.find_element(by=By.XPATH, value="//android.widget.Toast[1]").text
         print(err_msg)
         assert TestData.ERR_MSG in err_msg
-        self.log.info(f"Successfully Validated, {err_msg}")
+        log.info(f"Successfully Validated, {err_msg}")
 
     def shopping(self):
+        log = get_logger()
         self.filling_form()
         self.scroll_to_text(TestData.PRODUCT_ONE)
         # self.driver.find_element(by=By.XPATH, value="//android.widget.TextView[@text='Jordan 6 "
@@ -152,15 +154,16 @@ class HomePage:
         p_p = self.driver.find_element(by=By.ID, value="com.androidsample.generalstore:id/totalAmountLbl").text
         print(p_p)
         assert TestData.PRODUCT_ONE_PRICE in p_p
-        self.log.info(f"Successfully Added Product, {p_n}, Price: {p_p}")
+        log.info(f"Successfully Added Product, {p_n}, Price: {p_p}")
 
     def validating_cart_price(self):
+        log = get_logger()
         self.filling_form()
         self.scroll_to_text(TestData.PRODUCT_ONE)
         self.driver.find_element(by=By.XPATH, value=f"//android.widget.TextView[@text='{TestData.PRODUCT_ONE}']/parent::android.widget.LinearLayout//android.widget.TextView[@text='ADD TO CART']").click()
         self.scroll_to_text(TestData.PRODUCT_TWO)
         self.driver.find_element(by=By.XPATH, value=f"//android.widget.TextView[@text={TestData.PRODUCT_TWO}]/parent::android.widget.LinearLayout//android.widget.TextView[@text='ADD TO CART']").click()
-        self.log.info(f"Successfully Added Product, {TestData.PRODUCT_ONE} & {TestData.PRODUCT_TWO} into Cart")
+        log.info(f"Successfully Added Product, {TestData.PRODUCT_ONE} & {TestData.PRODUCT_TWO} into Cart")
         self.capture_screenshot()
 
         self.driver.find_element(by=By.ID, value='com.androidsample.generalstore:id/appbar_btn_cart').click()
@@ -172,21 +175,21 @@ class HomePage:
         for price in prices:
             clean_price = self.clear_amount(price.text)
             count += clean_price
-        self.log.info(f"Total Counted Price is {count}")
+        log.info(f"Total Counted Price is {count}")
         self.capture_screenshot()
 
         # validating product price
         total_price = self.driver.find_element(by=By.ID, value="com.androidsample.generalstore:id/totalAmountLbl").text
         print(total_price)
         assert count == self.clear_amount(total_price)
-        self.log.info(f"Validated Total Price: {total_price} with count: {count}")
+        log.info(f"Validated Total Price: {total_price} with count: {count}")
         self.capture_screenshot()
 
         terms_and_conditions = self.driver.find_element(by=By.ID, value="com.androidsample.generalstore:id/termsButton")
         self.driver.execute_script('mobile: longClickGesture', {'elementId': terms_and_conditions, 'duration': 2000})
         alert_title = self.driver.find_element(by=By.ID, value="com.androidsample.generalstore:id/alertTitle").text
         assert TestData.TOC_TITLE == alert_title
-        self.log.info(f"Validated Terms Of Conditions, {alert_title}")
+        log.info(f"Validated Terms Of Conditions, {alert_title}")
         self.capture_screenshot()
 
         self.driver.find_element(by=By.ID, value="android:id/button1").click()
@@ -204,7 +207,7 @@ class HomePage:
         time.sleep(1)
         self.driver.find_element(By.XPATH, "//*[@name='q']").send_keys("Hello Appium !!!")
         self.driver.find_element(By.XPATH, "//*[@name='q']").send_keys(Keys.ENTER)
-        self.log.info(f"Validated Apps Webview")
+        log.info(f"Validated Apps Webview")
         self.capture_screenshot()
 
         # Switching Back To App
@@ -212,5 +215,5 @@ class HomePage:
         self.driver.switch_to.context("NATIVE_APP")
         self.driver.find_element(by=By.XPATH,
                                  value="//android.widget.RadioButton[@resource-id='com.androidsample.generalstore:id/radioFemale']").click()
-        self.log.info(f"Validated Apps Native Interaction")
+        log.info(f"Validated Apps Native Interaction")
         self.capture_screenshot()

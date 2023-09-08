@@ -18,7 +18,12 @@ def get_logger():
         print(f"Log File Created in {log_directory}")
 
     logging.config.fileConfig(config_file_path, defaults={'log_filename': log_filename})
-    logger_name = inspect.stack()[1][3]
+    # logger_name = inspect.stack()[1][3]
+    # Get the caller's frame
+    caller_frame = inspect.currentframe().f_back
+
+    # Extract the caller function name
+    logger_name = caller_frame.f_code.co_name
     logger = logging.getLogger(logger_name)
     return logger
 
