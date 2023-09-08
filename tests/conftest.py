@@ -10,8 +10,8 @@ def setup(request):
     # service = AppiumService()
     options = UiAutomator2Options()
     # service.start()
-    # options.avd = "Pixel_3a_API_34_extension_level_7_x86_64"
-    options.udid = '54da5eee'
+    options.avd = "Pixel_3a_API_34_extension_level_7_x86_64"
+    # options.udid = '54da5eee'
     options.app = f'{Path(__file__).parent.parent / "app/General-Store.apk"}'
     options.auto_grant_permissions = True
     # options.chromedriver_executable_dir = f'{Path(__file__).parent.parent / "app/chromedriver.exe"}'
