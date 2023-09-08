@@ -1,12 +1,4 @@
-import time
-from time import sleep
 import pytest
-from appium.webdriver.common.appiumby import AppiumBy
-from selenium.webdriver import Keys
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-
 from pages.android_pages.home_page import HomePage
 
 
@@ -31,5 +23,3 @@ class TestHomePage:
         homepage = HomePage(self.driver)
         homepage.validating_cart_price()
         homepage.capture_screenshot()
-
-

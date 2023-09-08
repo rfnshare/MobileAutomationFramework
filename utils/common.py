@@ -5,6 +5,7 @@ import pytest
 import pandas as pd
 import glob
 import os
+from datetime import datetime
 
 
 def get_logger():
@@ -48,3 +49,23 @@ def get_html_reports():
     except Exception as e:
         print("Report not ready, Error", e)
     return reports
+
+
+# Read current date
+def read_date():
+    return str(datetime.today().strftime("%Y-%m-%d"))
+
+
+def read_time():
+    return str(datetime.today().strftime("%I-%M-%S-%p"))
+
+
+def clean_directory(directory):
+    for root, dirs, files in os.walk(directory, topdown=False):
+        for file in files:
+            file_path = os.path.join(root, file)
+            try:
+                os.remove(file_path)
+                print(f"Deleted file: {file_path}")
+            except Exception as e:
+                print(f"Failed to delete file: {file_path} - {e}")
