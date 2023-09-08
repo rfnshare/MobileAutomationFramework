@@ -81,11 +81,17 @@ def pytest_runtest_makereport(item):
         if (report.skipped and xfail) or (report.failed and not xfail):
             # Start performance recording with the "Page.load" category
 
-            file_name = (report.nodeid.replace("::", "_")).replace("/", "_") + f"_{timestamp}.png"
+            file_name = (report.nodeid.replace("::", "_")).replace(
+                "/", "_"
+            ) + f"_{timestamp}.png"
             SS_PATH = Path(__file__).parent.parent / "reports/screenshots/failed"
             _capture_screenshot(SS_PATH / file_name)
             if file_name:
-                image_path = Path(__file__).parent.parent / 'reports/screenshots/failed' / file_name
+                image_path = (
+                    Path(__file__).parent.parent
+                    / "reports/screenshots/failed"
+                    / file_name
+                )
                 # Encode the path to HTML-safe format
                 encoded_path = image_path.as_uri()
                 html = (
@@ -107,8 +113,8 @@ def _capture_screenshot(name):
 
 def pytest_exception_interact(node, call, report):
     """
-        Pending Implementation: Setup API response (request & response) data in Log
-        """
+    Pending Implementation: Setup API response (request & response) data in Log
+    """
     if report.failed:
         test_name = node.name  # Get the name of the test
         test_file = node.parent.nodeid  # Get the test file path

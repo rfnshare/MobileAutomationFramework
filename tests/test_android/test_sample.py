@@ -9,7 +9,7 @@ class TestHomePage:
     @pytest.mark.parametrize("data", get_test_data("info"))
     def test_fill_form(self, data):
         homepage = HomePage(self.driver)
-        homepage.filling_form(data['country'], data['name'], data['gender'])
+        homepage.filling_form(data["country"], data["name"], data["gender"])
         homepage.capture_screenshot()
 
     def test_error_msg(self):
