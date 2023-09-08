@@ -158,66 +158,43 @@ class HomePage:
         log = get_logger()
         self.filling_form()
         self.scroll_to_text(TestData.PRODUCT_ONE)
-        self.driver.find_element(
-            by=By.XPATH,
-            value=f"//android.widget.TextView[@text='{TestData.PRODUCT_ONE}']/parent::android.widget.LinearLayout//android.widget.TextView[@text='ADD TO CART']",
-        ).click()
+        self.driver.find_element(By.XPATH, self.home_locator.product_add_to_cart(TestData.PRODUCT_ONE)).click()
         self.scroll_to_text(TestData.PRODUCT_TWO)
-        self.driver.find_element(
-            by=By.XPATH,
-            value=f"//android.widget.TextView[@text={TestData.PRODUCT_TWO}]/parent::android.widget.LinearLayout//android.widget.TextView[@text='ADD TO CART']",
-        ).click()
+        self.driver.find_element(By.XPATH, self.home_locator.product_add_to_cart(TestData.PRODUCT_TWO)).click()
         log.info(
             f"Successfully Added Product, {TestData.PRODUCT_ONE} & {TestData.PRODUCT_TWO} into Cart"
         )
         self.capture_screenshot()
+        self.driver.find_element(*self.home_locator.CART_BUTTON).click()
 
-        self.driver.find_element(
-            by=By.ID, value="com.androidsample.generalstore:id/appbar_btn_cart"
-        ).click()
-        cart = (By.XPATH, "//android.widget.TextView[@text='Cart']")
         wait = WebDriverWait(self.driver, 10)
-        wait.until(EC.text_to_be_present_in_element(cart, "Cart"))
-        prices = self.driver.find_elements(
-            by=By.ID, value="com.androidsample.generalstore:id/productPrice"
-        )
+        wait.until(EC.text_to_be_present_in_element(self.home_locator.CART_TITLE, "Cart"))
+        prices = self.driver.find_elements(*self.home_locator.PRODUCT_PRICE)
         count = 0
         for price in prices:
             clean_price = self.clear_amount(price.text)
             count += clean_price
         log.info(f"Total Counted Price is {count}")
-        self.capture_screenshot()
 
         # validating product price
-        total_price = self.driver.find_element(
-            by=By.ID, value="com.androidsample.generalstore:id/totalAmountLbl"
-        ).text
-        print(total_price)
+        total_price = self.driver.find_element(*self.home_locator.TOTAL_AMOUNT).text
         assert count == self.clear_amount(total_price)
         log.info(f"Validated Total Price: {total_price} with count: {count}")
         self.capture_screenshot()
 
-        terms_and_conditions = self.driver.find_element(
-            by=By.ID, value="com.androidsample.generalstore:id/termsButton"
-        )
+        terms_and_conditions = self.driver.find_element(*self.home_locator.TERMS_AND_CONDITIONS_BUTTON)
         self.driver.execute_script(
             "mobile: longClickGesture",
             {"elementId": terms_and_conditions, "duration": 2000},
         )
-        alert_title = self.driver.find_element(
-            by=By.ID, value="com.androidsample.generalstore:id/alertTitle"
-        ).text
+        alert_title = self.driver.find_element(*self.home_locator.TERMS_AND_CONDITIONS_BUTTON_TITLE).text
         assert TestData.TOC_TITLE == alert_title
         log.info(f"Validated Terms Of Conditions, {alert_title}")
         self.capture_screenshot()
 
-        self.driver.find_element(by=By.ID, value="android:id/button1").click()
-        self.driver.find_element(
-            by=By.CLASS_NAME, value="android.widget.CheckBox"
-        ).click()
-        self.driver.find_element(
-            by=By.ID, value="com.androidsample.generalstore:id/btnProceed"
-        ).click()
+        self.driver.find_element(*self.common_locator.OK).click()
+        self.driver.find_element(*self.home_locator.CHECKBOX).click()
+        self.driver.find_element(*self.home_locator.PROCEED_BUTTON).click()
 
         # Switching To Webview
         web_view = (By.ID, "com.androidsample.generalstore:id/webView")
@@ -225,6 +202,7 @@ class HomePage:
         # print(self.driver.find_element(*web_view).is_displayed())
         # assert self.driver.find_element(*web_view).is_displayed()
         # Python
+        time.sleep(5)
         webview = self.driver.contexts[1]
         self.driver.switch_to.context(webview)
         time.sleep(1)
@@ -238,9 +216,6 @@ class HomePage:
         # Switching Back To App
         self.driver.press_keycode(4)
         self.driver.switch_to.context("NATIVE_APP")
-        self.driver.find_element(
-            by=By.XPATH,
-            value="//android.widget.RadioButton[@resource-id='com.androidsample.generalstore:id/radioFemale']",
-        ).click()
+        self.driver.find_element(*self.login_locator.GENDER).click()
         log.info(f"Validated Apps Native Interaction")
         self.capture_screenshot()
