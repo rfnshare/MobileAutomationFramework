@@ -11,15 +11,13 @@ from email.mime.text import MIMEText
 
 from dotenv import dotenv_values
 
+from utils.common import get_html_reports
+
 envs = dotenv_values(".env")
-# Access the environment variables
-api_key = envs["API_KEY"]
-db_url = envs["DB_URL"]
-debug_mode = envs.get("DEBUG", False)
 
 
 def send_report(receiver_email, reports, project_name):
-    sender = "rfnshare@gmail.com"
+    sender = "rfnshare@outlook.com"
     receiver = receiver_email
 
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -48,7 +46,7 @@ def send_report(receiver_email, reports, project_name):
     print("*" * 80)
 
     try:
-        server = smtplib.SMTP("smtp.gmail.com", 587)
+        server = smtplib.SMTP("smtp.office365.com", 587)
         server.ehlo()
         server.starttls()
         server.login(envs["email_address"], envs["email_password"])
