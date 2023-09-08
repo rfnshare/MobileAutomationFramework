@@ -100,15 +100,18 @@ class HomePage:
         ]
         return all(tests)
 
-    def filling_form(self):
+    def filling_form(self, country, name, gender):
         driver = self.driver
         log = get_logger()
         driver.find_element(*self.login_locator.COUNTRY_DROPDOWN).click()
-        self.scroll_to_text(TestData.COUNTRY)
-        driver.find_element(*self.login_locator.COUNTRY).click()
-        driver.find_element(*self.login_locator.NAME_FIELD).send_keys(TestData.NAME)
+        # self.scroll_to_text(TestData.COUNTRY)
+        self.scroll_to_text(country)
+        # driver.find_element(*self.login_locator.COUNTRY).click()
+        self.driver.find_element(By.XPATH, self.login_locator.select_country(country)).click()
+        driver.find_element(*self.login_locator.NAME_FIELD).send_keys(name)
         driver.hide_keyboard()
-        driver.find_element(*self.login_locator.GENDER).click()
+        # driver.find_element(*self.login_locator.GENDER).click()
+        self.driver.find_element(By.XPATH, self.login_locator.select_gender(gender)).click()
         driver.find_element(*self.login_locator.LETS_SHOP).click()
         log.info("Successfully Filled The Form & Proceed To Shopping")
 

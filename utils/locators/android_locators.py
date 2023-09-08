@@ -9,12 +9,20 @@ class CommonLocator(object):
 
 class LoginPageLocator(object):
     COUNTRY_DROPDOWN = (By.ID, "com.androidsample.generalstore:id/spinnerCountry")
-    COUNTRY = (By.XPATH, f"//android.widget.TextView[@text='{TestData.COUNTRY}']")
+    COUNTRY = (By.XPATH, "//android.widget.TextView[@text='{}']")
     NAME_FIELD = (By.ID, "com.androidsample.generalstore:id/nameField")
     GENDER = (
         By.XPATH,
-        f"//android.widget.RadioButton[@resource-id='com.androidsample.generalstore:id/radio{TestData.GENDER}']")
+        "//android.widget.RadioButton[@resource-id='com.androidsample.generalstore:id/radio{}']")
     LETS_SHOP = (By.ID, "com.androidsample.generalstore:id/btnLetsShop")
+
+    @classmethod
+    def select_country(cls, country):
+        return cls.COUNTRY[1].format(country)
+
+    @classmethod
+    def select_gender(cls, gender):
+        return cls.GENDER[1].format(gender)
 
 
 class HomePageLocator(object):
