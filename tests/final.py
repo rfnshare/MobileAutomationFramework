@@ -1,29 +1,8 @@
 import os
 import subprocess
 from pathlib import Path
-
 import pytest
-from datetime import datetime
-
-
-def clean_directory(directory):
-    for root, dirs, files in os.walk(directory, topdown=False):
-        for file in files:
-            file_path = os.path.join(root, file)
-            try:
-                os.remove(file_path)
-                print(f"Deleted file: {file_path}")
-            except Exception as e:
-                print(f"Failed to delete file: {file_path} - {e}")
-
-
-# Read current date
-def read_date():
-    return str(datetime.today().strftime("%Y-%m-%d"))
-
-
-def read_time():
-    return str(datetime.today().strftime("%I-%M-%S-%p"))
+from utils.common import read_date, read_time, clean_directory
 
 
 def run_pytest_tests(test_files):
@@ -41,9 +20,10 @@ def run_pytest_tests(test_files):
 
 if __name__ == "__main__":
     clean_directory(Path(__file__).parent.parent / "reports")
-    test_files_to_run = ['-k'] + [
+    test_files_to_run = [
+        'test_android/test_sample.py::TestHomePage::test_fill_form'
     ]
-    run_pytest_tests([])
+    run_pytest_tests(test_files_to_run)
 
 # run by marker -m
 # run by keyword search -k
