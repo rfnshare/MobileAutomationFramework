@@ -34,11 +34,13 @@ def set_and_get_config_data():
     apk_file_path = config.get('AndroidAppConfig', 'apkPath')
     package_name = config.get('AndroidAppConfig', 'appPackage')
     launcher_activity = config.get('AndroidAppConfig', 'appActivity')
+    wait = config.get('AndroidAppConfig', 'element_wait')
     return {
         'udid': first_udid,
         'apkPath': str(apk_file_path),
         'appPackage': str(package_name),
-        'appActivity': str(launcher_activity)
+        'appActivity': str(launcher_activity),
+        'wait': str(wait)
     }
 
 
@@ -54,7 +56,7 @@ def setup(request):
     # chrome_driver = config.get('AndroidAppConfig', 'chromedriver')
     # options.chromedriver_executable_dir = f'{chrome_driver}'
     driver = webdriver.Remote("http://127.0.0.1:4723", options=options)
-    driver.implicitly_wait(15)
+    driver.implicitly_wait(int(data['wait']))
     request.cls.driver = driver
     yield
     driver.quit()
