@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import allure
 import pytest
 from appium import webdriver
 from appium.options.android import UiAutomator2Options
@@ -98,6 +99,7 @@ def pytest_runtest_makereport(item):
                     / "reports/screenshots/failed"
                     / file_name
                 )
+                allure.attach(driver.get_screenshot_as_png())
                 # Encode the path to HTML-safe format
                 encoded_path = image_path.as_uri()
                 html = (
