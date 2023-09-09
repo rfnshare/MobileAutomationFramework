@@ -9,11 +9,12 @@ from utils.common import read_date, read_time, clean_directory
 def run_pytest_tests(test_files):
     report_file_name_prefix = f"{read_date()}_{read_time()}"
     report = (
-            Path(__file__).parent.parent
-            / f"reports/htmlreport/regression_{report_file_name_prefix}_report.html"
+        Path(__file__).parent.parent
+        / f"reports/htmlreport/regression_{report_file_name_prefix}_report.html"
     )
     exit_code = pytest.main(
-        test_files + ["--durations=0", "-vv", "-v", "-s", f"--html={report}", "--capture=tee-sys"]
+        test_files
+        + ["--durations=0", "-vv", "-v", "-s", f"--html={report}", "--capture=tee-sys"]
     )
     if exit_code == 0:
         print("All tests passed successfully.")

@@ -111,11 +111,15 @@ class HomePage(PageFactory):
         # self.scroll_to_text(TestData.COUNTRY)
         self.scroll_to_text(country)
         # driver.find_element(*self.login_locator.COUNTRY).click()
-        self.driver.find_element(By.XPATH, self.login_locator.select_country(country)).click()
+        self.driver.find_element(
+            By.XPATH, self.login_locator.select_country(country)
+        ).click()
         driver.find_element(*self.login_locator.NAME_FIELD).send_keys(name)
         driver.hide_keyboard()
         # driver.find_element(*self.login_locator.GENDER).click()
-        self.driver.find_element(By.XPATH, self.login_locator.select_gender(gender)).click()
+        self.driver.find_element(
+            By.XPATH, self.login_locator.select_gender(gender)
+        ).click()
         driver.find_element(*self.login_locator.LETS_SHOP).click()
         log.info("Successfully Filled The Form & Proceed To Shopping")
 
@@ -124,8 +128,12 @@ class HomePage(PageFactory):
         log = get_logger()
         driver.find_element(*self.login_locator.COUNTRY_DROPDOWN).click()
         self.scroll_to_text(TestData.COUNTRY)
-        self.driver.find_element(By.XPATH, self.login_locator.select_country(TestData.COUNTRY)).click()
-        self.driver.find_element(By.XPATH, self.login_locator.select_gender(TestData.GENDER)).click()
+        self.driver.find_element(
+            By.XPATH, self.login_locator.select_country(TestData.COUNTRY)
+        ).click()
+        self.driver.find_element(
+            By.XPATH, self.login_locator.select_gender(TestData.GENDER)
+        ).click()
         driver.find_element(*self.login_locator.LETS_SHOP).click()
         err_msg = driver.find_element(*self.common_locator.TOAST_MESSAGE).text
         assert TestData.ERR_MSG in err_msg
