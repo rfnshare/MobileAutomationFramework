@@ -9,16 +9,16 @@ from utils.common import read_date, read_time, clean_directory
 def run_pytest_tests(test_files):
     report_file_name_prefix = f"{read_date()}_{read_time()}"
     report_html = (
-            Path(__file__).parent.parent
-            / f"reports/htmlreport/regression_{report_file_name_prefix}_report.html"
+        Path(__file__).parent.parent
+        / f"reports/htmlreport/regression_{report_file_name_prefix}_report.html"
     )
     report_xml = (
-            Path(__file__).parent.parent
-            / f"reports/xml_report/regression_{report_file_name_prefix}_report.xml"
+        Path(__file__).parent.parent
+        / f"reports/xml_report/regression_{report_file_name_prefix}_report.xml"
     )
     report_allure = (
-            Path(__file__).parent.parent
-            / f"reports/allure_report/regression_{report_file_name_prefix}_report.html"
+        Path(__file__).parent.parent
+        / f"reports/allure_report/regression_{report_file_name_prefix}_report.html"
     )
     # Construct the pytest command as a list of arguments
     pytest_command = [
@@ -32,8 +32,7 @@ def run_pytest_tests(test_files):
         "-v",
         f"--junitxml={report_xml}",
         "-s",
-        f"--alluredir={report_allure}"
-
+        f"--alluredir={report_allure}",
     ]
     # Combine the pytest command and test files into a single list
     pytest_command += test_files

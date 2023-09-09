@@ -59,7 +59,15 @@ def read_time():
 
 
 def clean_directory(directory):
-    exclude_dirs = ["screenshots", "allure_report", "htmlreport", "logs", "xml_report", "failed", "passed"]
+    exclude_dirs = [
+        "screenshots",
+        "allure_report",
+        "htmlreport",
+        "logs",
+        "xml_report",
+        "failed",
+        "passed",
+    ]
     for root, dirs, files in os.walk(directory, topdown=False):
         for file in files:
             file_path = os.path.join(root, file)
