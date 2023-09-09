@@ -4,6 +4,9 @@ import pytest
 from appium import webdriver
 from appium.options.android import UiAutomator2Options
 import datetime
+
+from appium.webdriver.appium_service import AppiumService
+
 from utils.config import getConfig, setup_config
 
 driver = None
@@ -49,6 +52,8 @@ def set_and_get_config_data():
 def setup(request):
     global driver
     options = UiAutomator2Options()
+    service = AppiumService()
+    service.start()
     data = set_and_get_config_data()
     options.app = data["apkPath"]
     options.app_package = data["appPackage"]
@@ -61,6 +66,7 @@ def setup(request):
     request.cls.driver = driver
     yield
     driver.quit()
+    service.stop()
 
 
 @pytest.hookimpl(hookwrapper=True)
