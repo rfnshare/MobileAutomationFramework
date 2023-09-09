@@ -100,22 +100,28 @@ Install the Pycharm on your machine.
     ```
     pip install -r requirements.txt
     ```
-   
-6. For Run All, Run tests/test_android/final script.
-    ```
-    Inside tests/test_android/final.py, test_files_to_run
-    ```
-   This will open an app in the android device & run regression test.
+## Run Automated Tests
 
-7. Generate allure reports with run script include log.
-    ```
-    HTML Report added, it will generate automatically with log.
-    ```
-   Install ```npm install -g allure-commandline --save-dev``` for allure report generate.
-   This will create an HTML/allure report. You can find report, log, SS in project's reports root directory
+* To run all test cases in cmd line with html & allure report, run
+```
+python -m pytest -m <smoke/regression> --html=reports/htmlreport/index.html --self-contained-html -s --alluredir=reports/allure_report/<smoke/regression>_report_allure
+```
+* Generate Allure HTML Report
+```
+allure serve reports/allure_report/<smoke/regression>_report_allure
+```
+* To run all test cases without cmd line, Go to project root directory then tests folder & run `final.py` file.
+
+This will create an HTML, allure report, automatically attach failed screenshot in report. You can find report in reports directory, report automatically will open in browser.
+* You can configure Jenkins to parameterized run your test cases & generate html report, allure report, junit report. Also send mail to recipient (pending for implementation).
+
+## Sample Test Report
+
+![Allure report screenshot](https://raw.githubusercontent.com/startrug/phptravels-selenium-py/screenshots/allure_report.png "Allure report screenshot")
+
+Report is generated in a chosen browser.
 
 ### Usage
-
 
 For more examples,  please refer to the [Documentation](https://example.com)
 
