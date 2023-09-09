@@ -22,6 +22,9 @@ class HomePage(PageFactory):
         self.login_locator = LoginPageLocator
         self.common_locator = CommonLocator
 
+    def page_factory_test(self):
+        self.driver.double_click()
+
     def wait(self, method, locator):
         """
         Check if all elements on the home page are visible.
@@ -103,7 +106,6 @@ class HomePage(PageFactory):
 
     def filling_form(self, country, name, gender):
         driver = self.driver
-        self.driver.double_click()
         log = get_logger()
         driver.find_element(*self.login_locator.COUNTRY_DROPDOWN).click()
         # self.scroll_to_text(TestData.COUNTRY)
