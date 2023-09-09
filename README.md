@@ -125,6 +125,46 @@ Report is generated in a chosen browser.
 
 For more examples,  please refer to the [Documentation](https://example.com)
 
+## License
+```
+MIT License
+
+Copyright (c) 2023 Abdullah Al Faroque
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+```
+
+## FAQ
+* Can I use it for any personal/commercial project?
+-> Yes.
+
+* Can I use it for making my personal/commercial project? 
+-> Definitely. But make sure you FORK it while doing it :)
+
+* Can I share your project link with my friends?
+-> DEFINITELY! ^_^
+
+* Can I contact you if I get stuck while trying to create my own project using the forked source code?
+-> DEFINITELY! :)
+
+
 <!-- ROADMAP -->
 ## Roadmap
 
@@ -148,8 +188,8 @@ Contributions are what make the open source community such an amazing place to b
 
 Abdullah Al Faroque - [@rfnshare](https://twitter.com/rfnshare) - aalfaroque@gmail.com
 
-Portfolio: - [Abdullah Al Faroque](https://rfnshare.github.io/)
-Project Link: [Android Automation](https://github.com/rfnshare/MobileAutomationFramework.git)
+## Support
+[![buymeacoffee](https://www.buymeacoffee.com/assets/img/guidelines/download-assets-sm-1.svg)](https://www.buymeacoffee.com/aalfaroque)
 
 
 <!-- MARKDOWN LINKS & IMAGES -->
