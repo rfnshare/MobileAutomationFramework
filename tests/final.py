@@ -8,26 +8,56 @@ from utils.common import read_date, read_time, clean_directory
 
 def run_pytest_tests(test_files):
     report_file_name_prefix = f"{read_date()}_{read_time()}"
-    report = (
-        Path(__file__).parent.parent
-        / f"reports/htmlreport/regression_{report_file_name_prefix}_report.html"
+    report_html = (
+            Path(__file__).parent.parent
+            / f"reports/htmlreport/regression_{report_file_name_prefix}_report.html"
     )
-    exit_code = pytest.main(
-        test_files
-        + ["--durations=0", "-vv", "-v", "-s", f"--html={report}", "--capture=tee-sys"]
+    report_xml = (
+            Path(__file__).parent.parent
+            / f"reports/xml_report/regression_{report_file_name_prefix}_report.xml"
     )
-    if exit_code == 0:
-        print("All tests passed successfully.")
-    else:
-        print("Some tests failed.")
+    report_allure = (
+            Path(__file__).parent.parent
+            / f"reports/allure_report/regression_{report_file_name_prefix}_report.html"
+    )
+    # Construct the pytest command as a list of arguments
+    pytest_command = [
+        "pytest",
+        "--durations=0",
+        "-vv",
+        "-v",
+        "-s",
+        f"--html={report_html}",
+        "--capture=tee-sys",
+        "-v",
+        f"--junitxml={report_xml}",
+        "-s",
+        f"--alluredir={report_allure}"
+
+    ]
+    # Combine the pytest command and test files into a single list
+    pytest_command += test_files
+    # Execute the pytest command as a subprocess
+    try:
+        subprocess.run(pytest_command, check=True, text=True)
+    except subprocess.CalledProcessError as e:
+        print(f"Error: {e}")
     # html report open
-    html_open_report = f"start {report}"
+    html_open_report = f"start {report_html}"
     subprocess.run(html_open_report, shell=True)
+
+    # send report to receivers email [pending for implementation]
+
+    # allure report serve
+    allure_serve_command = f"allure serve {report_allure}"
+    subprocess.run(allure_serve_command, shell=True)
 
 
 if __name__ == "__main__":
     clean_directory(Path(__file__).parent.parent / "reports")
-    test_files_to_run = []
+    test_files_to_run = [
+        'test_android/test_sample.py::TestHomePage::test_error_msg'
+    ]
     run_pytest_tests(test_files_to_run)
 
 # run by marker -m
