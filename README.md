@@ -109,9 +109,9 @@ Install the Pycharm on your machine.
 
 7. Generate allure reports with run script include log.
     ```
-    HTML Report added, it will generate automatically with log. 
-    Allure report will added later.
+    HTML Report added, it will generate automatically with log.
     ```
+   Install ```npm install -g allure-commandline --save-dev``` for allure report generate.
    This will create an HTML/allure report. You can find report, log, SS in project's reports root directory
 
 ### Usage
