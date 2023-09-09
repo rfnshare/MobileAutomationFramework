@@ -59,6 +59,7 @@ def read_time():
 
 
 def clean_directory(directory):
+    exclude_dirs = ["screenshots", "allure_report", "htmlreport", "logs", "xml_report", "failed", "passed"]
     for root, dirs, files in os.walk(directory, topdown=False):
         for file in files:
             file_path = os.path.join(root, file)
@@ -67,3 +68,12 @@ def clean_directory(directory):
                 print(f"Deleted file: {file_path}")
             except Exception as e:
                 print(f"Failed to delete file: {file_path} - {e}")
+
+        for dir in dirs:
+            dir_path = os.path.join(root, dir)
+            if dir.lower() not in exclude_dirs:
+                try:
+                    os.rmdir(dir_path)
+                    print(f"Deleted folder: {dir_path}")
+                except Exception as e:
+                    print(f"Failed to delete folder: {dir_path} - {e}")
