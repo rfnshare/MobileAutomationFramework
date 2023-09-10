@@ -106,6 +106,11 @@ Install the Pycharm on your machine.
 ```
 python -m pytest -m <smoke/regression> --html=reports/htmlreport/index.html --self-contained-html -s --alluredir=reports/allure_report/<smoke/regression>_report_allure
 ```
+* Install Allure Command Line Install
+```
+npm install -g allure-commandline
+
+```
 * Generate Allure HTML Report
 ```
 allure serve reports/allure_report/<smoke/regression>_report_allure
