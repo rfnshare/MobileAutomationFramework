@@ -75,7 +75,11 @@ Also set path variables by following by adding :
 **Appium Installation:**
 
 You can follow following link for installation https://medium.com/@syamsasi/setting-up-appium-on-windows-and-ubuntu-ea9a73ab989
- 
+
+Install Appium driver after install Appium server 2.0.0
+```
+    appium driver install uiautomator2
+ ```
 **Pycharm Installation:**
 
 Download the Pycharm from their official website.
