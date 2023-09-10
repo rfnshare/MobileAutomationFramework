@@ -56,6 +56,7 @@ def setup(request):
     service = AppiumService()
     service.start()
     data = set_and_get_config_data()
+    options.udid = data["udid"]
     options.app = data["apkPath"]
     options.app_package = data["appPackage"]
     options.app_activity = data["appActivity"]
