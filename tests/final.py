@@ -18,7 +18,7 @@ def run_pytest_tests(test_files):
     )
     report_allure = (
         Path(__file__).parent.parent
-        / f"reports/allure_report/regression_{report_file_name_prefix}_report.html"
+        / f"reports/allure_report/regression_{report_file_name_prefix}_report"
     )
     # Construct the pytest command as a list of arguments
     pytest_command = [
@@ -55,7 +55,7 @@ def run_pytest_tests(test_files):
 if __name__ == "__main__":
     clean_directory(Path(__file__).parent.parent / "reports")
     test_files_to_run = [
-        # 'test_android/test_sample.py::TestHomePage::test_error_msg'
+        'test_android/test_sample.py::TestHomePage::test_error_msg'
     ]
     run_pytest_tests(test_files_to_run)
 
