@@ -2,10 +2,12 @@ import glob
 import inspect
 import logging.config
 import os
+import re
 from datetime import datetime
 from pathlib import Path
-
+import subprocess
 import pandas as pd
+import requests
 
 
 def get_logger():
@@ -85,3 +87,80 @@ def clean_directory(directory):
                     print(f"Deleted folder: {dir_path}")
                 except Exception as e:
                     print(f"Failed to delete folder: {dir_path} - {e}")
+
+
+def get_appium_server_version(appium_server_url):
+    try:
+        # Send a GET request to the Appium server's status endpoint
+        response = requests.get(f"{appium_server_url}/status")
+        response_json = response.json()
+
+        # Extract and return the Appium server version
+        appium_server_version = response_json.get("value", {}).get("build", {}).get("version", "Version not found")
+        return appium_server_version
+
+    except requests.exceptions.RequestException as e:
+        print(f"An error occurred while getting Appium server version: {str(e)}")
+        return None
+
+
+def check_appium(server):
+    try:
+        # Get the Appium version
+        appium_version = get_appium_server_version(server)
+        print("Appium version:", appium_version)
+
+        # Check Appium version and print an error message if it's 1.22 or lower
+        if appium_version and tuple(map(int, re.findall(r'\d+', appium_version))) <= (1, 22, 0):
+            raise EnvironmentError(
+                f"Appium version {appium_version} is installed. Please upgrade to version 2.0.0 or higher.")
+
+    except ImportError:
+        raise EnvironmentError("Appium is not installed or accessible.")
+
+
+def check_environment():
+    try:
+        # Check if JAVA_HOME is set
+        java_home = os.environ.get("JAVA_HOME")
+        print("JAVA_HOME:", java_home)
+        if not java_home:
+            raise EnvironmentError("JAVA_HOME environment variable is not set.")
+
+        # Check if Java version is accessible
+        try:
+            java_version_output = subprocess.check_output(["java", "-version"], stderr=subprocess.STDOUT,
+                                                          universal_newlines=True)
+            if "java version" not in java_version_output.lower():
+                raise EnvironmentError("Java SDK is not installed or accessible.")
+        except subprocess.CalledProcessError as e:
+            raise EnvironmentError("Java SDK is not installed or accessible.")
+
+        # Check if ANDROID_HOME is set
+        android_home = os.environ.get("ANDROID_HOME")
+        print("ANDROID_HOME:", android_home)
+        if not android_home:
+            raise EnvironmentError("ANDROID_HOME environment variable is not set.")
+
+        # Check Android SDK paths
+        android_sdk_paths = [
+            os.path.join(android_home, "platform-tools"),  # Path to platform-tools
+            os.path.join(android_home, "build-tools")  # Path to build-tools
+            # Add more paths as needed
+        ]
+
+        for path in android_sdk_paths:
+            if not os.path.exists(path):
+                raise EnvironmentError(f"Android SDK path not found: {path}")
+
+        # Check if Node.js is installed
+        try:
+            nodejs_version_output = subprocess.check_output(["node", "--version"], stderr=subprocess.STDOUT,
+                                                            universal_newlines=True)
+            if not re.search(r"v\d+\.\d+\.\d+", nodejs_version_output):
+                raise EnvironmentError("Node.js is not installed or accessible.")
+        except subprocess.CalledProcessError as e:
+            raise EnvironmentError("Node.js is not installed or accessible.")
+
+    except EnvironmentError as e:
+        print(f"Error: {e}")
