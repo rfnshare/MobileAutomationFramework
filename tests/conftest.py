@@ -91,7 +91,7 @@ def setup(request):
     # chrome_driver = config.get('AndroidAppConfig', 'chromedriver')
     # options.chromedriver_executable_dir = f'{chrome_driver}'
     check_appium("http://localhost:4723")  # Checking Appium Server Compatible Version
-    driver = webdriver.Remote("http://localhost:4723", options=options)
+    driver = webdriver.Remote("http://localhost:4723", options=options) # dynamic data transfer from appium service [pending]
     driver.implicitly_wait(int(data["wait"]))
     request.cls.driver = driver
     yield
