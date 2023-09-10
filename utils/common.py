@@ -138,7 +138,7 @@ def check_environment():
 
         # Check if ANDROID_HOME is set
         android_home = os.environ.get("ANDROID_HOME")
-        print("\nFound ANDROID_HOME:", android_home)
+        print("Found ANDROID_HOME:", android_home)
         if not android_home:
             raise EnvironmentError("ANDROID_HOME environment variable is not set.")
 
@@ -150,6 +150,7 @@ def check_environment():
         ]
 
         for path in android_sdk_paths:
+            print("Found android_sdk_paths:", path)
             if not os.path.exists(path):
                 raise EnvironmentError(f"Android SDK path not found: {path}")
 
