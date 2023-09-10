@@ -123,7 +123,7 @@ def check_environment():
     try:
         # Check if JAVA_HOME is set
         java_home = os.environ.get("JAVA_HOME")
-        print("\n Found JAVA_HOME:", java_home)
+        print("\nFound JAVA_HOME:", java_home)
         if not java_home:
             raise EnvironmentError("JAVA_HOME environment variable is not set.")
 
@@ -138,7 +138,7 @@ def check_environment():
 
         # Check if ANDROID_HOME is set
         android_home = os.environ.get("ANDROID_HOME")
-        print("\n Found ANDROID_HOME:", android_home)
+        print("\nFound ANDROID_HOME:", android_home)
         if not android_home:
             raise EnvironmentError("ANDROID_HOME environment variable is not set.")
 
