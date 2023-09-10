@@ -99,7 +99,13 @@ def pytest_runtest_makereport(item):
                     / "reports/screenshots/failed"
                     / file_name
                 )
-                allure.attach(driver.get_screenshot_as_png())
+                try:
+                    if driver is None:
+                        raise AppiumDriverNotInitializedError
+                    allure.attach(driver.get_screenshot_as_png())
+                except AppiumDriverNotInitializedError as e:
+                    print(f"An error occurred: {e}")
+
                 # Encode the path to HTML-safe format
                 encoded_path = image_path.as_uri()
                 html = (
