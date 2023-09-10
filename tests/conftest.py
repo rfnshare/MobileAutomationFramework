@@ -1,3 +1,5 @@
+import configparser
+import os
 from pathlib import Path
 
 import allure
@@ -8,6 +10,7 @@ import datetime
 
 from appium.webdriver.appium_service import AppiumService
 
+from utils.common import check_appium, check_environment
 from utils.config import getConfig, setup_config
 
 driver = None
@@ -22,24 +25,47 @@ class AppiumDriverNotInitializedError(Exception):
 def set_and_get_config_data():
     setup_config()
     config = getConfig()
+
+    # Check if the APK exists in the app/android folder
+    apk_folder = os.path.join(os.getcwd(), "app", "android")
+    apk_file_name = config.get("AndroidAppConfig", "apkPath")
+
+    apk_file_path = None
+    if os.path.exists(os.path.join(apk_folder, apk_file_name)):
+        apk_file_path = os.path.join(apk_folder, apk_file_name)
+
+    # If the APK file path is not found, raise an error
+    if apk_file_path is None:
+        print("APK file not found in the app/android folder.")
+        exit()
+
     # Get the 'udid' value from the 'AndroidAppConfig' section
     try:
         udid_string = config.get("AndroidAppConfig", "udid")
-    except config.NoOptionError:
+    except configparser.NoOptionError:
         print("No 'udid' key found in the INI file.")
         exit()
+
     # Split the 'udid' string by commas
     udid_list = [udid.strip() for udid in udid_string.split(",")]
+
     if not udid_list:
         print("No UDIDs found in the 'udid' list.")
         exit()
 
+    # Get the APK name from the 'AndroidAppConfig' section
+    try:
+        package_name = config.get("AndroidAppConfig", "appPackage")
+        launcher_activity = config.get("AndroidAppConfig", "appActivity")
+        wait = config.get("AndroidAppConfig", "element_wait")
+    except configparser.NoOptionError:
+        print("APK name or other required values not found in the 'AndroidAppConfig' section.")
+        print("Please define 'apkPath', 'appPackage', 'appActivity', and 'element_wait' in the configuration file.")
+        exit()
+
     # Always choose the first UDID from the list
     first_udid = udid_list[0]
-    apk_file_path = config.get("AndroidAppConfig", "apkPath")
-    package_name = config.get("AndroidAppConfig", "appPackage")
-    launcher_activity = config.get("AndroidAppConfig", "appActivity")
-    wait = config.get("AndroidAppConfig", "element_wait")
+
     return {
         "udid": first_udid,
         "apkPath": str(apk_file_path),
@@ -51,6 +77,7 @@ def set_and_get_config_data():
 
 @pytest.fixture(scope="function")
 def setup(request):
+    check_environment()  # Checking node js installed or not, ENV variables set or not
     global driver
     options = UiAutomator2Options()
     service = AppiumService()
@@ -63,7 +90,8 @@ def setup(request):
     options.auto_grant_permissions = True
     # chrome_driver = config.get('AndroidAppConfig', 'chromedriver')
     # options.chromedriver_executable_dir = f'{chrome_driver}'
-    driver = webdriver.Remote("http://127.0.0.1:4723", options=options)
+    check_appium("http://localhost:4723")  # Checking Appium Server Compatible Version
+    driver = webdriver.Remote("http://localhost:4723", options=options)
     driver.implicitly_wait(int(data["wait"]))
     request.cls.driver = driver
     yield
@@ -96,9 +124,9 @@ def pytest_runtest_makereport(item):
             _capture_screenshot(SS_PATH / file_name)
             if file_name:
                 image_path = (
-                    Path(__file__).parent.parent
-                    / "reports/screenshots/failed"
-                    / file_name
+                        Path(__file__).parent.parent
+                        / "reports/screenshots/failed"
+                        / file_name
                 )
                 try:
                     if driver is None:

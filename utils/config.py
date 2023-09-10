@@ -1,4 +1,5 @@
 import configparser
+import os
 import subprocess
 from pathlib import Path
 
@@ -48,19 +49,31 @@ def setup_config():
         print(f"INI file '{ini_file_path}' not found.")
         return
 
-    # Get the 'apk' value from the 'AndroidAppConfig' section
-    try:
-        apk_file_name = config.get("AndroidAppConfig", "apk")
-        # Check if the 'apk' value is empty
-        if not apk_file_name:
-            print("The 'apk' key in the INI file is empty.")
-            return
-    except config.NoOptionError:
-        print("No 'apk' key found in the INI file.")
-        return
+    # # Get the 'apk' value from the 'AndroidAppConfig' section
+    # try:
+    #     apk_file_name = config.get("AndroidAppConfig", "apk")
+    #     # Check if the 'apk' value is empty
+    #     if not apk_file_name:
+    #         print("The 'apk' key in the INI file is empty.")
+    #         return
+    # except config.NoOptionError:
+    #     print("No 'apk' key found in the INI file.")
+    #     return
 
+    # Find APK files in the app/android folder
+    apk_folder = Path(__file__).parent.parent / 'app/android'
+    apk_files = [file for file in os.listdir(apk_folder) if file.endswith(".apk")]
+
+    if not apk_files:
+        print("No APK files found in the app/android folder.")
+        exit()
+    if len(apk_files) == 1:
+        apks = apk_files[0]
+    else:
+        print("Found multiple APK files in the app/android folder. Please provide only one APK.")
+        exit()
     # Construct the full path to the APK file
-    apk_file_path = Path(__file__).parent.parent / "app/android" / apk_file_name
+    apk_file_path = Path(__file__).parent.parent / "app/android" / apks
 
     # Check if the APK file exists
     if not apk_file_path.exists():
@@ -78,10 +91,11 @@ def setup_config():
     connected_device_udid = get_connected_device_udid()
 
     # Update the INI file with the extracted values
-    config["AndroidAppConfig"]["ApkPath"] = str(apk_file_path)
+    config["AndroidAppConfig"]["apk"] = str(apks)
+    config["AndroidAppConfig"]["apkPath"] = str(apk_file_path)
     config["AndroidAppConfig"]["udid"] = str(connected_device_udid)
-    config["AndroidAppConfig"]["apppackage"] = str(package_name)
-    config["AndroidAppConfig"]["appactivity"] = str(launcher_activity)
+    config["AndroidAppConfig"]["appPackage"] = str(package_name)
+    config["AndroidAppConfig"]["appActivity"] = str(launcher_activity)
 
     # Save the changes back to the INI file
     with open(ini_file_path, "w") as configfile:
