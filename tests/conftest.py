@@ -1,7 +1,7 @@
 import configparser
 import os
 from pathlib import Path
-
+import socket
 import allure
 import pytest
 from appium import webdriver
@@ -75,14 +75,32 @@ def set_and_get_config_data():
     }
 
 
+def free_port(start_port=4723):
+    """
+    Determines a free port using sockets, starting from the specified start_port.
+    """
+    port = start_port
+    while True:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as free_socket:
+            try:
+                free_socket.bind(('0.0.0.0', port))
+                free_socket.listen(5)
+                port = free_socket.getsockname()[1]
+                return port
+            except OSError:
+                port += 1
+
 @pytest.fixture(scope="function")
 def setup(request):
     check_environment()  # Checking node js installed or not, ENV variables set or not
     global driver
     options = UiAutomator2Options()
-    service = AppiumService()
-    service.start()
     data = set_and_get_config_data()
+    port = free_port(start_port=4723)  # Start from port 4723 and find an available port
+    service = AppiumService()
+    service.start(args=['--address', 'localhost', '-p', str(port)])
+    appium_server_url = f"http://localhost:{port}"
+    print("Running on:", appium_server_url)
     options.udid = data["udid"]
     options.app = data["apkPath"]
     options.app_package = data["appPackage"]
@@ -90,8 +108,8 @@ def setup(request):
     options.auto_grant_permissions = True
     # chrome_driver = config.get('AndroidAppConfig', 'chromedriver')
     # options.chromedriver_executable_dir = f'{chrome_driver}'
-    check_appium("http://localhost:4723")  # Checking Appium Server Compatible Version
-    driver = webdriver.Remote("http://localhost:4723", options=options) # dynamic data transfer from appium service [pending]
+    check_appium(appium_server_url)  # Checking Appium Server Compatible Version
+    driver = webdriver.Remote(appium_server_url, options=options)
     driver.implicitly_wait(int(data["wait"]))
     request.cls.driver = driver
     yield
