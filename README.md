@@ -95,7 +95,7 @@ Install the Pycharm on your machine.
     ```
     app/android/appname.apk
     ```
-4. Configure ```config/properties.ini``` file with your APK name. Make sure you connect you android device/emulator. Devices UDID, ApK path, appPackage & appActivity will detect automatically.
+4. Make sure you connect you android device/emulator. Devices UDID, APK, ApK path, appPackage & appActivity will detect automatically.
 5. Go to the project's root directory and install requirements (Recommended create virtual env first).
     ```
     pip install -r requirements.txt
