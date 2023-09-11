@@ -8,7 +8,7 @@ from pathlib import Path
 import subprocess
 import pandas as pd
 import requests
-
+import sys
 
 def get_logger():
     config_file_path = Path(__file__).parent.parent / "config/logging.conf"
@@ -165,3 +165,4 @@ def check_environment():
 
     except EnvironmentError as e:
         print(f"Error: {e}")
+        sys.exit(1)  # Exit the program with a non-zero exit code
