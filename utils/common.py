@@ -170,7 +170,9 @@ def check_environment():
                 print("JAVA_HOME set to:", java_home)
             except EnvironmentError as e:
                 print(f"Error: {e}")
-
+        if not java_home:
+            print("JAVA_HOME is still not set. Please set it manually.")
+            sys.exit(1)  # Exit the program with a non-zero exit code
         print("Found JAVA_HOME:", java_home)
 
         # Check if Java version is accessible
@@ -198,6 +200,9 @@ def check_environment():
                 print("ANDROID_HOME set to:", android_home)
             except EnvironmentError as e:
                 print(f"Error: {e}")
+        if not android_home:
+            print("ANDROID_HOME is still not set. Please set it manually.")
+            sys.exit(1)  # Exit the program with a non-zero exit code
 
         print("Found ANDROID_HOME:", android_home)
 
