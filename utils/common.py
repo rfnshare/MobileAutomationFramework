@@ -121,14 +121,25 @@ def check_appium(server):
 
 
 def find_java_jdk_path():
-    # Define the search pattern for JDK installation directories
-    pattern = r"C:\Program Files\Java\jdk-*"
+    # Define the search patterns for JDK installation directories on Linux, macOS, and Windows
+    linux_pattern = '/usr/lib/jvm/java-*'
+    mac_pattern = '/Library/Java/JavaVirtualMachines/jdk*'
+    windows_pattern = r"C:\Program Files\Java\jdk-*"
 
-    # Use glob to find JDK directories that match the pattern
-    jdk_paths = glob.glob(pattern)
+    # Determine the current operating system
+    current_os = os.name
+
+    if current_os == 'posix':  # Linux or macOS
+        # Use glob to find JDK directories that match the patterns on Linux and macOS
+        jdk_paths = glob.glob(linux_pattern) + glob.glob(mac_pattern)
+    elif current_os == 'nt':  # Windows
+        # Use glob to find JDK directories that match the pattern on Windows
+        jdk_paths = glob.glob(windows_pattern)
+    else:
+        raise EnvironmentError("Unsupported operating system.")
 
     if not jdk_paths:
-        raise EnvironmentError("No Java JDK installations found matching the pattern.")
+        raise EnvironmentError("No Java JDK installations found matching the patterns.")
 
     # Return the first matching JDK path (you can modify this if multiple JDKs are installed)
     return jdk_paths[0]
@@ -180,7 +191,7 @@ def check_environment():
             java_version_output = subprocess.check_output(
                 ["java", "-version"], stderr=subprocess.STDOUT, universal_newlines=True
             )
-            if "java version" not in java_version_output.lower():
+            if not any(char.isdigit() for char in java_version_output):
                 raise EnvironmentError("Java SDK is not installed or accessible.")
         except subprocess.CalledProcessError as e:
             raise EnvironmentError("Java SDK is not installed or accessible.")
