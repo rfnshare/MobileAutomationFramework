@@ -10,6 +10,7 @@ import pandas as pd
 import requests
 import sys
 
+
 def get_logger():
     config_file_path = Path(__file__).parent.parent / "config/logging.conf"
     project_path = Path(__file__).parent.parent
@@ -119,18 +120,64 @@ def check_appium(server):
         raise EnvironmentError("Appium is not installed or accessible.")
 
 
+def find_java_jdk_path():
+    # Define the search pattern for JDK installation directories
+    pattern = r"C:\Program Files\Java\jdk-*"
+
+    # Use glob to find JDK directories that match the pattern
+    jdk_paths = glob.glob(pattern)
+
+    if not jdk_paths:
+        raise EnvironmentError("No Java JDK installations found matching the pattern.")
+
+    # Return the first matching JDK path (you can modify this if multiple JDKs are installed)
+    return jdk_paths[0]
+
+
+def find_android_sdk_path():
+    # Try to find the Android SDK path based on the user's home directory
+    home = str(Path.home())
+    potential_sdk_paths = [
+        os.path.join(home, "AppData", "Local", "Android", "Sdk"),  # Windows
+        os.path.join(home, "Library", "Android", "sdk"),  # macOS
+        os.path.join(home, "Android", "Sdk"),  # Linux
+    ]
+
+    for path in potential_sdk_paths:
+        if os.path.exists(path):
+            return path
+
+    # If the SDK path is not found, you can raise an exception or return None
+    raise EnvironmentError(
+        "Android SDK path not found. Please install the Android SDK and set it up correctly."
+    )
+
+
 def check_environment():
     try:
         # Check if JAVA_HOME is set
         java_home = os.environ.get("JAVA_HOME")
-        print("\nFound JAVA_HOME:", java_home)
+
         if not java_home:
-            raise EnvironmentError("JAVA_HOME environment variable is not set.")
+            print("JAVA_HOME environment variable is not set. Setting it now...")
+            try:
+                java_jdk_path = find_java_jdk_path()
+                print("Java JDK path:", java_jdk_path)
+                # Set JAVA_HOME to the appropriate value
+                # Replace 'your_java_home_path' with the actual path to your Java installation
+                os.environ["JAVA_HOME"] = java_jdk_path
+                java_home = os.environ["JAVA_HOME"]
+                print("JAVA_HOME set to:", java_home)
+            except EnvironmentError as e:
+                print(f"Error: {e}")
+
+        print("Found JAVA_HOME:", java_home)
 
         # Check if Java version is accessible
         try:
-            java_version_output = subprocess.check_output(["java", "-version"], stderr=subprocess.STDOUT,
-                                                          universal_newlines=True)
+            java_version_output = subprocess.check_output(
+                ["java", "-version"], stderr=subprocess.STDOUT, universal_newlines=True
+            )
             if "java version" not in java_version_output.lower():
                 raise EnvironmentError("Java SDK is not installed or accessible.")
         except subprocess.CalledProcessError as e:
@@ -140,7 +187,19 @@ def check_environment():
         android_home = os.environ.get("ANDROID_HOME")
         print("Found ANDROID_HOME:", android_home)
         if not android_home:
-            raise EnvironmentError("ANDROID_HOME environment variable is not set.")
+            print("ANDROID_HOME environment variable is not set. Setting it now...")
+            try:
+                android_sdk_path = find_android_sdk_path()
+                print("Extract Android SDK path:", android_sdk_path)
+                # Set ANDROID_HOME to the appropriate value
+                # Replace 'your_android_home_path' with the actual path to your Android SDK installation
+                os.environ["ANDROID_HOME"] = android_sdk_path
+                android_home = os.environ["ANDROID_HOME"]
+                print("ANDROID_HOME set to:", android_home)
+            except EnvironmentError as e:
+                print(f"Error: {e}")
+
+        print("Found ANDROID_HOME:", android_home)
 
         # Check Android SDK paths
         android_sdk_paths = [
@@ -156,8 +215,9 @@ def check_environment():
 
         # Check if Node.js is installed
         try:
-            nodejs_version_output = subprocess.check_output(["node", "--version"], stderr=subprocess.STDOUT,
-                                                            universal_newlines=True)
+            nodejs_version_output = subprocess.check_output(
+                ["node", "--version"], stderr=subprocess.STDOUT, universal_newlines=True
+            )
             if not re.search(r"v\d+\.\d+\.\d+", nodejs_version_output):
                 raise EnvironmentError("Node.js is not installed or accessible.")
         except subprocess.CalledProcessError as e:
