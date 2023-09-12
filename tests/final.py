@@ -1,4 +1,5 @@
 import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -41,6 +42,7 @@ def run_pytest_tests(test_files):
         subprocess.run(pytest_command, check=True, text=True)
     except subprocess.CalledProcessError as e:
         print(f"Error: {e}")
+        sys.exit(1)  # Exit the program with a non-zero exit code
     # html report open
     html_open_report = f"start {report_html}"
     subprocess.run(html_open_report, shell=True)
