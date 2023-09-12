@@ -8,7 +8,8 @@ def is_nodejs_installed():
     try:
         system_platform = os.name
         if system_platform == "nt":  # Windows
-            subprocess.run(["node", "--version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True, shell=True)
+            subprocess.run(["node", "--version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True,
+                           shell=True)
             subprocess.run(["npm", "--version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True, shell=True)
         else:  # Linux and macOS
             subprocess.run(["node", "--version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
@@ -89,8 +90,14 @@ def install_nodejs():
 
 def get_appium_version():
     try:
-        result = subprocess.run(["appium", "--version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
-                                check=True, shell=True)
+        system_platform = os.name
+        if system_platform == "nt":  # Windows
+            result = subprocess.run(["appium", "--version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+                                    check=True, shell=True)
+        else:  # Linux and macOS
+            result = subprocess.run(["appium", "--version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+                                    check=True)
+
         version_match = re.search(r"(\d+\.\d+\.\d+)", result.stdout)
         if version_match:
             return version_match.group(1)
@@ -100,7 +107,75 @@ def get_appium_version():
         return None
 
 
-def install_appium_dependency():
+def install_appium_version(system_platform):
+    if system_platform == "posix":  # Linux and macOS
+        # Install Appium globally for Linux and macOS
+        subprocess.run(["npm", "install", "-g", "appium"])
+    elif system_platform == "nt":  # Windows
+        # Install Appium globally for Windows
+        subprocess.run(["npm", "install", "-g", "appium"])
+    else:
+        print("Unsupported operating system")
+
+
+def install_appium_drivers(system_platform):
+    # Add your logic for installing Appium drivers here
+    if system_platform == "posix":  # Linux and macOS
+        # Install the required Appium drivers for Linux and macOS
+        subprocess.run(["appium", "driver", "install", "uiautomator2"])
+        subprocess.run(["appium", "driver", "install", "xcuitest"])
+    elif system_platform == "nt":  # Windows
+        # Install the required Appium drivers for Windows
+        subprocess.run(["appium", "driver", "install", "uiautomator2"], shell=True)
+        subprocess.run(["appium", "driver", "install", "xcuitest"], shell=True)
+    else:
+        print("Unsupported operating system")
+
+
+def install_appium():
+    system_platform = os.name
+
+    if not is_nodejs_installed():
+        print("Node.js and/or npm are not installed. Skipping Appium installation.")
+        return
+
+    current_version = get_appium_version()
+
+    if current_version:
+        print(f"Appium {current_version} is already installed.")
+
+        if current_version < "2.0.0":
+            user_response = input(
+                "Appium version is older than 2.0.0. Do you want to uninstall the existing Appium and install the latest version? (yes/no): ").strip().lower()
+
+            if user_response == "yes":
+                if system_platform == "posix":  # Linux and macOS
+                    subprocess.run(["npm", "uninstall", "-g", "appium"])
+                elif system_platform == "nt":  # Windows
+                    subprocess.run(["npm", "uninstall", "-g", "appium", "--global-style"])
+                print("Uninstalling the existing Appium...")
+
+                # Reinstall Appium
+                install_appium_version(system_platform)
+            else:
+                print("Skipping Appium installation.")
+                return
+        else:
+            print(f"Appium version {current_version} is up to date.")
+    else:
+        # Appium is not installed, install it
+        install_appium_version(system_platform)
+
+    # Check the installed Appium version again
+    updated_version = get_appium_version()
+
+    if updated_version and updated_version >= "2.0.0":
+        print("Appium installation/Checked complete.")
+        install_appium_drivers(system_platform)
+        print("Appium driver installation/checked complete.")
+
+
+def check_and_install_dependency():
     system_platform = os.name
 
     if not is_nodejs_installed():
@@ -114,43 +189,8 @@ def install_appium_dependency():
         else:
             print("Node.js and npm installation successful.")
 
-    # current_version = get_appium_version()
-    #
-    # if current_version:
-    #     print(f"Appium {current_version} is already installed.")
-    #
-    #     if current_version < "2.0.0":
-    #         user_response = input(
-    #             "Do you want to uninstall the existing Appium and install the latest version? (yes/no): ").strip().lower()
-    #
-    #         if user_response == "yes":
-    #             if system_platform == "posix":  # Linux and macOS
-    #                 subprocess.run(["npm", "uninstall", "-g", "appium"])
-    #             elif system_platform == "nt":  # Windows
-    #                 subprocess.run(["npm", "uninstall", "-g", "appium", "--global-style"])
-    #             print("Uninstalling the existing Appium...")
-    #         else:
-    #             print("Skipping Appium installation.")
-    #             return
-    #
-    #     else:
-    #         print(f"Appium version {current_version} is up to date. Skipping installation.")
-    #         return
-    #
-    # if system_platform == "posix":  # Linux and macOS
-    #     # Install Appium globally for Linux and macOS
-    #     subprocess.run(["npm", "install", "-g", "appium"])
-    #
-    # elif system_platform == "nt":  # Windows
-    #     # Install Appium globally for Windows
-    #     subprocess.run(["npm", "install", "-g", "appium"])
-    #
-    # else:
-    #     print("Unsupported operating system")
-    #     return
-    #
-    # print("Appium installation complete!")
+    install_appium()
 
 
 if __name__ == "__main__":
-    install_appium_dependency()
+    install_appium()
