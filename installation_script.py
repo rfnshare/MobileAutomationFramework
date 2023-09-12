@@ -4,8 +4,13 @@ import re
 import subprocess
 import sys
 import getpass
-
-
+'''
+Pending Work:
+- handle node version, if old then update
+- brew path permanent
+- git install
+- and so on
+'''
 def execute_sudo_command(command):
     sudo_password = getpass.getpass("Enter your sudo password: ")
     p = os.system('echo %s|sudo -S %s' % (sudo_password, command))
