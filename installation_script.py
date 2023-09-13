@@ -486,6 +486,13 @@ def install_appium_doctor():
                 check=True,
                 shell=True,
             )
+            subprocess.run(
+                ["npm", "install", "-g", "allure"],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=True,
+                shell=True,
+            )
 
         else:  # Linux and macOS
             subprocess.run(
@@ -494,7 +501,13 @@ def install_appium_doctor():
                 stderr=subprocess.PIPE,
                 check=True,
             )
-        print("Appium Doctor Installed...")
+            subprocess.run(
+                ["npm", "install", "-g", "allure"],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=True,
+            )
+        print("Appium Doctor & allure command line Installed...")
     except (FileNotFoundError, subprocess.CalledProcessError):
         return None
 
