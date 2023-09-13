@@ -202,6 +202,40 @@ def update_appium():
         return
 
 
+def check_java():
+    try:
+        # Check for JDK
+        subprocess.run(['javac', '-version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True, text=True)
+        jdk_installed = True
+    except subprocess.CalledProcessError:
+        jdk_installed = False
+
+    try:
+        # Check for JRE
+        subprocess.run(['java', '-version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True, text=True)
+        jre_installed = True
+    except subprocess.CalledProcessError:
+        jre_installed = False
+
+    return jdk_installed, jre_installed
+
+
+def install_java():
+    system = platform.system()
+
+    if system == "Linux":
+        # Install OpenJDK on Linux
+        subprocess.run(['sudo', 'apt-get', 'install', 'openjdk-8-jdk', 'openjdk-8-jre', '-y'])
+    elif system == "Darwin":
+        # Install AdoptOpenJDK on macOS (you can adjust this based on your macOS package manager)
+        subprocess.run(['brew', 'install', 'adoptopenjdk8'])
+    elif system == "Windows":
+        # You can add Windows-specific installation commands here
+        pass
+    else:
+        print("Unsupported operating system.")
+
+
 def check_and_install_dependency():
     print(f"Your Platform is {sys.platform}")
     try:
@@ -246,6 +280,13 @@ def check_and_install_dependency():
         update_appium()
     else:
         print(f"Appium {current_appium_version} is already installed.")
+    jdk_installed, jre_installed = check_java()
+
+    if jdk_installed and jre_installed:
+        print("JDK & JRE is installed.")
+    else:
+        print("JDK or JRE is not installed.")
+        install_java()
 
 
 # Example usage:
