@@ -487,7 +487,7 @@ def install_appium_doctor():
                 shell=True,
             )
             subprocess.run(
-                ["npm", "install", "-g", "allure"],
+                ["npm", "install", "-g", "allure-commandline"],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 check=True,
@@ -502,7 +502,7 @@ def install_appium_doctor():
                 check=True,
             )
             subprocess.run(
-                ["npm", "install", "-g", "allure"],
+                ["npm", "install", "-g", "allure-commandline"],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 check=True,
