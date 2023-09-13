@@ -13,7 +13,7 @@ Pending Work:
 - brew path permanent [Solve not found]
 - git install (optional)
 - manage with multiple package manager [sudo, brew]
-- java [jdk, jre], android sdk
+- java [jdk, jre], android sdk path not setting permanently
 """
 
 
