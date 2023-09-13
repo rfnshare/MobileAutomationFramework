@@ -1,3 +1,4 @@
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -43,13 +44,27 @@ def run_pytest_tests(test_files):
     except subprocess.CalledProcessError as e:
         print(f"Error: {e}")
         sys.exit(1)  # Exit the program with a non-zero exit code
-    # html report open
-    html_open_report = f"start {report_html}"
-    subprocess.run(html_open_report, shell=True)
+    # Determine the current operating system
+    current_os = os.name  # Returns 'posix' for Linux/macOS, 'nt' for Windows
 
-    # send report to receivers email [pending for implementation]
+    # Open the HTML report in the default web browser (OS-specific)
+    if current_os == "posix":  # Linux or macOS
+        open_command = f"open {report_html}"  # macOS
+    elif current_os == "nt":  # Windows
+        open_command = f"start {report_html}"  # Windows
+    else:
+        print("Unsupported operating system")
+        open_command = None
 
-    # allure report serve
+    # Check if the open command is defined for the current OS
+    if open_command:
+        subprocess.run(open_command, shell=True)
+    else:
+        print("Failed to open HTML report due to unsupported OS.")
+
+    # Send the report via email (pending implementation)
+
+    # Serve the Allure report (OS-agnostic)
     allure_serve_command = f"allure serve {report_allure}"
     subprocess.run(allure_serve_command, shell=True)
 
