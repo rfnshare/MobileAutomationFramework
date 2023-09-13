@@ -239,6 +239,40 @@ def install_java():
         print("Unsupported operating system.")
 
 
+def find_sdk_directory():
+    system = platform.system()
+    home_dir = os.path.expanduser("~")
+
+    if system == "Linux":
+        possible_paths = [
+            "/usr/local/android-sdk",  # Common installation path on Linux
+            f"{home_dir}/Android/Sdk",  # Android Studio default SDK path
+        ]
+    elif system == "Darwin":
+        possible_paths = [
+            "/usr/local/android-sdk",  # Common installation path on macOS
+            f"{home_dir}/Library/Android/sdk",  # Android Studio default SDK path on macOS
+        ]
+    elif system == "Windows":
+        possible_paths = [
+            f"{home_dir}\\AppData\\Local\\Android\\Sdk",  # Default SDK path on Windows
+        ]
+    else:
+        print("Unsupported operating system.")
+        return None
+
+    for path in possible_paths:
+        if os.path.exists(path):
+            return path
+
+    return None
+
+
+def check_sdk():
+    sdk_directory = find_sdk_directory()
+    return sdk_directory is not None
+
+
 def check_and_install_dependency():
     print(f"Your Platform is {sys.platform}")
     try:
@@ -290,6 +324,28 @@ def check_and_install_dependency():
     else:
         print("JDK or JRE is not installed.")
         install_java()
+    sdk_installed = check_sdk()
+
+    if sdk_installed:
+        print("Android SDK is installed.")
+    else:
+        print("Android SDK is not installed or not found in common locations.")
+
+
+def install_sdk():
+    system = platform.system()
+
+    if system == "Linux":
+        # Install Android SDK on Linux
+        subprocess.run(['sudo', 'apt-get', 'install', 'android-sdk', '-y'])
+    elif system == "Darwin":
+        # Install Android SDK on macOS (you can adjust this based on your macOS package manager)
+        subprocess.run(['brew', 'install', 'android-sdk'])
+    elif system == "Windows":
+        # You can add Windows-specific installation commands here
+        pass
+    else:
+        print("Unsupported operating system.")
 
 
 # Example usage:
