@@ -345,7 +345,7 @@ def install_java():
         )
     elif system == "Darwin":
         # Install AdoptOpenJDK on macOS (you can adjust this based on your macOS package manager)
-        subprocess.run(["brew", "install", "adoptopenjdk8"])
+        subprocess.run(["brew", "install", "adoptopenjdk11"])
     elif system == "Windows":
         # You can add Windows-specific installation commands here
         print("Install JAVA Manually...")
@@ -574,7 +574,9 @@ def check_and_install_dependency():
         install_nodejs()
 
     current_node_version = get_node_version()
-    if current_node_version < "18.0.0":
+    if current_node_version is None:
+        return
+    elif current_node_version < "18.0.0":
         print(
             "Node.js and/or npm is not up to date. Update Node.js Manually Then Continue..."
         )
