@@ -475,6 +475,30 @@ def is_appium_doctor_installed():
         return False
 
 
+def install_appium_doctor():
+    try:
+        system_platform = os.name
+        if system_platform == "nt":  # Windows
+            subprocess.run(
+                ["npm", "install", "-g", "appium-doctor"],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=True,
+                shell=True,
+            )
+
+        else:  # Linux and macOS
+            subprocess.run(
+                ["npm", "install", "-g", "appium-doctor"],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=True,
+            )
+        print("Appium Doctor Installed...")
+    except (FileNotFoundError, subprocess.CalledProcessError):
+        return None
+
+
 def check_and_install_dependency():
     print(f"Your Platform is {sys.platform}")
     try:
@@ -548,13 +572,7 @@ def check_and_install_dependency():
     check_environment()
 
     if not is_appium_doctor_installed():
-        subprocess.run(
-            ["npm", "install", "-g", "appium-doctor"],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            check=True,
-            shell=True,
-        )
+        install_appium_doctor()
     subprocess.run(
         ["appium-doctor"],
         check=True,
