@@ -288,7 +288,6 @@ def check_java():
             text=True,
         )
         jdk_installed = True
-        print(f"Java Path: {jdk_installed}")
     except (subprocess.CalledProcessError, FileNotFoundError):
         print("JDK Not Found")
         jdk_installed = False
@@ -316,7 +315,7 @@ def install_java():
     if system == "Linux":
         # Install OpenJDK on Linux
         subprocess.run(
-            ["sudo", "apt-get", "install", "openjdk-8-jdk", "openjdk-8-jre", "-y"]
+            ["sudo", "apt-get", "install", "openjdk-11-jdk", "openjdk-11-jre", "-y"]
         )
     elif system == "Darwin":
         # Install AdoptOpenJDK on macOS (you can adjust this based on your macOS package manager)
