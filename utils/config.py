@@ -2,7 +2,7 @@ import configparser
 import os
 import subprocess
 from pathlib import Path
-
+import socket
 import mysql.connector
 from androguard.core.bytecodes.apk import APK
 from mysql.connector import Error
@@ -130,3 +130,72 @@ def getQuery(query):
     row = cursor.fetchone()
     conn.close()
     return row
+
+
+def set_and_get_config_data():
+    setup_config()
+    config = getConfig()
+
+    # Check if the APK exists in the app/android folder
+    apk_folder = os.path.join(os.getcwd(), "app", "android")
+    apk_file_name = config.get("AndroidAppConfig", "apkPath")
+
+    apk_file_path = None
+    if os.path.exists(os.path.join(apk_folder, apk_file_name)):
+        apk_file_path = os.path.join(apk_folder, apk_file_name)
+
+    # If the APK file path is not found, raise an error
+    if apk_file_path is None:
+        print("APK file not found in the app/android folder.")
+        exit()
+
+    # Get the 'udid' value from the 'AndroidAppConfig' section
+    try:
+        udid_string = config.get("AndroidAppConfig", "udid")
+    except configparser.NoOptionError:
+        print("No 'udid' key found in the INI file.")
+        exit()
+
+    # Split the 'udid' string by commas
+    udid_list = [udid.strip() for udid in udid_string.split(",")]
+
+    if not udid_list:
+        print("No UDIDs found in the 'udid' list.")
+        exit()
+
+    # Get the APK name from the 'AndroidAppConfig' section
+    try:
+        package_name = config.get("AndroidAppConfig", "appPackage")
+        launcher_activity = config.get("AndroidAppConfig", "appActivity")
+        wait = config.get("AndroidAppConfig", "element_wait")
+    except configparser.NoOptionError:
+        print("APK name or other required values not found in the 'AndroidAppConfig' section.")
+        print("Please define 'apkPath', 'appPackage', 'appActivity', and 'element_wait' in the configuration file.")
+        exit()
+
+    # Always choose the first UDID from the list
+    first_udid = udid_list[0]
+
+    return {
+        "udid": first_udid,
+        "apkPath": str(apk_file_path),
+        "appPackage": str(package_name),
+        "appActivity": str(launcher_activity),
+        "wait": str(wait),
+    }
+
+
+def free_port(start_port=4723):
+    """
+    Determines a free port using sockets, starting from the specified start_port.
+    """
+    port = start_port
+    while True:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as free_socket:
+            try:
+                free_socket.bind(('0.0.0.0', port))
+                free_socket.listen(5)
+                port = free_socket.getsockname()[1]
+                return port
+            except OSError:
+                port += 1
