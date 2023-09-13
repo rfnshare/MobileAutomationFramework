@@ -9,8 +9,9 @@ import getpass
 Pending Work:
 - handle node version, if old then update [For now manual install]
 - brew path permanent [Solve not found]
-- git install
-- and so on
+- git install (optional)
+- manage with multiple package manager [sudo, brew]
+- java [jdk, jre], android sdk
 '''
 
 
