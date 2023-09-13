@@ -4,6 +4,7 @@ import re
 import subprocess
 import sys
 import getpass
+
 '''
 Pending Work:
 - handle node version, if old then update
@@ -11,6 +12,8 @@ Pending Work:
 - git install
 - and so on
 '''
+
+
 def execute_sudo_command(command):
     sudo_password = getpass.getpass("Enter your sudo password: ")
     p = os.system('echo %s|sudo -S %s' % (sudo_password, command))
@@ -109,9 +112,7 @@ def install_nodejs():
 
     if system_platform == "posix":  # Linux and macOS
         try:
-            update_command = "apt update"
             install_command = ["brew", "install", "nodejs"]
-            execute_sudo_command(update_command)
             subprocess.run(install_command)
 
         except FileNotFoundError:
@@ -158,6 +159,25 @@ def get_appium_version():
         return None
 
 
+def get_node_version():
+    try:
+        system_platform = os.name
+        if system_platform == "nt":  # Windows
+            result = subprocess.run(["node", "--version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+                                    check=True, shell=True)
+        else:  # Linux and macOS
+            result = subprocess.run(["node", "--version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+                                    check=True)
+
+        version_match = re.search(r"(\d+\.\d+\.\d+)", result.stdout)
+        if version_match:
+            return version_match.group(1)
+        else:
+            return None
+    except (FileNotFoundError, subprocess.CalledProcessError):
+        return None
+
+
 def install_appium():
     subprocess.run(["npm", "install", "-g", "appium"])
     print("Successfully Installed Appium...")
@@ -186,6 +206,8 @@ def check_and_install_dependency():
     print(f"Your Platform is {sys.platform}")
     try:
         if sys.platform == "darwin" or sys.platform == "linux" or sys.platform == "linux2":  # macOS
+            update_command = "apt update"
+            execute_sudo_command(update_command)
             if not is_curl_installed():
                 print("Curl are not installed. Installing curl...")
                 install_curl()
@@ -209,13 +231,21 @@ def check_and_install_dependency():
     if not is_nodejs_installed():
         print("Node.js and/or npm are not installed. Installing Node.js...")
         install_nodejs()
-    current_version = get_appium_version()
-    if current_version is None:
+
+    current_node_version = get_node_version()
+    if current_node_version < "18.0.0":
+        print("Node.js and/or npm is not up to date. Update Node.js Manually Then Continue...")
+        return
+    else:
+        print(f"Node {current_node_version} is already installed.")
+
+    current_appium_version = get_appium_version()
+    if current_appium_version is None:
         install_appium()
-    elif current_version < "2.0.0":
+    elif current_appium_version < "2.0.0":
         update_appium()
     else:
-        print(f"Appium {current_version} is already installed.")
+        print(f"Appium {current_appium_version} is already installed.")
 
 
 # Example usage:
