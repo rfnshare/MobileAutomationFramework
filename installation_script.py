@@ -208,14 +208,16 @@ def check_java():
         # Check for JDK
         subprocess.run(['javac', '-version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True, text=True)
         jdk_installed = True
-    except subprocess.CalledProcessError:
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        print("JDK Not Found")
         jdk_installed = False
 
     try:
         # Check for JRE
         subprocess.run(['java', '-version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True, text=True)
         jre_installed = True
-    except subprocess.CalledProcessError:
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        print("JRE Not Found")
         jre_installed = False
 
     return jdk_installed, jre_installed
