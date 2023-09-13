@@ -9,11 +9,13 @@ from pathlib import Path
 
 """
 Pending Work:
+- handle brew automatically [Linux, MacOs & windows] pending
+- handle install java, jre, android sdk install [windows] pending
 - handle node version, if old then update [For now manual install]
-- brew path permanent [Solve not found]
-- git install (optional)
+- brew path permanent [Solve not found for some devices]
+- git install handle (optional)
 - manage with multiple package manager [sudo, brew]
-- java [jdk, jre], android sdk path not setting permanently
+- java [jdk, jre], android sdk path not setting permanently [some devices]
 """
 
 
@@ -44,7 +46,7 @@ def install_curl():
 
     if system_platform == "Windows":
         print(
-            "Curl installation on Windows is not supported via Python script. Do it manually"
+            "You might already have curl. Curl installation on Windows is not supported via Python script. Do it manually"
         )
         return
     elif system_platform == "Darwin":  # macOS
@@ -105,7 +107,7 @@ def is_homebrew_installed():
 
 
 def install_homebrew():
-    pass  # will implement later, now install manually
+    pass  # will implement later, now install manually. Follow README_FOR_INSTALLATION.md
 
 
 def is_nodejs_installed():  # need to check version also
@@ -249,12 +251,32 @@ def get_node_version():
 
 
 def install_appium():
-    subprocess.run(["npm", "install", "-g", "appium"])
-    print("Successfully Installed Appium...")
-    get_appium_version()
-    subprocess.run(["appium", "driver", "install", "uiautomator2"])
-    subprocess.run(["appium", "driver", "install", "xcuitest"])
-    print("Successfully Installed Appium drivers...")
+    try:
+        system_platform = os.name
+        if system_platform == "nt":  # Windows
+            subprocess.run(
+                ["npm", "install", "-g", "appium"],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                check=True,
+                shell=True,
+            )
+            subprocess.run(["appium", "driver", "install", "uiautomator2"], shell=True)
+            subprocess.run(["appium", "driver", "install", "xcuitest"], shell=True)
+        else:  # Linux and macOS
+             subprocess.run(
+                ["npm", "install", "-g", "appium"],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                check=True,
+            )
+        subprocess.run(["appium", "driver", "install", "uiautomator2"])
+        subprocess.run(["appium", "driver", "install", "xcuitest"])
+        print("Successfully Installed Appium & Drivers...")
+    except (FileNotFoundError, subprocess.CalledProcessError):
+        return None
 
 
 def update_appium():
@@ -267,11 +289,15 @@ def update_appium():
         .lower()
     )
     if user_response == "yes":
-        subprocess.run(["npm", "uninstall", "-g", "appium"])
+        system_platform = os.name
+        if system_platform == "nt":  # Windows
+            subprocess.run(["npm", "uninstall", "-g", "appium"], shell=True)
+        else:
+            subprocess.run(["npm", "uninstall", "-g", "appium"])
         print("Uninstalling the existing Appium...")
-
         # Reinstall Appium
         install_appium()
+        print("Latest Appium Installed Successfully...")
     else:
         print("Skipping Appium installation.")
         return
@@ -322,7 +348,7 @@ def install_java():
         subprocess.run(["brew", "install", "adoptopenjdk8"])
     elif system == "Windows":
         # You can add Windows-specific installation commands here
-        pass
+        print("Install JAVA Manually...")
     else:
         print("Unsupported operating system.")
 
@@ -373,8 +399,7 @@ def install_sdk():
         # Install Android SDK on macOS (you can adjust this based on your macOS package manager)
         subprocess.run(["brew", "install", "android-sdk"])
     elif system == "Windows":
-        # You can add Windows-specific installation commands here
-        pass
+        print("Install SDK Manually...")
     else:
         print("Unsupported operating system.")
 
@@ -534,7 +559,10 @@ def check_and_install_dependency():
             else:
                 print("Curl Found, Skipping Installation...")
         elif sys.platform == "win32":  # Windows
-            print("Curl Check Skipping For Now For Windows")
+            if not is_curl_installed():
+                print("You might already have curl, something is wrong. Check Manually")
+            else:
+                print("Curl Found...")
         else:
             return False  # Unsupported platform
     except (subprocess.CalledProcessError, FileNotFoundError):
@@ -564,7 +592,8 @@ def check_and_install_dependency():
     jdk_installed, jre_installed = check_java()
 
     if jdk_installed and jre_installed:
-        print("JDK & JRE is installed.")
+        path = find_java_jdk_path()
+        print(f"JDK Path: {path}")
     else:
         print("JDK or JRE is not installed.")
         install_java()
@@ -572,9 +601,7 @@ def check_and_install_dependency():
         check_java()
     sdk_installed = check_sdk()
 
-    if sdk_installed:
-        print("Android SDK is installed.")
-    else:
+    if not sdk_installed:
         print(
             "Android SDK is not installed or not found in common locations. Now Installing..."
         )
