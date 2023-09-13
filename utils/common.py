@@ -247,11 +247,29 @@ def check_environment():
         sys.exit(1)  # Exit the program with a non-zero exit code
 
 
+def get_android_version():
+    try:
+        # Run the ADB command to retrieve the Android version
+        result = subprocess.run(['adb', 'shell', 'getprop', 'ro.build.version.release'], stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE, text=True)
+
+        # Check if the command was successful
+        if result.returncode == 0:
+            android_version = result.stdout.strip()
+            return android_version
+        else:
+            # Handle the case where the ADB command failed
+            error_message = result.stderr.strip()
+            return f"Error: {error_message}"
+    except FileNotFoundError:
+        return "Error: ADB is not installed or not in the system PATH."
+
+
 def create_json_capabilities():
     data = set_and_get_config_data()
     device_capabilities = {
         "platformName": "Android",
-        # "platformVersion": "AndroidVersion",  # Replace with the actual Android version
+        "platformVersion": get_android_version(),  # Replace with the actual Android version
         "app": data["apkPath"],  # Replace with the actual app path
         "automationName": "UIAutomator2",
         "appPackage": data["appPackage"],  # Replace with the actual app package name
