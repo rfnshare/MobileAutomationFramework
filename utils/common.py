@@ -3,6 +3,7 @@ import inspect
 import json
 import logging.config
 import os
+import platform
 import re
 from datetime import datetime
 from pathlib import Path
@@ -120,9 +121,9 @@ def check_appium(server):
 
         # Check Appium version and print an error message if it's 1.22 or lower
         if appium_version and tuple(map(int, re.findall(r"\d+", appium_version))) <= (
-            1,
-            22,
-            0,
+                1,
+                22,
+                0,
         ):
             raise EnvironmentError(
                 f"Appium version {appium_version} is installed. Please upgrade to version 2.0.0 or higher."
@@ -176,6 +177,36 @@ def find_android_sdk_path():
     )
 
 
+def find_sdk_directory():
+    system = platform.system()
+    home_dir = os.path.expanduser("~")
+
+    if system == "Linux":
+        possible_paths = [
+            "/usr/local/android-sdk",  # Common installation path on Linux
+            f"{home_dir}/Android/Sdk",  # Android Studio default SDK path
+            "/usr/lib/android-sdk",
+        ]
+    elif system == "Darwin":
+        possible_paths = [
+            "/usr/local/android-sdk",  # Common installation path on macOS
+            f"{home_dir}/Library/Android/sdk",  # Android Studio default SDK path on macOS
+        ]
+    elif system == "Windows":
+        possible_paths = [
+            f"{home_dir}\\AppData\\Local\\Android\\Sdk",  # Default SDK path on Windows
+        ]
+    else:
+        print("Unsupported operating system.")
+        return None
+
+    for path in possible_paths:
+        if os.path.exists(path):
+            return path
+
+    return None
+
+
 def check_environment():
     try:
         # Check if JAVA_HOME is set
@@ -185,59 +216,41 @@ def check_environment():
             print("JAVA_HOME environment variable is not set. Setting it now...")
             try:
                 java_jdk_path = find_java_jdk_path()
-                print("Java JDK path:", java_jdk_path)
-                # Set JAVA_HOME to the appropriate value
-                # Replace 'your_java_home_path' with the actual path to your Java installation
                 os.environ["JAVA_HOME"] = java_jdk_path
                 java_home = os.environ["JAVA_HOME"]
                 print("JAVA_HOME set to:", java_home)
             except EnvironmentError as e:
                 print(f"Error: {e}")
+
         if not java_home:
             print("JAVA_HOME is still not set. Please set it manually.")
-            sys.exit(1)  # Exit the program with a non-zero exit code
-        print("Found JAVA_HOME:", java_home)
-
-        # Check if Java version is accessible
-        try:
-            java_version_output = subprocess.check_output(
-                ["java", "-version"], stderr=subprocess.STDOUT, universal_newlines=True
-            )
-            if not any(char.isdigit() for char in java_version_output):
-                raise EnvironmentError("Java SDK is not installed or accessible.")
-        except subprocess.CalledProcessError as e:
-            raise EnvironmentError("Java SDK is not installed or accessible.")
+            sys.exit(1)
 
         # Check if ANDROID_HOME is set
         android_home = os.environ.get("ANDROID_HOME")
-        print("Found ANDROID_HOME:", android_home)
+
         if not android_home:
             print("ANDROID_HOME environment variable is not set. Setting it now...")
             try:
-                android_sdk_path = find_android_sdk_path()
-                print("Extract Android SDK path:", android_sdk_path)
-                # Set ANDROID_HOME to the appropriate value
-                # Replace 'your_android_home_path' with the actual path to your Android SDK installation
+                android_sdk_path = find_sdk_directory()
                 os.environ["ANDROID_HOME"] = android_sdk_path
                 android_home = os.environ["ANDROID_HOME"]
                 print("ANDROID_HOME set to:", android_home)
             except EnvironmentError as e:
                 print(f"Error: {e}")
+
         if not android_home:
             print("ANDROID_HOME is still not set. Please set it manually.")
-            sys.exit(1)  # Exit the program with a non-zero exit code
-
-        print("Found ANDROID_HOME:", android_home)
+            sys.exit(1)
 
         # Check Android SDK paths
         android_sdk_paths = [
-            os.path.join(android_home, "platform-tools"),  # Path to platform-tools
-            os.path.join(android_home, "build-tools")  # Path to build-tools
+            os.path.join(android_home, "platform-tools"),
+            os.path.join(android_home, "build-tools"),
             # Add more paths as needed
         ]
 
         for path in android_sdk_paths:
-            print("Found android_sdk_paths:", path)
             if not os.path.exists(path):
                 raise EnvironmentError(f"Android SDK path not found: {path}")
 
