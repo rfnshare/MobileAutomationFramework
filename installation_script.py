@@ -206,8 +206,9 @@ def update_appium():
 def check_java():
     try:
         # Check for JDK
-        subprocess.run(['javac', '-version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True, text=True)
+        java = subprocess.run(['javac', '-version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True, text=True)
         jdk_installed = True
+        print(f"Java Path: {jdk_installed}")
     except (subprocess.CalledProcessError, FileNotFoundError):
         print("JDK Not Found")
         jdk_installed = False
@@ -247,6 +248,7 @@ def find_sdk_directory():
         possible_paths = [
             "/usr/local/android-sdk",  # Common installation path on Linux
             f"{home_dir}/Android/Sdk",  # Android Studio default SDK path
+            "/usr/lib/android-sdk",
         ]
     elif system == "Darwin":
         possible_paths = [
@@ -270,7 +272,24 @@ def find_sdk_directory():
 
 def check_sdk():
     sdk_directory = find_sdk_directory()
+    print(f"SDK Path: {sdk_directory}")
     return sdk_directory is not None
+
+
+def install_sdk():
+    system = platform.system()
+
+    if system == "Linux":
+        # Install Android SDK on Linux
+        subprocess.run(['sudo', 'apt-get', 'install', 'android-sdk', '-y'])
+    elif system == "Darwin":
+        # Install Android SDK on macOS (you can adjust this based on your macOS package manager)
+        subprocess.run(['brew', 'install', 'android-sdk'])
+    elif system == "Windows":
+        # You can add Windows-specific installation commands here
+        pass
+    else:
+        print("Unsupported operating system.")
 
 
 def check_and_install_dependency():
@@ -324,30 +343,18 @@ def check_and_install_dependency():
     else:
         print("JDK or JRE is not installed.")
         install_java()
+        print("JDK or JRE is installed.")
+        check_java()
     sdk_installed = check_sdk()
 
     if sdk_installed:
         print("Android SDK is installed.")
     else:
-        print("Android SDK is not installed or not found in common locations.")
+        print("Android SDK is not installed or not found in common locations. Now Installing...")
+        install_sdk()
+        print("Android SDK Installed...")
+        check_sdk()
 
 
-def install_sdk():
-    system = platform.system()
-
-    if system == "Linux":
-        # Install Android SDK on Linux
-        subprocess.run(['sudo', 'apt-get', 'install', 'android-sdk', '-y'])
-    elif system == "Darwin":
-        # Install Android SDK on macOS (you can adjust this based on your macOS package manager)
-        subprocess.run(['brew', 'install', 'android-sdk'])
-    elif system == "Windows":
-        # You can add Windows-specific installation commands here
-        pass
-    else:
-        print("Unsupported operating system.")
-
-
-# Example usage:
 if __name__ == "__main__":
     check_and_install_dependency()
