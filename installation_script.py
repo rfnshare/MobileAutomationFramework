@@ -1,9 +1,13 @@
+import glob
 import os
 import platform
 import re
 import subprocess
 import sys
 import getpass
+from pathlib import Path
+
+from utils.common import check_environment
 
 '''
 Pending Work:
@@ -206,7 +210,8 @@ def update_appium():
 def check_java():
     try:
         # Check for JDK
-        java = subprocess.run(['javac', '-version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True, text=True)
+        java = subprocess.run(['javac', '-version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True,
+                              text=True)
         jdk_installed = True
         print(f"Java Path: {jdk_installed}")
     except (subprocess.CalledProcessError, FileNotFoundError):
@@ -292,6 +297,80 @@ def install_sdk():
         print("Unsupported operating system.")
 
 
+def find_java_jdk_path():
+    # Define search patterns for JDK installation directories
+    jdk_patterns = {
+        "posix": ["/usr/lib/jvm/java-*"],
+        "nt": [r"C:\Program Files\Java\jdk-*"],
+    }
+
+    current_os = os.name
+    jdk_paths = []
+
+    if current_os in jdk_patterns:
+        patterns = jdk_patterns[current_os]
+        for pattern in patterns:
+            jdk_paths += glob.glob(pattern)
+
+    if not jdk_paths:
+        raise EnvironmentError("No Java JDK installations found matching the patterns.")
+
+    return jdk_paths[0]  # Return the first matching JDK path
+
+def check_environment():
+    try:
+        # Check if JAVA_HOME is set
+        java_home = os.environ.get("JAVA_HOME")
+
+        if not java_home:
+            print("JAVA_HOME environment variable is not set. Setting it now...")
+            try:
+                java_jdk_path = find_java_jdk_path()
+                os.environ["JAVA_HOME"] = java_jdk_path
+                java_home = os.environ["JAVA_HOME"]
+                print("JAVA_HOME set to:", java_home)
+            except EnvironmentError as e:
+                print(f"Error: {e}")
+
+        if not java_home:
+            print("JAVA_HOME is still not set. Please set it manually.")
+            sys.exit(1)
+
+
+        # Check if ANDROID_HOME is set
+        android_home = os.environ.get("ANDROID_HOME")
+
+        if not android_home:
+            print("ANDROID_HOME environment variable is not set. Setting it now...")
+            try:
+                android_sdk_path = find_sdk_directory()
+                os.environ["ANDROID_HOME"] = android_sdk_path
+                android_home = os.environ["ANDROID_HOME"]
+                print("ANDROID_HOME set to:", android_home)
+            except EnvironmentError as e:
+                print(f"Error: {e}")
+
+        if not android_home:
+            print("ANDROID_HOME is still not set. Please set it manually.")
+            sys.exit(1)
+
+
+        # Check Android SDK paths
+        android_sdk_paths = [
+            os.path.join(android_home, "platform-tools"),
+            os.path.join(android_home, "build-tools"),
+            # Add more paths as needed
+        ]
+
+        for path in android_sdk_paths:
+            if not os.path.exists(path):
+                raise EnvironmentError(f"Android SDK path not found: {path}")
+
+    except EnvironmentError as e:
+        print(f"Error: {e}")
+        sys.exit(1)
+
+
 def check_and_install_dependency():
     print(f"Your Platform is {sys.platform}")
     try:
@@ -354,6 +433,7 @@ def check_and_install_dependency():
         install_sdk()
         print("Android SDK Installed...")
         check_sdk()
+    check_environment()
 
 
 if __name__ == "__main__":
