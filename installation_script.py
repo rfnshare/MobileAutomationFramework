@@ -453,13 +453,35 @@ def check_environment():
         sys.exit(1)
 
 
+def is_appium_doctor_installed():
+    try:
+        # Run 'appium-doctor --version' and capture the output
+        appium_doctor_version = subprocess.run(
+            ["appium-doctor", "--version"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=True,
+            shell=True,
+            text=True,
+        )
+
+        # Check if the command ran successfully
+        if appium_doctor_version.returncode == 0:
+            return True
+        else:
+            return False
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        # If there was an error or 'appium-doctor' was not found, return False
+        return False
+
+
 def check_and_install_dependency():
     print(f"Your Platform is {sys.platform}")
     try:
         if (
-            sys.platform == "darwin"
-            or sys.platform == "linux"
-            or sys.platform == "linux2"
+                sys.platform == "darwin"
+                or sys.platform == "linux"
+                or sys.platform == "linux2"
         ):  # macOS
             update_command = "apt update"
             execute_sudo_command(update_command)
@@ -525,7 +547,20 @@ def check_and_install_dependency():
         check_sdk()
     check_environment()
 
+    if not is_appium_doctor_installed():
+        subprocess.run(
+            ["npm", "install", "-g", "appium-doctor"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=True,
+            shell=True,
+        )
+    subprocess.run(
+        ["appium-doctor"],
+        check=True,
+        shell=True,
+    )
+
 
 if __name__ == "__main__":
     check_and_install_dependency()
-    subprocess.run(["appium-doctor"])
