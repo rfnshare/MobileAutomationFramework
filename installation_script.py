@@ -7,8 +7,6 @@ import sys
 import getpass
 from pathlib import Path
 
-from utils.common import check_environment
-
 '''
 Pending Work:
 - handle node version, if old then update [For now manual install]
@@ -438,3 +436,4 @@ def check_and_install_dependency():
 
 if __name__ == "__main__":
     check_and_install_dependency()
+    subprocess.run(["appium-doctor"])
