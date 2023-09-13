@@ -61,7 +61,7 @@ def setup_config():
     #     return
 
     # Find APK files in the app/android folder
-    apk_folder = Path(__file__).parent.parent / 'app/android'
+    apk_folder = Path(__file__).parent.parent / "app/android"
     apk_files = [file for file in os.listdir(apk_folder) if file.endswith(".apk")]
 
     if not apk_files:
@@ -70,7 +70,9 @@ def setup_config():
     if len(apk_files) == 1:
         apks = apk_files[0]
     else:
-        print("Found multiple APK files in the app/android folder. Please provide only one APK.")
+        print(
+            "Found multiple APK files in the app/android folder. Please provide only one APK."
+        )
         exit()
     # Construct the full path to the APK file
     apk_file_path = Path(__file__).parent.parent / "app/android" / apks
@@ -169,8 +171,12 @@ def set_and_get_config_data():
         launcher_activity = config.get("AndroidAppConfig", "appActivity")
         wait = config.get("AndroidAppConfig", "element_wait")
     except configparser.NoOptionError:
-        print("APK name or other required values not found in the 'AndroidAppConfig' section.")
-        print("Please define 'apkPath', 'appPackage', 'appActivity', and 'element_wait' in the configuration file.")
+        print(
+            "APK name or other required values not found in the 'AndroidAppConfig' section."
+        )
+        print(
+            "Please define 'apkPath', 'appPackage', 'appActivity', and 'element_wait' in the configuration file."
+        )
         exit()
 
     # Always choose the first UDID from the list
@@ -193,7 +199,7 @@ def free_port(start_port=4723):
     while True:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as free_socket:
             try:
-                free_socket.bind(('0.0.0.0', port))
+                free_socket.bind(("0.0.0.0", port))
                 free_socket.listen(5)
                 port = free_socket.getsockname()[1]
                 return port

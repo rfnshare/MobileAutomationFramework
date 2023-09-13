@@ -25,7 +25,7 @@ def setup(request):
     data = set_and_get_config_data()
     port = free_port(start_port=4723)  # Start from port 4723 and find an available port
     service = AppiumService()
-    service.start(args=['--address', 'localhost', '-p', str(port)])
+    service.start(args=["--address", "localhost", "-p", str(port)])
     appium_server_url = f"http://localhost:{port}"
     print("Running on:", appium_server_url)
     options.udid = data["udid"]
@@ -70,9 +70,9 @@ def pytest_runtest_makereport(item):
             _capture_screenshot(SS_PATH / file_name)
             if file_name:
                 image_path = (
-                        Path(__file__).parent.parent
-                        / "reports/screenshots/failed"
-                        / file_name
+                    Path(__file__).parent.parent
+                    / "reports/screenshots/failed"
+                    / file_name
                 )
                 try:
                     if driver is None:

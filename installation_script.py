@@ -7,19 +7,19 @@ import sys
 import getpass
 from pathlib import Path
 
-'''
+"""
 Pending Work:
 - handle node version, if old then update [For now manual install]
 - brew path permanent [Solve not found]
 - git install (optional)
 - manage with multiple package manager [sudo, brew]
 - java [jdk, jre], android sdk
-'''
+"""
 
 
 def execute_sudo_command(command):
     sudo_password = getpass.getpass("Enter your sudo password: ")
-    p = os.system('echo %s|sudo -S %s' % (sudo_password, command))
+    p = os.system("echo %s|sudo -S %s" % (sudo_password, command))
     if p == 0:
         return True
     else:
@@ -28,7 +28,12 @@ def execute_sudo_command(command):
 
 def is_curl_installed():
     try:
-        subprocess.run(["curl", "--version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
+        subprocess.run(
+            ["curl", "--version"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=True,
+        )
         return True
     except (subprocess.CalledProcessError, FileNotFoundError):
         return False
@@ -38,7 +43,9 @@ def install_curl():
     system_platform = platform.system()
 
     if system_platform == "Windows":
-        print("Curl installation on Windows is not supported via Python script. Do it manually")
+        print(
+            "Curl installation on Windows is not supported via Python script. Do it manually"
+        )
         return
     elif system_platform == "Darwin":  # macOS
         try:
@@ -61,15 +68,28 @@ def is_homebrew_installed():
     try:
         if sys.platform == "darwin":  # macOS
             # Check if Homebrew is installed on macOS by running 'brew --version'
-            subprocess.run(["brew", "--version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
-            print("Homebrew is found. You can continue with your Homebrew-related tasks.")
+            subprocess.run(
+                ["brew", "--version"],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=True,
+            )
+            print(
+                "Homebrew is found. You can continue with your Homebrew-related tasks."
+            )
             return True
         elif sys.platform == "linux" or sys.platform == "linux2":  # Linux
             # Check if Homebrew is installed on Linux
             homebrew_install_path = "/home/linuxbrew/.linuxbrew/bin/brew"
-            subprocess.run([homebrew_install_path, "--version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                           check=True)
-            print("Homebrew is found. You can continue with your Homebrew-related tasks.")
+            subprocess.run(
+                [homebrew_install_path, "--version"],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=True,
+            )
+            print(
+                "Homebrew is found. You can continue with your Homebrew-related tasks."
+            )
             return True
         elif sys.platform == "win32":  # Windows
             # Check if Homebrew is installed on Windows
@@ -92,18 +112,39 @@ def is_nodejs_installed():  # need to check version also
     try:
         system_platform = os.name
         if system_platform == "nt":  # Windows
-            node_version = subprocess.run(["node", "--version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                          check=True,
-                                          shell=True)
-            npm_version = subprocess.run(["npm", "--version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                         check=True, shell=True)
-            print(f"Found Nodejs {node_version.stdout.strip()} & npm {npm_version.stdout.strip()}")
+            node_version = subprocess.run(
+                ["node", "--version"],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=True,
+                shell=True,
+            )
+            npm_version = subprocess.run(
+                ["npm", "--version"],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=True,
+                shell=True,
+            )
+            print(
+                f"Found Nodejs {node_version.stdout.strip()} & npm {npm_version.stdout.strip()}"
+            )
         else:  # Linux and macOS
-            node_version = subprocess.run(["node", "--version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                          check=True)
-            npm_version = subprocess.run(["npm", "--version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                         check=True)
-            print(f"Found Nodejs {node_version.stdout.strip()} & npm {npm_version.stdout.strip()}")
+            node_version = subprocess.run(
+                ["node", "--version"],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=True,
+            )
+            npm_version = subprocess.run(
+                ["npm", "--version"],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=True,
+            )
+            print(
+                f"Found Nodejs {node_version.stdout.strip()} & npm {npm_version.stdout.strip()}"
+            )
         return True
     except (subprocess.CalledProcessError, FileNotFoundError):
         print(f"An error occurred while checking Node.js and npm")
@@ -119,7 +160,9 @@ def install_nodejs():
             subprocess.run(install_command)
 
         except FileNotFoundError:
-            print("Node.js installation failed. Please install Node.js and npm manually.")
+            print(
+                "Node.js installation failed. Please install Node.js and npm manually."
+            )
             return None
     elif system_platform == "nt":  # Windows
         # Download and run the official Node.js installer for Windows
@@ -128,7 +171,9 @@ def install_nodejs():
         # Download the Node.js installer
         subprocess.run(["curl", "-o", nodejs_installer_path, nodejs_installer_url])
         # Run the installer silently
-        subprocess.run(["msiexec", "/i", nodejs_installer_path, "/qn", "/L*V", "node_install.log"])
+        subprocess.run(
+            ["msiexec", "/i", nodejs_installer_path, "/qn", "/L*V", "node_install.log"]
+        )
         # Clean up the installer file
         os.remove(nodejs_installer_path)
     else:
@@ -147,11 +192,22 @@ def get_appium_version():
     try:
         system_platform = os.name
         if system_platform == "nt":  # Windows
-            result = subprocess.run(["appium", "--version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
-                                    check=True, shell=True)
+            result = subprocess.run(
+                ["appium", "--version"],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                check=True,
+                shell=True,
+            )
         else:  # Linux and macOS
-            result = subprocess.run(["appium", "--version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
-                                    check=True)
+            result = subprocess.run(
+                ["appium", "--version"],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                check=True,
+            )
 
         version_match = re.search(r"(\d+\.\d+\.\d+)", result.stdout)
         if version_match:
@@ -166,11 +222,22 @@ def get_node_version():
     try:
         system_platform = os.name
         if system_platform == "nt":  # Windows
-            result = subprocess.run(["node", "--version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
-                                    check=True, shell=True)
+            result = subprocess.run(
+                ["node", "--version"],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                check=True,
+                shell=True,
+            )
         else:  # Linux and macOS
-            result = subprocess.run(["node", "--version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
-                                    check=True)
+            result = subprocess.run(
+                ["node", "--version"],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                check=True,
+            )
 
         version_match = re.search(r"(\d+\.\d+\.\d+)", result.stdout)
         if version_match:
@@ -191,9 +258,14 @@ def install_appium():
 
 
 def update_appium():
-    user_response = input(
-        "Appium version is older than 2.0.0. Do you want to uninstall the existing Appium and install the "
-        "latest version? (yes/no): ").strip().lower()
+    user_response = (
+        input(
+            "Appium version is older than 2.0.0. Do you want to uninstall the existing Appium and install the "
+            "latest version? (yes/no): "
+        )
+        .strip()
+        .lower()
+    )
     if user_response == "yes":
         subprocess.run(["npm", "uninstall", "-g", "appium"])
         print("Uninstalling the existing Appium...")
@@ -208,8 +280,13 @@ def update_appium():
 def check_java():
     try:
         # Check for JDK
-        java = subprocess.run(['javac', '-version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True,
-                              text=True)
+        java = subprocess.run(
+            ["javac", "-version"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=True,
+            text=True,
+        )
         jdk_installed = True
         print(f"Java Path: {jdk_installed}")
     except (subprocess.CalledProcessError, FileNotFoundError):
@@ -218,7 +295,13 @@ def check_java():
 
     try:
         # Check for JRE
-        subprocess.run(['java', '-version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True, text=True)
+        subprocess.run(
+            ["java", "-version"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=True,
+            text=True,
+        )
         jre_installed = True
     except (subprocess.CalledProcessError, FileNotFoundError):
         print("JRE Not Found")
@@ -232,10 +315,12 @@ def install_java():
 
     if system == "Linux":
         # Install OpenJDK on Linux
-        subprocess.run(['sudo', 'apt-get', 'install', 'openjdk-8-jdk', 'openjdk-8-jre', '-y'])
+        subprocess.run(
+            ["sudo", "apt-get", "install", "openjdk-8-jdk", "openjdk-8-jre", "-y"]
+        )
     elif system == "Darwin":
         # Install AdoptOpenJDK on macOS (you can adjust this based on your macOS package manager)
-        subprocess.run(['brew', 'install', 'adoptopenjdk8'])
+        subprocess.run(["brew", "install", "adoptopenjdk8"])
     elif system == "Windows":
         # You can add Windows-specific installation commands here
         pass
@@ -284,10 +369,10 @@ def install_sdk():
 
     if system == "Linux":
         # Install Android SDK on Linux
-        subprocess.run(['sudo', 'apt-get', 'install', 'android-sdk', '-y'])
+        subprocess.run(["sudo", "apt-get", "install", "android-sdk", "-y"])
     elif system == "Darwin":
         # Install Android SDK on macOS (you can adjust this based on your macOS package manager)
-        subprocess.run(['brew', 'install', 'android-sdk'])
+        subprocess.run(["brew", "install", "android-sdk"])
     elif system == "Windows":
         # You can add Windows-specific installation commands here
         pass
@@ -315,6 +400,7 @@ def find_java_jdk_path():
 
     return jdk_paths[0]  # Return the first matching JDK path
 
+
 def check_environment():
     try:
         # Check if JAVA_HOME is set
@@ -334,7 +420,6 @@ def check_environment():
             print("JAVA_HOME is still not set. Please set it manually.")
             sys.exit(1)
 
-
         # Check if ANDROID_HOME is set
         android_home = os.environ.get("ANDROID_HOME")
 
@@ -351,7 +436,6 @@ def check_environment():
         if not android_home:
             print("ANDROID_HOME is still not set. Please set it manually.")
             sys.exit(1)
-
 
         # Check Android SDK paths
         android_sdk_paths = [
@@ -372,7 +456,11 @@ def check_environment():
 def check_and_install_dependency():
     print(f"Your Platform is {sys.platform}")
     try:
-        if sys.platform == "darwin" or sys.platform == "linux" or sys.platform == "linux2":  # macOS
+        if (
+            sys.platform == "darwin"
+            or sys.platform == "linux"
+            or sys.platform == "linux2"
+        ):  # macOS
             update_command = "apt update"
             execute_sudo_command(update_command)
             if not is_curl_installed():
@@ -401,7 +489,9 @@ def check_and_install_dependency():
 
     current_node_version = get_node_version()
     if current_node_version < "18.0.0":
-        print("Node.js and/or npm is not up to date. Update Node.js Manually Then Continue...")
+        print(
+            "Node.js and/or npm is not up to date. Update Node.js Manually Then Continue..."
+        )
         return
     else:
         print(f"Node {current_node_version} is already installed.")
@@ -427,7 +517,9 @@ def check_and_install_dependency():
     if sdk_installed:
         print("Android SDK is installed.")
     else:
-        print("Android SDK is not installed or not found in common locations. Now Installing...")
+        print(
+            "Android SDK is not installed or not found in common locations. Now Installing..."
+        )
         install_sdk()
         print("Android SDK Installed...")
         check_sdk()

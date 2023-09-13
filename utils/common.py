@@ -100,7 +100,11 @@ def get_appium_server_version(appium_server_url):
         response_json = response.json()
 
         # Extract and return the Appium server version
-        appium_server_version = response_json.get("value", {}).get("build", {}).get("version", "Version not found")
+        appium_server_version = (
+            response_json.get("value", {})
+            .get("build", {})
+            .get("version", "Version not found")
+        )
         return appium_server_version
 
     except requests.exceptions.RequestException as e:
@@ -115,9 +119,14 @@ def check_appium(server):
         print("Running Appium version:", appium_version)
 
         # Check Appium version and print an error message if it's 1.22 or lower
-        if appium_version and tuple(map(int, re.findall(r'\d+', appium_version))) <= (1, 22, 0):
+        if appium_version and tuple(map(int, re.findall(r"\d+", appium_version))) <= (
+            1,
+            22,
+            0,
+        ):
             raise EnvironmentError(
-                f"Appium version {appium_version} is installed. Please upgrade to version 2.0.0 or higher.")
+                f"Appium version {appium_version} is installed. Please upgrade to version 2.0.0 or higher."
+            )
 
     except ImportError:
         raise EnvironmentError("Appium is not installed or accessible.")
@@ -125,17 +134,17 @@ def check_appium(server):
 
 def find_java_jdk_path():
     # Define the search patterns for JDK installation directories on Linux, macOS, and Windows
-    linux_pattern = '/usr/lib/jvm/java-*'
-    mac_pattern = '/Library/Java/JavaVirtualMachines/jdk*'
+    linux_pattern = "/usr/lib/jvm/java-*"
+    mac_pattern = "/Library/Java/JavaVirtualMachines/jdk*"
     windows_pattern = r"C:\Program Files\Java\jdk-*"
 
     # Determine the current operating system
     current_os = os.name
 
-    if current_os == 'posix':  # Linux or macOS
+    if current_os == "posix":  # Linux or macOS
         # Use glob to find JDK directories that match the patterns on Linux and macOS
         jdk_paths = glob.glob(linux_pattern) + glob.glob(mac_pattern)
-    elif current_os == 'nt':  # Windows
+    elif current_os == "nt":  # Windows
         # Use glob to find JDK directories that match the pattern on Windows
         jdk_paths = glob.glob(windows_pattern)
     else:
@@ -250,8 +259,12 @@ def check_environment():
 def get_android_version():
     try:
         # Run the ADB command to retrieve the Android version
-        result = subprocess.run(['adb', 'shell', 'getprop', 'ro.build.version.release'], stdout=subprocess.PIPE,
-                                stderr=subprocess.PIPE, text=True)
+        result = subprocess.run(
+            ["adb", "shell", "getprop", "ro.build.version.release"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
 
         # Check if the command was successful
         if result.returncode == 0:
@@ -280,5 +293,5 @@ def create_json_capabilities():
     }
     device_capabilities_json = json.dumps(device_capabilities)
     json_file_path = Path(__file__).parent.parent / "device_capabilities.json"
-    with open(json_file_path, 'w') as json_file:
+    with open(json_file_path, "w") as json_file:
         json.dump(device_capabilities, json_file, indent=4)
