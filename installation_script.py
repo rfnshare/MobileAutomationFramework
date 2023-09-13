@@ -7,8 +7,8 @@ import getpass
 
 '''
 Pending Work:
-- handle node version, if old then update
-- brew path permanent
+- handle node version, if old then update [For now manual install]
+- brew path permanent [Solve not found]
 - git install
 - and so on
 '''
