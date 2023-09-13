@@ -1,5 +1,6 @@
 import glob
 import inspect
+import json
 import logging.config
 import os
 import re
@@ -9,6 +10,8 @@ import subprocess
 import pandas as pd
 import requests
 import sys
+
+from utils.config import set_and_get_config_data
 
 
 def get_logger():
@@ -242,3 +245,22 @@ def check_environment():
     except EnvironmentError as e:
         print(f"Error: {e}")
         sys.exit(1)  # Exit the program with a non-zero exit code
+
+
+def create_json_capabilities():
+    data = set_and_get_config_data()
+    device_capabilities = {
+        "platformName": "Android",
+        # "platformVersion": "AndroidVersion",  # Replace with the actual Android version
+        "app": data["apkPath"],  # Replace with the actual app path
+        "automationName": "UIAutomator2",
+        "appPackage": data["appPackage"],  # Replace with the actual app package name
+        "appActivity": data["appActivity"],  # Replace with the actual app activity name
+        "autoGrantPermissions": True,  # Set to True or False based on your requirements
+        "udid": data["udid"],  # Replace with the actual device UDID
+        "newCommandTimeout": 300,  # Adjust the timeout value as needed
+    }
+    device_capabilities_json = json.dumps(device_capabilities)
+    json_file_path = Path(__file__).parent.parent / "device_capabilities.json"
+    with open(json_file_path, 'w') as json_file:
+        json.dump(device_capabilities, json_file, indent=4)

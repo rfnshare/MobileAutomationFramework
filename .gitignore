@@ -8,3 +8,4 @@ reports/logs/*.log
 .env
 reports/htmlreport/assets/
 reports/htmlreport/*.html
+*.json
