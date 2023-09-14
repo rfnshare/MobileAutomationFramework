@@ -348,6 +348,7 @@ def install_java():
     elif system == "Windows":
         # You can add Windows-specific installation commands here
         print("Install JAVA Manually...")
+        return
     else:
         print("Unsupported operating system.")
 
@@ -399,6 +400,7 @@ def install_sdk():
         subprocess.run(["brew", "install", "android-sdk"])
     elif system == "Windows":
         print("Install SDK Manually...")
+        return
     else:
         print("Unsupported operating system.")
 
