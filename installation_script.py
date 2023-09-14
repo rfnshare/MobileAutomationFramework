@@ -168,17 +168,15 @@ def install_nodejs():
             )
             return None
     elif system_platform == "nt":  # Windows
-        # Download and run the official Node.js installer for Windows
-        nodejs_installer_url = "https://nodejs.org/dist/latest/node-x64.msi"
-        nodejs_installer_path = os.path.expanduser("~/node-setup.msi")
-        # Download the Node.js installer
-        subprocess.run(["curl", "-o", nodejs_installer_path, nodejs_installer_url])
-        # Run the installer silently
-        subprocess.run(
-            ["msiexec", "/i", nodejs_installer_path, "/qn", "/L*V", "node_install.log"]
-        )
-        # Clean up the installer file
-        os.remove(nodejs_installer_path)
+        try:
+            install_command = ["choco", "install", "nodejs", "-y"]
+            subprocess.run(install_command, shell=True)
+
+        except FileNotFoundError:
+            print(
+                "Node.js installation failed. Please install Node.js and npm manually."
+            )
+            return None
     else:
         print("Unsupported operating system")
         return
