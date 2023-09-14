@@ -28,6 +28,38 @@ def execute_sudo_command(command):
         return False
 
 
+def install_chocolatey():
+    # PowerShell command to install Chocolatey
+    powershell_command = [
+        "powershell.exe",
+        "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = ["
+        "System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object "
+        "System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"
+    ]
+
+    try:
+        # Run the PowerShell command to install Chocolatey
+        subprocess.run(powershell_command, check=True)
+        print("Chocolatey has been installed successfully.")
+    except subprocess.CalledProcessError as e:
+        print(f"Error: {e}")
+
+
+def check_chocolatey_installed():
+    # Check if Chocolatey is installed
+    powershell_command = [
+        "powershell.exe",
+        "if (Test-Path '$env:ProgramData\\chocolatey\\bin\\choco.exe') { Write-Host 'Chocolatey is installed.' } else "
+        "{ Write-Host 'Chocolatey is not installed.' }"
+    ]
+
+    try:
+        # Run the PowerShell command to check if Chocolatey is installed
+        subprocess.run(powershell_command, check=True)
+    except subprocess.CalledProcessError as e:
+        print(f"Error: {e}")
+
+
 def is_curl_installed():
     try:
         subprocess.run(
@@ -46,7 +78,8 @@ def install_curl():
 
     if system_platform == "Windows":
         print(
-            "You might already have curl. Curl installation on Windows is not supported via Python script. Do it manually"
+            "You might already have curl. Curl installation on Windows is not supported via Python script. Do it "
+            "manually"
         )
         return
     elif system_platform == "Darwin":  # macOS
@@ -264,7 +297,7 @@ def install_appium():
             subprocess.run(["appium", "driver", "install", "uiautomator2"], shell=True)
             subprocess.run(["appium", "driver", "install", "xcuitest"], shell=True)
         else:  # Linux and macOS
-             subprocess.run(
+            subprocess.run(
                 ["npm", "install", "-g", "appium"],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
@@ -347,7 +380,7 @@ def install_java():
         subprocess.run(["brew", "install", "adoptopenjdk11"])
     elif system == "Windows":
         # You can add Windows-specific installation commands here
-        print("Install JAVA Manually...")
+        print("Install JAVA Manually For Windows...")
         return None
     else:
         print("Unsupported operating system.")
