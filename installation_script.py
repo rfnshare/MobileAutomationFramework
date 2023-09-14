@@ -515,14 +515,13 @@ def check_environment():
         # Check Android SDK paths
         android_sdk_paths = [
             os.path.join(android_home, "platform-tools"),
-            os.path.join(android_home, "build-tools"),
+            # os.path.join(android_home, "build-tools"),
             # Add more paths as needed
         ]
 
         for path in android_sdk_paths:
             if not os.path.exists(path):
-                print(f"Android SDK path not found: {path}")
-                # raise EnvironmentError(f"Android SDK path not found: {path}")
+                raise EnvironmentError(f"Android SDK path not found: {path}")
 
     except EnvironmentError as e:
         print(f"Error: {e}")
