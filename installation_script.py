@@ -103,6 +103,7 @@ def is_homebrew_installed():
         else:
             return False  # Unsupported platform
     except (subprocess.CalledProcessError, FileNotFoundError):
+        print("Home Brew Not Found, Please Follow Readme For Installation...")
         return False
 
 
@@ -567,8 +568,8 @@ def check_and_install_dependency():
             return False  # Unsupported platform
     except (subprocess.CalledProcessError, FileNotFoundError):
         return False
-    is_homebrew_installed()
-
+    if not is_homebrew_installed():
+        return
     if not is_nodejs_installed():
         print("Node.js and/or npm are not installed. Installing Node.js...")
         install_nodejs()
