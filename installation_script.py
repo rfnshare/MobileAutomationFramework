@@ -49,15 +49,10 @@ def check_chocolatey_installed():
     try:
         # Run the choco -v command to check if Chocolatey is installed
         result = subprocess.run(["choco", "-v"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-
-        if result.returncode == 0:
-            print(f"Chocolatey is installed. Version: {result.stdout.strip()}")
-            return True
-        else:
-            print("Chocolatey is not installed.")
-            return False
+        return result.stdout.strip()
     except FileNotFoundError:
         print("Chocolatey is not installed.")
+        return None
 
 
 def is_curl_installed():
@@ -608,12 +603,16 @@ def check_and_install_dependency():
             else:
                 print("Curl Found, Skipping Installation...")
         elif sys.platform == "win32":  # Windows
-            if not check_chocolatey_installed():
+            choco_version = check_chocolatey_installed()
+            if choco_version is None:
                 install_chocolatey()
-                print("Choco Installed ...")
+                print(f"Chocolatey is installed. Version: {choco_version}")
             else:
-                print("Install Choco Manually...")
+                print("Chocolatey is already there...")
+            if check_chocolatey_installed() is None:
+                print("Something is wrong, Install Choco Manually...")
                 return
+
         else:
             return False  # Unsupported platform
     except (subprocess.CalledProcessError, FileNotFoundError):
