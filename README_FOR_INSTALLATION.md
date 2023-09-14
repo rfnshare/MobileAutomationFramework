@@ -1,16 +1,18 @@
 Before running installation_script.py these need to set up manually
 # For Linux & macOS
-- Install Git, Curl
-  - sudo apt install git
+- Install Curl
   - sudo apt install curl   
-- Install Homebrew For Linux & macOS
+- Install Homebrew (Package Manager) For Linux & macOS
   - /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
 # For Windows
-- Install Git, Python 3
+- Install chocolatey
+  - Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+- Install Python
+  - choco install python
 
 # Known Issues
 - Linux
-  - Node installation Issues (Second Time)
+  - TBA
 - Windows
-  - 
+  - TBA
