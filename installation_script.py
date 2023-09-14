@@ -642,22 +642,20 @@ def check_and_install_dependency():
     else:
         print(f"Appium {current_appium_version} is already installed.")
     jdk_installed, jre_installed = check_java()
+    if sys.platform == "darwin" or sys.platform == "linux" or sys.platform == "linux2":
+        if jdk_installed and jre_installed:
+            path = find_java_jdk_path()
+            print(f"JDK Path: {path}")
+        else:
+            print("JDK or JRE is not installed. Now Installing...")
+            if install_java() is None:
+                return
+            print("JDK or JRE is installed....")
 
-    if jdk_installed and jre_installed:
+    else:
         path = find_java_jdk_path()
         print(f"JDK Path: {path}")
-    else:
-        print("JDK or JRE is not installed. Now Installing...")
-        if install_java() is None:
-            return
-        print("JDK or JRE is installed....")
-        jdk_installed, jre_installed = check_java()
-        if sys.platform == "darwin" or sys.platform == "linux" or sys.platform == "linux2":
-            if jdk_installed or jre_installed is False:
-                return
-        else:
-            if jdk_installed or jre_installed is False:
-                print("Couldn't Check Java Version...")
+        print("Couldn't Check Java Version...")
     sdk_installed = check_sdk()
 
     if not sdk_installed:
