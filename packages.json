@@ -12,7 +12,7 @@
             "apt": "sudo apt upgrade git",
             "brew": "brew upgrade git"
         },
-        "min_version": [2, 0, 0]
+        "min_version": "2.0.0"
     },
     {
         "name": "Python",
@@ -24,9 +24,24 @@
         },
         "update_commands": {
             "choco": "choco upgrade python -y",
-            "apt": "sudo apt-get install --only-upgrade python -y",
+            "apt": "sudo apt upgrade python3",
             "brew": "brew upgrade python"
         },
-        "min_version": [3, 8, 0]
+        "min_version": "3.8.0"
+    },
+    {
+        "name": "Node.js",
+        "check_command": "node --version",
+        "install_commands": {
+            "choco": "choco install nodejs -y",
+            "apt": "sudo apt-get install nodejs",
+            "brew": "brew install node"
+        },
+        "update_commands": {
+            "choco": "choco upgrade nodejs -y",
+            "apt": "sudo apt upgrade nodejs",
+            "brew": "brew upgrade node"
+        },
+        "min_version": "18.0.0"
     }
 ]

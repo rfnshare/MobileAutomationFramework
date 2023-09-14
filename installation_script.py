@@ -1,4 +1,5 @@
 import json
+import re
 import shutil
 import subprocess
 import platform
@@ -50,26 +51,54 @@ def check_and_install_or_update(package_details):
     package_name = package_details["name"]
     check_command = package_details["check_command"]
     install_commands = package_details["install_commands"]
-    update_commands = package_details.get("update_commands", {})
+    update_commands = package_details["update_commands"]
     min_version = package_details.get("min_version", None)
-
+    # Get the selected package manager
+    package_manager = get_package_manager()
     try:
         # Check if the package is already installed
-        subprocess.run(
+        version_output = subprocess.check_output(
             check_command,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            check=True,
+            stderr=subprocess.STDOUT,
             shell=True,
+            text=True,
         )
+        pattern = r'(\d+\.\d+(\.\d+)?)'
+        match = re.search(pattern, version_output.strip())
+        installed_version = match.group(1)
+
+        if min_version:
+            # Check if the installed package version is lower than the required minimum version
+            installed_version_u = list(map(int, installed_version.split('.')))
+            min_version_u = list(map(int, min_version.split('.')))
+
+            if installed_version_u < min_version_u:
+                update_choice = input(
+                    f"{package_name} is below the required minimum version {min_version}. Do you want to update it? (yes/no): ").strip().lower()
+                converted_package = re.sub(r'[^a-zA-Z0-9]', '', package_name.lower())
+                if update_choice in {"yes", "y"} and any(converted_package in cmd for cmd in update_commands.values()):
+                    try:
+                        subprocess.run(
+                            update_commands[package_manager],
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE,
+                            check=True,
+                            shell=True,
+                        )
+                        print(f"{package_name} has been updated to the latest version.")
+                    except subprocess.CalledProcessError:
+                        print(f"An error occurred while updating {package_name}.")
+                else:
+                    print(f"Operation canceled. Please update {package_name} and try again.")
+                    return False  # Return failure status
+
         print(f"{package_name} is already installed.")
         return True  # Return success status
 
     except subprocess.CalledProcessError:
         print(f"{package_name} is not installed. Attempting installation...")
 
-        # Get the selected package manager
-        package_manager = get_package_manager()
+
 
         # Select the appropriate installation or update command based on the package manager
         if package_manager not in install_commands:
@@ -88,40 +117,6 @@ def check_and_install_or_update(package_details):
         except subprocess.CalledProcessError:
             print(f"An error occurred while installing {package_name} with {package_manager}.")
             return False  # Return failure status
-
-        if min_version:
-            # Check if the installed package version is lower than the required minimum version
-            try:
-                version_output = subprocess.check_output(
-                    check_command,
-                    stderr=subprocess.STDOUT,
-                    shell=True,
-                    text=True,
-                )
-                installed_version = version_output.strip().split()[-1]  # Extract the version number
-                installed_version = tuple(map(int, installed_version.split(".")))  # Convert to tuple
-
-                if installed_version < min_version:
-                    update_choice = input(
-                        f"{package_name} is below the required minimum version {min_version}. Do you want to update it? (yes/no): ").strip().lower()
-                    if update_choice in {"yes", "y"} and package_manager in update_commands:
-                        try:
-                            subprocess.run(
-                                update_commands[package_manager],
-                                stdout=subprocess.PIPE,
-                                stderr=subprocess.PIPE,
-                                check=True,
-                                shell=True,
-                            )
-                            print(f"{package_name} has been updated to the latest version.")
-                        except subprocess.CalledProcessError:
-                            print(f"An error occurred while updating {package_name}.")
-                    else:
-                        print(f"Operation canceled. Please update {package_name} and try again.")
-                        return False  # Return failure status
-
-            except subprocess.CalledProcessError:
-                print(f"Failed to check the version of {package_name}.")
 
         return True  # Return success status
 
