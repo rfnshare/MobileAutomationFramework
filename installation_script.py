@@ -452,7 +452,7 @@ def find_java_jdk_path():
     # Define search patterns for JDK installation directories
     jdk_patterns = {
         "posix": ["/usr/lib/jvm/java-*"],
-        "nt": [r"C:\Program Files\Java\jdk-*"],
+        "nt": [r"C:\Program Files\Java\jdk-*", r"C:\Program Files\OpenJDK\jdk-*"]
     }
 
     current_os = os.name
@@ -652,8 +652,12 @@ def check_and_install_dependency():
             return
         print("JDK or JRE is installed....")
         jdk_installed, jre_installed = check_java()
-        if jdk_installed or jre_installed is False:
-            return
+        if sys.platform == "darwin" or sys.platform == "linux" or sys.platform == "linux2":
+            if jdk_installed or jre_installed is False:
+                return
+        else:
+            if jdk_installed or jre_installed is False:
+                print("Couldn't Check Java Version...")
     sdk_installed = check_sdk()
 
     if not sdk_installed:
