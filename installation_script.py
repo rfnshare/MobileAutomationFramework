@@ -614,7 +614,6 @@ def check_and_install_dependency():
             else:
                 print("Install Choco Manually...")
                 return
-            check_chocolatey_installed()
         else:
             return False  # Unsupported platform
     except (subprocess.CalledProcessError, FileNotFoundError):
