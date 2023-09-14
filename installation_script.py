@@ -406,6 +406,7 @@ def find_sdk_directory():
     elif system == "Windows":
         possible_paths = [
             f"{home_dir}\\AppData\\Local\\Android\\Sdk",  # Default SDK path on Windows
+            "C:\\Android\\android-sdk"
         ]
     else:
         print("Unsupported operating system.")
@@ -478,6 +479,9 @@ def check_environment():
             print("JAVA_HOME environment variable is not set. Setting it now...")
             try:
                 java_jdk_path = find_java_jdk_path()
+                if java_jdk_path is None:
+                    print("JAVA Path Not Found....")
+                    return
                 os.environ["JAVA_HOME"] = java_jdk_path
                 java_home = os.environ["JAVA_HOME"]
                 print("JAVA_HOME set to:", java_home)
@@ -495,6 +499,9 @@ def check_environment():
             print("ANDROID_HOME environment variable is not set. Setting it now...")
             try:
                 android_sdk_path = find_sdk_directory()
+                if android_sdk_path is None:
+                    print("SDK Path Not Found")
+                    return
                 os.environ["ANDROID_HOME"] = android_sdk_path
                 android_home = os.environ["ANDROID_HOME"]
                 print("ANDROID_HOME set to:", android_home)
