@@ -606,10 +606,13 @@ def check_and_install_dependency():
             else:
                 print("Curl Found, Skipping Installation...")
         elif sys.platform == "win32":  # Windows
-            if not is_curl_installed():
-                print("You might already have curl, something is wrong. Check Manually")
+            if not check_chocolatey_installed():
+                install_chocolatey()
+                print("Choco Installed ...")
             else:
-                print("Curl Found...")
+                print("Install Choco Manually...")
+                return
+            check_chocolatey_installed()
         else:
             return False  # Unsupported platform
     except (subprocess.CalledProcessError, FileNotFoundError):
