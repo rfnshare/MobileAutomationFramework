@@ -52,8 +52,10 @@ def check_chocolatey_installed():
 
         if result.returncode == 0:
             print(f"Chocolatey is installed. Version: {result.stdout.strip()}")
+            return True
         else:
             print("Chocolatey is not installed.")
+            return False
     except FileNotFoundError:
         print("Chocolatey is not installed.")
 
