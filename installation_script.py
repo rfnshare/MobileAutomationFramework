@@ -655,7 +655,8 @@ def check_and_install_dependency():
             print(f"JDK Path: {path}")
         else:
             print("JDK or JRE is not installed. Now Installing...")
-            if install_java() is None:
+            install_java()
+            if not check_java():
                 return
             print("JDK or JRE is installed....")
 
