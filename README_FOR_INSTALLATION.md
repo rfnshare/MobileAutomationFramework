@@ -8,3 +8,9 @@ Before running installation_script.py these need to set up manually
 
 # For Windows
 - Install Git, Python 3
+
+# Known Issues
+- Linux
+  - Node installation Issues (Second Time)
+- Windows
+  - 
