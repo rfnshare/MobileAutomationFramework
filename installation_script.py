@@ -192,7 +192,7 @@ def install_nodejs():
 
         except FileNotFoundError:
             print(
-                "Node.js installation failed. Please install Node.js and npm manually."
+                "Node.js installation failed. Please check brew or install Node.js and npm manually."
             )
             return None
     elif system_platform == "nt":  # Windows
