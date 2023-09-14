@@ -46,18 +46,16 @@ def install_chocolatey():
 
 
 def check_chocolatey_installed():
-    # Check if Chocolatey is installed
-    powershell_command = [
-        "powershell.exe",
-        "if (Test-Path '$env:ProgramData\\chocolatey\\bin\\choco.exe') { Write-Host 'Chocolatey is installed.' } else "
-        "{ Write-Host 'Chocolatey is not installed.' }"
-    ]
-
     try:
-        # Run the PowerShell command to check if Chocolatey is installed
-        subprocess.run(powershell_command, check=True)
-    except subprocess.CalledProcessError as e:
-        print(f"Error: {e}")
+        # Run the choco -v command to check if Chocolatey is installed
+        result = subprocess.run(["choco", "-v"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+
+        if result.returncode == 0:
+            print(f"Chocolatey is installed. Version: {result.stdout.strip()}")
+        else:
+            print("Chocolatey is not installed.")
+    except FileNotFoundError:
+        print("Chocolatey is not installed.")
 
 
 def is_curl_installed():
