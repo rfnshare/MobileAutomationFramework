@@ -1,3 +1,4 @@
+import json
 import shutil
 import subprocess
 import platform
@@ -125,62 +126,30 @@ def check_and_install_or_update(package_details):
         return True  # Return success status
 
 
-def check_and_install_env():
-    # Define the package details inside the function
-    packages_to_install_or_update = [
-        {
-            "name": "Git",
-            "check_command": 'git --version',
-            "install_commands": {
-                "choco": "choco install git -y",
-                "apt": "sudo apt-get install git",
-                "brew": "brew install git",
-            },
-            "update_commands": {
-                "choco": "choco upgrade git -y",
-                "apt": "sudo apt upgrade git",
-                "brew": "brew upgrade git",
-            },
-            "min_version": (2, 0, 0),
-        },
-        {
-            "name": "Python",
-            "check_command": 'python --version',
-            "install_commands": {
-                "choco": "choco install python -y",
-                "apt": "sudo apt-get install python",
-                "brew": "brew install python",
-            },
-            "update_commands": {
-                "choco": "choco upgrade python -y",
-                "apt": "sudo apt-get install --only-upgrade python -y",
-                "brew": "brew upgrade python",
-            },
-            "min_version": (3, 8, 0),
-        },
-        # Add more packages as needed
-    ]
-
+def load_packages_from_file(file_path):
     try:
-        # Check if the required package manager is available
-        get_package_manager()
-    except PackageManagerNotFound as e:
-        print(e.message)
-        print("Please install the required package manager and try again.")
+        with open(file_path, 'r') as file:
+            packages = json.load(file)
+        return packages
+    except FileNotFoundError:
+        print(f"File not found: {file_path}")
+        return []
+
+
+def check_and_install_env(package_file_path):
+    packages_to_install_or_update = load_packages_from_file(package_file_path)
+
+    if not packages_to_install_or_update:
+        print("No packages found in the file.")
         return
 
     for package_details in packages_to_install_or_update:
-        try:
-            check_and_install_or_update(package_details)
-        except InstallationError as e:
-            print(e.message)
-            print(f"{e.package} installation failed. Aborting further execution.")
+        success = check_and_install_or_update(package_details)
+        if not success:
+            print(f"Failed to install/update {package_details['name']}. Aborting further execution.")
             return
-
-    # Continue with your desired workflow here.
-    # This code will only execute if all packages are successfully installed or updated.
 
 
 # Call the function to check and install or update the environment
 if __name__ == "__main__":
-    check_and_install_env()
+    check_and_install_env('packages.json')
