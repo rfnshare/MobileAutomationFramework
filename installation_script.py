@@ -348,7 +348,7 @@ def install_java():
     elif system == "Windows":
         # You can add Windows-specific installation commands here
         print("Install JAVA Manually...")
-        return
+        return None
     else:
         print("Unsupported operating system.")
 
@@ -598,10 +598,13 @@ def check_and_install_dependency():
         path = find_java_jdk_path()
         print(f"JDK Path: {path}")
     else:
-        print("JDK or JRE is not installed.")
-        install_java()
-        print("JDK or JRE is installed.")
-        check_java()
+        print("JDK or JRE is not installed. Now Installing...")
+        if install_java() is None:
+            return
+        print("JDK or JRE is installed....")
+        jdk_installed, jre_installed = check_java()
+        if jdk_installed or jre_installed is False:
+            return
     sdk_installed = check_sdk()
 
     if not sdk_installed:
