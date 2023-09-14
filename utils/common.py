@@ -216,6 +216,9 @@ def check_environment():
             print("JAVA_HOME environment variable is not set. Setting it now...")
             try:
                 java_jdk_path = find_java_jdk_path()
+                if java_jdk_path is None:
+                    print("JAVA Path Not Found....")
+                    return
                 os.environ["JAVA_HOME"] = java_jdk_path
                 java_home = os.environ["JAVA_HOME"]
                 print("JAVA_HOME set to:", java_home)
@@ -224,7 +227,7 @@ def check_environment():
 
         if not java_home:
             print("JAVA_HOME is still not set. Please set it manually.")
-            sys.exit(1)
+            return
 
         # Check if ANDROID_HOME is set
         android_home = os.environ.get("ANDROID_HOME")
@@ -233,6 +236,9 @@ def check_environment():
             print("ANDROID_HOME environment variable is not set. Setting it now...")
             try:
                 android_sdk_path = find_sdk_directory()
+                if android_sdk_path is None:
+                    print("SDK Path Not Found")
+                    return
                 os.environ["ANDROID_HOME"] = android_sdk_path
                 android_home = os.environ["ANDROID_HOME"]
                 print("ANDROID_HOME set to:", android_home)
@@ -241,12 +247,12 @@ def check_environment():
 
         if not android_home:
             print("ANDROID_HOME is still not set. Please set it manually.")
-            sys.exit(1)
+            return
 
         # Check Android SDK paths
         android_sdk_paths = [
             os.path.join(android_home, "platform-tools"),
-            os.path.join(android_home, "build-tools"),
+            # os.path.join(android_home, "build-tools"),
             # Add more paths as needed
         ]
 
@@ -254,19 +260,9 @@ def check_environment():
             if not os.path.exists(path):
                 raise EnvironmentError(f"Android SDK path not found: {path}")
 
-        # Check if Node.js is installed
-        try:
-            nodejs_version_output = subprocess.check_output(
-                ["node", "--version"], stderr=subprocess.STDOUT, universal_newlines=True
-            )
-            if not re.search(r"v\d+\.\d+\.\d+", nodejs_version_output):
-                raise EnvironmentError("Node.js is not installed or accessible.")
-        except subprocess.CalledProcessError as e:
-            raise EnvironmentError("Node.js is not installed or accessible.")
-
     except EnvironmentError as e:
         print(f"Error: {e}")
-        sys.exit(1)  # Exit the program with a non-zero exit code
+        sys.exit(1)
 
 
 def get_android_version():
