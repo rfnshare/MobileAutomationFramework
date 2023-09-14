@@ -378,8 +378,15 @@ def install_java():
         subprocess.run(["brew", "install", "adoptopenjdk11"])
     elif system == "Windows":
         # You can add Windows-specific installation commands here
-        print("Install JAVA Manually For Windows...")
-        return None
+        try:
+            install_command = ["choco", "install", "openjdk", "-y"]
+            subprocess.run(install_command, shell=True)
+
+        except FileNotFoundError:
+            print(
+                "JDK installation failed. Please install manually."
+            )
+            return None
     else:
         print("Unsupported operating system.")
 
@@ -430,7 +437,15 @@ def install_sdk():
         # Install Android SDK on macOS (you can adjust this based on your macOS package manager)
         subprocess.run(["brew", "install", "android-sdk"])
     elif system == "Windows":
-        print("Install SDK Manually...")
+        try:
+            install_command = ["choco", "install", "android-sdk", "-y"]
+            subprocess.run(install_command, shell=True)
+
+        except FileNotFoundError:
+            print(
+                "Android-SDK installation failed. Please install manually."
+            )
+            return None
         return
     else:
         print("Unsupported operating system.")
