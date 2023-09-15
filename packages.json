@@ -1,7 +1,7 @@
 [
     {
         "name": "Git",
-        "check_command": "git --version",
+        "check_commands": ["git --version"],
         "install_commands": {
             "brew": "brew install git",
             "choco": "choco install git -y",
@@ -16,7 +16,7 @@
     },
     {
         "name": "Python",
-        "check_command": ["python --version","python3 --version"],
+        "check_commands": ["python --version","python3 --version"],
         "install_commands": {
             "brew": "brew install python3",
             "choco": "choco install python -y",
@@ -31,7 +31,7 @@
     },
     {
         "name": "Node.js",
-        "check_command": "node --version",
+        "check_commands": ["node --version"],
         "install_commands": {
             "brew": "brew install node",
             "choco": "choco install nodejs -y",
@@ -46,15 +46,13 @@
     },
     {
         "name": "Appium",
-        "check_command": "appium --version",
+        "check_commands": ["appium --version"],
         "install_commands": {
             "npm": "npm install -g appium"
         },
         "update_commands": {
-            "brew": "brew upgrade node",
-            "choco": "choco upgrade nodejs -y",
-            "apt": "sudo apt upgrade nodejs"
+            "npm": "npm install -g appium"
         },
-        "min_version": "18.0.0"
+        "min_version": "2.0.0"
     }
 ]

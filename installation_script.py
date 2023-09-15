@@ -47,79 +47,80 @@ def get_package_manager():
         raise PackageManagerNotFound(package_manager)
 
 
+import subprocess
+import re
+
+
 def check_and_install_or_update(package_details):
     package_name = package_details["name"]
-    check_command = package_details["check_command"]
+    check_commands = package_details["check_commands"]
     install_commands = package_details["install_commands"]
     update_commands = package_details["update_commands"]
     min_version = package_details.get("min_version", None)
-    # Get the selected package manager
-    package_manager = get_package_manager()
-    try:
-        # Check if the package is already installed
-        version_output = subprocess.check_output(
-            check_command,
-            stderr=subprocess.STDOUT,
-            shell=True,
-            text=True,
-        )
-        pattern = r'(\d+\.\d+(\.\d+)?)'
-        match = re.search(pattern, version_output.strip())
-        installed_version = match.group(1)
 
-        if min_version:
-            # Check if the installed package version is lower than the required minimum version
-            installed_version_u = list(map(int, installed_version.split('.')))
-            min_version_u = list(map(int, min_version.split('.')))
+    # Define the order of package managers to try
+    package_managers_order = ["brew", "choco", "apt"]
 
-            if installed_version_u < min_version_u:
-                update_choice = input(
-                    f"{package_name} is below the required minimum version {min_version}. Do you want to update it? (yes/no): ").strip().lower()
-                converted_package = re.sub(r'[^a-zA-Z0-9]', '', package_name.lower())
-                if update_choice in {"yes", "y"} and any(converted_package in cmd for cmd in update_commands.values()):
-                    print(f"{package_name} updating with {package_manager}...")
-                    try:
-                        subprocess.run(
-                            update_commands[package_manager],
-                            stdout=subprocess.PIPE,
-                            stderr=subprocess.PIPE,
-                            check=True,
-                            shell=True,
-                        )
-                        print(f"{package_name} has been updated to the latest version.")
-                    except subprocess.CalledProcessError:
-                        print(f"An error occurred while updating {package_name}.")
+    installed = False  # Initialize a flag to check if the package is installed
+
+    for check_command in check_commands:
+        try:
+            # Check if the package is already installed
+            version_output = subprocess.check_output(
+                check_command,
+                stderr=subprocess.STDOUT,
+                shell=True,
+                text=True,
+            )
+            pattern = r'(\d+\.\d+(\.\d+)?)'
+            match = re.search(pattern, version_output.strip())
+            installed_version = match.group(1)
+
+            if min_version:
+                # Check if the installed package version is lower than the required minimum version
+                installed_version_u = list(map(int, installed_version.split('.')))
+                min_version_u = list(map(int, min_version.split('.')))
+
+                if installed_version_u < min_version_u:
+                    print(f"{package_name} is below the required minimum version {min_version}.")
+                    installed = False  # Package version is below minimum
                 else:
-                    print(f"Operation canceled. Please update {package_name} and try again.")
-                    return False  # Return failure status
+                    installed = True  # Package is installed and meets the minimum version
+                    break  # Exit the loop if a suitable version is found
 
-        print(f"{package_name} is already installed.")
-        return True  # Return success status
+            installed = True  # Package is installed
+            break  # Exit the loop if the package is found
 
-    except subprocess.CalledProcessError:
+        except subprocess.CalledProcessError:
+            continue  # Move to the next check command if this one fails
+
+    if not installed:
         print(f"{package_name} is not installed. Attempting installation...")
 
-        # Select the appropriate installation or update command based on the package manager
-        if package_manager not in install_commands:
-            print(f"Unsupported package manager '{package_manager}' for {package_name}. Skipping installation.")
-            return False  # Return failure status
+        # Iterate through the package managers in order
+        for package_manager in package_managers_order:
+            if package_manager in install_commands:
+                try:
+                    print(f"{package_name} installing with {package_manager}...")
+                    subprocess.run(
+                        install_commands[package_manager],
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE,
+                        check=True,
+                        shell=True,
+                    )
+                    print(f"{package_name} has been successfully installed.")
+                    return True  # Return success status
 
-        try:
-            print(f"{package_name} installing with {package_manager}...")
-            subprocess.run(
-                install_commands[package_manager],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                check=True,
-                shell=True,
-            )
-            print(f"{package_name} has been successfully installed.")
-        except subprocess.CalledProcessError:
-            print(f"An error occurred while installing {package_name} with {package_manager}.")
-            return False  # Return failure status
+                except subprocess.CalledProcessError:
+                    print(f"An error occurred while installing {package_name} with {package_manager}.")
 
+        print(f"Failed to install {package_name} with all available package managers.")
+        return False  # Return failure status
+
+    else:
+        print(f"{package_name} is already installed.")
         return True  # Return success status
-
 
 def load_packages_from_file(file_path):
     try:
