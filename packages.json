@@ -110,5 +110,25 @@
             "apt": "sudo apt-get remove openjdk-11-jdk"
         },
         "min_version": "11.0.0"
+    },
+  {
+        "name": "Android SDK",
+        "check_commands": [],
+        "install_commands": {
+            "brew": "brew install android-sdk",
+            "choco": "choco install android-sdk",
+            "apt": "sudo apt-get install android-sdk"
+        },
+        "update_commands": {
+            "brew": "brew upgrade android-sdk",
+            "choco": "choco upgrade android-sdk -y",
+            "apt": "sudo apt upgrade android-sdk"
+        },
+        "uninstall_commands": {
+            "brew": "brew uninstall android-sdk",
+            "choco": "choco uninstall android-sdk -y",
+            "apt": "sudo apt-get remove android-sdk"
+        },
+        "min_version": ""
     }
 ]
