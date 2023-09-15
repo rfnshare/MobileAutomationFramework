@@ -13,6 +13,11 @@ Before running installation_script.py these need to set up manually
 
 # Known Issues
 - Linux
-  - TBA
+  - Appium already installed but driver are not installed (can't handle this logic)
 - Windows
   - TBA
+
+# Pending Work
+- JDK, JRE & SDK install/update
+- JDK, SDK Env Setup & Validate
+- appium-doctor execute end of the script(Optional)
