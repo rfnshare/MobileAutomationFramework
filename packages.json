@@ -16,14 +16,14 @@
     },
     {
         "name": "Python",
-        "check_command": "python --version",
+        "check_command": ["python --version","python3 --version"],
         "install_commands": {
-            "brew": "brew install python",
+            "brew": "brew install python3",
             "choco": "choco install python -y",
-            "apt": "sudo apt-get install python"
+            "apt": "sudo apt-get install python3"
         },
         "update_commands": {
-            "brew": "brew upgrade python",
+            "brew": "brew upgrade python3",
             "choco": "choco upgrade python -y",
             "apt": "sudo apt upgrade python3"
         },
@@ -36,6 +36,19 @@
             "brew": "brew install node",
             "choco": "choco install nodejs -y",
             "apt": "sudo apt-get install nodejs"
+        },
+        "update_commands": {
+            "brew": "brew upgrade node",
+            "choco": "choco upgrade nodejs -y",
+            "apt": "sudo apt upgrade nodejs"
+        },
+        "min_version": "18.0.0"
+    },
+    {
+        "name": "Appium",
+        "check_command": "appium --version",
+        "install_commands": {
+            "npm": "npm install -g appium"
         },
         "update_commands": {
             "brew": "brew upgrade node",
