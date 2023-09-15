@@ -77,6 +77,7 @@ def check_and_install_or_update(package_details):
                     f"{package_name} is below the required minimum version {min_version}. Do you want to update it? (yes/no): ").strip().lower()
                 converted_package = re.sub(r'[^a-zA-Z0-9]', '', package_name.lower())
                 if update_choice in {"yes", "y"} and any(converted_package in cmd for cmd in update_commands.values()):
+                    print(f"{package_name} updating with {package_manager}...")
                     try:
                         subprocess.run(
                             update_commands[package_manager],
@@ -98,14 +99,13 @@ def check_and_install_or_update(package_details):
     except subprocess.CalledProcessError:
         print(f"{package_name} is not installed. Attempting installation...")
 
-
-
         # Select the appropriate installation or update command based on the package manager
         if package_manager not in install_commands:
             print(f"Unsupported package manager '{package_manager}' for {package_name}. Skipping installation.")
             return False  # Return failure status
 
         try:
+            print(f"{package_name} installing with {package_manager}...")
             subprocess.run(
                 install_commands[package_manager],
                 stdout=subprocess.PIPE,
