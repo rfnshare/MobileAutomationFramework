@@ -83,7 +83,7 @@ def is_installed(package_name, check_commands, min_version=None):
 
 def update_package(package_name, package_manager, sub_package_manager, update_commands):
     converted_package = re.sub(r'[^a-zA-Z0-9]', '', package_name.lower())
-    print("Updating...")
+    print(f"{package_name} updating with {package_manager}...")
     # Try to update using the primary package manager
     if package_manager in update_commands:
         try:
@@ -270,7 +270,6 @@ def check_and_install_or_update(package_details):
                                     print("Invalid input. Please enter a number or 'exit' to finish.")
                         else:
                             print("Failed to install 'appium driver'.")
-
                     return True
 
     print(f"Failed to install or update {package_name}.")
