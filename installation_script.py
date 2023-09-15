@@ -58,7 +58,8 @@ def check_and_install_or_update(package_details):
     package_managers_order = ["brew", "choco", "apt"]
 
     installed = False  # Initialize a flag to check if the package is installed
-
+    # Get the selected package manager
+    package_manager = get_package_manager()
     for check_command in check_commands:
         try:
             # Check if the package is already installed
