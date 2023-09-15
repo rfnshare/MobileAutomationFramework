@@ -171,7 +171,14 @@ def check_and_install_or_update(package_details):
     installed = False
 
     if is_installed(package_name, check_commands, min_version):
-        print(f"{package_name} is already installed.")
+        if package_name == "Appium":
+            print(f"{package_name} is already installed.")
+            appium_driver_list_output = execute_command("appium driver list")
+            if appium_driver_list_output:
+                print(appium_driver_list_output)
+        else:
+            print(f"{package_name} is already installed.")
+
         return True
 
     print(f"{package_name} is not installed. Attempting installation...")
