@@ -47,19 +47,67 @@ def get_package_manager():
         raise PackageManagerNotFound(package_manager)
 
 
+def handle_sub_package(sub_package_name, install_command, update_command, uninstall_command):
+    # Install the sub-package
+    try:
+        print(f"Installing {sub_package_name}...")
+        subprocess.run(
+            install_command,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=True,
+            shell=True,
+        )
+        print(f"{sub_package_name} has been successfully installed.")
+    except subprocess.CalledProcessError:
+        print(f"An error occurred while installing {sub_package_name}.")
+
+    # Update the sub-package (if an update command is provided)
+    if update_command:
+        try:
+            print(f"Updating {sub_package_name}...")
+            subprocess.run(
+                update_command,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=True,
+                shell=True,
+            )
+            print(f"{sub_package_name} has been updated to the latest version.")
+        except subprocess.CalledProcessError:
+            print(f"An error occurred while updating {sub_package_name}.")
+
+    # Uninstall the sub-package (if an uninstall command is provided)
+    if uninstall_command:
+        try:
+            print(f"Uninstalling {sub_package_name}...")
+            subprocess.run(
+                uninstall_command,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=True,
+                shell=True,
+            )
+            print(f"{sub_package_name} has been uninstalled.")
+        except subprocess.CalledProcessError:
+            print(f"An error occurred while uninstalling {sub_package_name}.")
+
+
 def check_and_install_or_update(package_details):
     package_name = package_details["name"]
     check_commands = package_details["check_commands"]
     install_commands = package_details["install_commands"]
     update_commands = package_details["update_commands"]
+    uninstall_commands = package_details.get("uninstall_commands", {})
     min_version = package_details.get("min_version", None)
+    sub_packages = package_details.get("sub_packages", [])
 
     # Define the order of package managers to try
-    package_managers_order = ["brew", "choco", "apt"]
-
-    installed = False  # Initialize a flag to check if the package is installed
+    package_managers_order = ["brew", "choco", "apt", "npm"]
     # Get the selected package manager
     package_manager = get_package_manager()
+    installed = False  # Initialize a flag to check if the package is installed
+
     for check_command in check_commands:
         try:
             # Check if the package is already installed
@@ -82,11 +130,12 @@ def check_and_install_or_update(package_details):
                     update_choice = input(
                         f"{package_name} is below the required minimum version {min_version}. Do you want to update it? (yes/no): ").strip().lower()
                     converted_package = re.sub(r'[^a-zA-Z0-9]', '', package_name.lower())
-                    if update_choice in {"yes", "y"} and any(converted_package in cmd for cmd in update_commands.values()):
+                    if update_choice in {"yes", "y"} and any(
+                            converted_package in cmd for cmd in update_commands.values()):
                         print(f"{package_name} updating with {package_manager}...")
                         try:
                             subprocess.run(
-                                update_commands[package_manager],
+                                update_commands[converted_package],
                                 stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE,
                                 check=True,
@@ -124,13 +173,72 @@ def check_and_install_or_update(package_details):
                         shell=True,
                     )
                     print(f"{package_name} has been successfully installed.")
+
+                    if package_name == "Appium" and package_manager == "npm":
+                        # Execute 'appium driver list' and show its output
+                        appium_driver_list_output = subprocess.check_output(
+                            "appium driver list",
+                            stderr=subprocess.STDOUT,
+                            shell=True,
+                            text=True,
+                        )
+                        print("Available Appium drivers:")
+                        print(appium_driver_list_output)
+                        # Ask the user if they want to install 'appium driver'
+                        install_appium_driver = input(
+                            "Do you want to install 'appium driver'? (yes/no): ").strip().lower()
+                        if install_appium_driver in {"yes", "y"}:
+                            print("Installing 'appium driver'...")
+                            subprocess.run(
+                                install_commands.get("appium driver", ""),
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE,
+                                check=True,
+                                shell=True,
+                            )
+                            print("'appium driver' has been successfully installed.")
+
+                            # Ask the user to choose sub-packages to install
+                            print(f"Available sub-packages for {package_name}:")
+                            for i, sub_package in enumerate(sub_packages, start=1):
+                                print(f"{i}. {sub_package['name']}")
+
+                            while True:
+                                try:
+                                    user_choice = input(
+                                        f"Choose a sub-package to install (1-{len(sub_packages)}) or 'exit' to finish: ").strip()
+                                    if user_choice.lower() == 'exit':
+                                        break  # Exit the loop if the user chooses to finish
+
+                                    user_choice = int(user_choice)
+                                    if 1 <= user_choice <= len(sub_packages):
+                                        selected_sub_package = sub_packages[user_choice - 1]
+                                        sub_package_name = selected_sub_package["name"]
+                                        sub_package_install_command = selected_sub_package.get("install_command")
+
+                                        # Install the selected sub-package
+                                        if sub_package_install_command:
+                                            print(f"Installing {sub_package_name}...")
+                                            subprocess.run(
+                                                sub_package_install_command,
+                                                stdout=subprocess.PIPE,
+                                                stderr=subprocess.PIPE,
+                                                check=True,
+                                                shell=True,
+                                            )
+                                            print(f"{sub_package_name} has been successfully installed.")
+                                        else:
+                                            print(f"No install command found for {sub_package_name}.")
+
+                                    else:
+                                        print("Invalid choice. Please enter a valid number or 'exit' to finish.")
+                                except (ValueError, IndexError):
+                                    print("Invalid input. Please enter a number or 'exit' to finish.")
+
                     return True  # Return success status
 
                 except subprocess.CalledProcessError:
                     print(f"An error occurred while installing {package_name} with {package_manager}.")
-
-        print(f"Failed to install {package_name} with all available package managers.")
-        return False  # Return failure status
 
     else:
         print(f"{package_name} is already installed.")

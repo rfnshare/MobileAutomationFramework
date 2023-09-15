@@ -12,11 +12,16 @@
             "choco": "choco upgrade git -y",
             "apt": "sudo apt upgrade git"
         },
+        "uninstall_commands": {
+            "brew": "brew uninstall git",
+            "choco": "choco uninstall git -y",
+            "apt": "sudo apt-get remove git"
+        },
         "min_version": "2.0.0"
     },
     {
         "name": "Python",
-        "check_commands": ["python --version","python3 --version"],
+        "check_commands": ["python --version", "python3 --version"],
         "install_commands": {
             "brew": "brew install python3",
             "choco": "choco install python -y",
@@ -26,6 +31,11 @@
             "brew": "brew upgrade python3",
             "choco": "choco upgrade python -y",
             "apt": "sudo apt upgrade python3"
+        },
+        "uninstall_commands": {
+            "brew": "brew uninstall python3",
+            "choco": "choco uninstall python -y",
+            "apt": "sudo apt-get remove python3"
         },
         "min_version": "3.8.0"
     },
@@ -42,9 +52,14 @@
             "choco": "choco upgrade nodejs -y",
             "apt": "sudo apt upgrade nodejs"
         },
+        "uninstall_commands": {
+            "brew": "brew uninstall node",
+            "choco": "choco uninstall nodejs -y",
+            "apt": "sudo apt-get remove nodejs"
+        },
         "min_version": "18.0.0"
     },
-    {
+     {
         "name": "Appium",
         "check_commands": ["appium --version"],
         "install_commands": {
@@ -53,6 +68,27 @@
         "update_commands": {
             "npm": "npm install -g appium"
         },
-        "min_version": "2.0.0"
+        "uninstall_commands": {
+            "npm": "npm uninstall -g appium"
+        },
+        "min_version": "2.0.0",
+        "sub_packages": [
+           {
+                "name": "uiautomator2",
+                "install_command": "appium driver install uiautomator2"
+            },
+          {
+                "name": "xcuitest",
+                "install_command": "appium driver install xcuitest"
+          },
+          {
+                "name": "gecko",
+                "install_command": "appium driver install gecko"
+          },
+          {
+                "name": "chromium",
+                "install_command": "appium driver install chromium"
+          }
+        ]
     }
 ]
