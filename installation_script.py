@@ -82,11 +82,11 @@ def check_and_install_or_update(package_details):
                     update_choice = input(
                         f"{package_name} is below the required minimum version {min_version}. Do you want to update it? (yes/no): ").strip().lower()
                     converted_package = re.sub(r'[^a-zA-Z0-9]', '', package_name.lower())
-                    if update_choice in {"yes", "y"} and converted_package in update_commands:
+                    if update_choice in {"yes", "y"} and any(converted_package in cmd for cmd in update_commands.values()):
                         print(f"{package_name} updating with {package_manager}...")
                         try:
                             subprocess.run(
-                                update_commands[converted_package],
+                                update_commands[package_manager],
                                 stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE,
                                 check=True,
