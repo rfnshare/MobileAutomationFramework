@@ -90,5 +90,25 @@
                 "install_command": "appium driver install chromium"
           }
         ]
+    },
+  {
+        "name": "JAVA",
+        "check_commands": ["javac --version"],
+        "install_commands": {
+            "brew": "brew install adoptopenjdk11",
+            "choco": "choco install openjdk -y",
+            "apt": "sudo apt-get install openjdk-11-jdk"
+        },
+        "update_commands": {
+            "brew": "brew upgrade adoptopenjdk11",
+            "choco": "choco upgrade openjdk -y",
+            "apt": "sudo apt upgrade openjdk-11-jdk"
+        },
+        "uninstall_commands": {
+            "brew": "brew uninstall adoptopenjdk11",
+            "choco": "choco uninstall openjdk -y",
+            "apt": "sudo apt-get remove openjdk-11-jdk"
+        },
+        "min_version": "11.0.0"
     }
 ]
