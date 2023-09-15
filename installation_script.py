@@ -47,10 +47,6 @@ def get_package_manager():
         raise PackageManagerNotFound(package_manager)
 
 
-import subprocess
-import re
-
-
 def check_and_install_or_update(package_details):
     package_name = package_details["name"]
     check_commands = package_details["check_commands"]
@@ -82,11 +78,28 @@ def check_and_install_or_update(package_details):
                 min_version_u = list(map(int, min_version.split('.')))
 
                 if installed_version_u < min_version_u:
-                    print(f"{package_name} is below the required minimum version {min_version}.")
-                    installed = False  # Package version is below minimum
-                else:
-                    installed = True  # Package is installed and meets the minimum version
-                    break  # Exit the loop if a suitable version is found
+                    update_choice = input(
+                        f"{package_name} is below the required minimum version {min_version}. Do you want to update it? (yes/no): ").strip().lower()
+                    converted_package = re.sub(r'[^a-zA-Z0-9]', '', package_name.lower())
+                    if update_choice in {"yes", "y"} and converted_package in update_commands:
+                        print(f"{package_name} updating with {package_manager}...")
+                        try:
+                            subprocess.run(
+                                update_commands[converted_package],
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE,
+                                check=True,
+                                shell=True,
+                            )
+                            print(f"{package_name} has been updated to the latest version.")
+                        except subprocess.CalledProcessError:
+                            print(f"An error occurred while updating {package_name}.")
+                    else:
+                        print(f"Operation canceled. Please update {package_name} and try again.")
+                        return False  # Return failure status
+
+                installed = True  # Package is installed and meets the minimum version
+                break  # Exit the loop if a suitable version is found
 
             installed = True  # Package is installed
             break  # Exit the loop if the package is found
@@ -121,6 +134,7 @@ def check_and_install_or_update(package_details):
     else:
         print(f"{package_name} is already installed.")
         return True  # Return success status
+
 
 def load_packages_from_file(file_path):
     try:
