@@ -4,7 +4,7 @@
         "check_commands": ["git --version"],
         "install_commands": {
             "brew": "brew install git",
-            "choco": "choco install git -y",
+            "choco": "choco install git.install -y",
             "apt": "sudo apt-get install git"
         },
         "update_commands": {
@@ -116,7 +116,7 @@
         "check_commands": [],
         "install_commands": {
             "brew": "brew install android-sdk",
-            "choco": "choco install android-sdk",
+            "choco": "choco install android-sdk -y",
             "apt": "sudo apt-get install android-sdk"
         },
         "update_commands": {
