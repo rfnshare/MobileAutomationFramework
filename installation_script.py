@@ -68,7 +68,7 @@ def execute_command(command):
 def find_java_directory():
     # Define search patterns for JDK installation directories
     jdk_patterns = {
-        "posix": ["/usr/lib/jvm/java-*"],
+        "posix": ["/usr/lib/jvm/java-*", "/home/linuxbrew/.linuxbrew/Celler/*"],
         "nt": [r"C:\Program Files\Java\jdk-*", r"C:\Program Files\OpenJDK\jdk-*"],
     }
 
