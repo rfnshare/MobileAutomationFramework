@@ -1,3 +1,4 @@
+import glob
 import json
 import os
 import re
@@ -64,6 +65,27 @@ def execute_command(command):
         return None
 
 
+def find_java_directory():
+    # Define search patterns for JDK installation directories
+    jdk_patterns = {
+        "posix": ["/usr/lib/jvm/java-*"],
+        "nt": [r"C:\Program Files\Java\jdk-*", r"C:\Program Files\OpenJDK\jdk-*"],
+    }
+
+    current_os = os.name
+    jdk_paths = []
+
+    if current_os in jdk_patterns:
+        patterns = jdk_patterns[current_os]
+        for pattern in patterns:
+            jdk_paths += glob.glob(pattern)
+
+    if not jdk_paths:
+        raise EnvironmentError("No Java JDK installations found matching the patterns.")
+
+    return jdk_paths[0]  # Return the first matching JDK path
+
+
 def find_sdk_directory():
     system = platform.system()
     home_dir = os.path.expanduser("~")
@@ -82,7 +104,7 @@ def find_sdk_directory():
     elif system == "Windows":
         possible_paths = [
             f"{home_dir}\\AppData\\Local\\Android\\Sdk",  # Default SDK path on Windows
-            "C:\\Android\\android-sdk"
+            "C:\\Android\\android-sdk",
         ]
     else:
         print("Unsupported operating system.")
@@ -106,13 +128,13 @@ def is_installed(package_name, check_commands, min_version=None):
     for check_command in check_commands:
         version_output = execute_command(check_command)
         if version_output:
-            pattern = r'(\d+\.\d+(\.\d+)?)'
+            pattern = r"(\d+\.\d+(\.\d+)?)"
             match = re.search(pattern, version_output.strip())
             installed_version = match.group(1)
 
             if min_version:
-                installed_version_u = list(map(int, installed_version.split('.')))
-                min_version_u = list(map(int, min_version.split('.')))
+                installed_version_u = list(map(int, installed_version.split(".")))
+                min_version_u = list(map(int, min_version.split(".")))
 
                 if installed_version_u < min_version_u:
                     return False, installed_version  # Return the installed version
@@ -122,7 +144,7 @@ def is_installed(package_name, check_commands, min_version=None):
 
 
 def update_package(package_name, package_manager, sub_package_manager, update_commands):
-    converted_package = re.sub(r'[^a-zA-Z0-9]', '', package_name.lower())
+    converted_package = re.sub(r"[^a-zA-Z0-9]", "", package_name.lower())
     print(f"{package_name} updating with {package_manager}...")
     # Try to update using the primary package manager
     if package_manager in update_commands:
@@ -170,7 +192,7 @@ def install_package(package_name, package_manager, install_commands):
             # Read and print the command's output line by line
             for line in process.stdout:
                 time.sleep(1)
-                print(line, end='')  # Print each line without newline
+                print(line, end="")  # Print each line without newline
 
             # Wait for the command to complete
             process.wait()
@@ -185,7 +207,9 @@ def install_package(package_name, package_manager, install_commands):
     return False
 
 
-def handle_sub_package(sub_package_name, install_command, update_command, uninstall_command):
+def handle_sub_package(
+    sub_package_name, install_command, update_command, uninstall_command
+):
     # Install the sub-package
     try:
         print(f"Installing {sub_package_name}...")
@@ -245,28 +269,43 @@ def check_and_install_or_update(package_details):
     installed = False
 
     # Check if the package is already installed
-    is_installed_result, installed_version = is_installed(package_name, check_commands, min_version)
+    is_installed_result, installed_version = is_installed(
+        package_name, check_commands, min_version
+    )
     if is_installed_result:
         if package_name == "Appium":
             print(f"{package_name} is already installed.")
             appium_driver_list_output = execute_command("appium driver list")
             if appium_driver_list_output:
                 print(appium_driver_list_output)
+        elif package_name == "JAVA":
+            path = find_java_directory()
+            print(f"JDK Path: {path}")
+            print(f"{package_name} is already installed.")
         else:
             print(f"{package_name} is already installed.")
         return True
     # try to update the package if the user chooses to
     if installed_version is not None and not is_installed_result:
-        update_choice = input(
-            f"{package_name} is below the required minimum version {min_version}. Do you want to update it? (yes/no): ").strip().lower()
+        update_choice = (
+            input(
+                f"{package_name} is below the required minimum version {min_version}. Do you want to update it? (yes/no): "
+            )
+            .strip()
+            .lower()
+        )
         if update_choice in {"yes", "y"}:
-            if update_package(package_name, package_manager, sub_package_manager, update_commands):
+            if update_package(
+                package_name, package_manager, sub_package_manager, update_commands
+            ):
                 print(f"{package_name} has been updated to the latest version.")
                 return True
         else:
             print(f"Operation canceled. Please update {package_name} and try again.")
             return False  # Return failure status
-    print(f"{package_name} is not installed. Attempting installation using {package_manager}...")
+    print(
+        f"{package_name} is not installed. Attempting installation using {package_manager}..."
+    )
 
     if install_package(package_name, package_manager, install_commands):
         if package_name == "Appium" and package_manager == "npm":
@@ -274,8 +313,11 @@ def check_and_install_or_update(package_details):
             if appium_driver_list_output:
                 print(appium_driver_list_output)
 
-                install_appium_driver = input(
-                    "Do you want to install 'appium driver'? (yes/no): ").strip().lower()
+                install_appium_driver = (
+                    input("Do you want to install 'appium driver'? (yes/no): ")
+                    .strip()
+                    .lower()
+                )
                 if install_appium_driver in {"yes", "y"}:
                     print("Installing 'appium driver'...")
                     subprocess.run(
@@ -295,29 +337,45 @@ def check_and_install_or_update(package_details):
                         while True:
                             try:
                                 user_choice = input(
-                                    f"Choose a sub-package to install (1-{len(sub_packages)}) or 'exit' to finish: ").strip()
-                                if user_choice.lower() == 'exit':
+                                    f"Choose a sub-package to install (1-{len(sub_packages)}) or 'exit' to finish: "
+                                ).strip()
+                                if user_choice.lower() == "exit":
                                     break
 
                                 user_choice = int(user_choice)
                                 if 1 <= user_choice <= len(sub_packages):
                                     selected_sub_package = sub_packages[user_choice - 1]
                                     sub_package_name = selected_sub_package["name"]
-                                    sub_package_install_command = selected_sub_package.get("install_command")
+                                    sub_package_install_command = (
+                                        selected_sub_package.get("install_command")
+                                    )
 
                                     if sub_package_install_command:
                                         print(f"Installing {sub_package_name}...")
-                                        if install_package(sub_package_name, sub_package_manager,
-                                                           sub_package_install_command):
-                                            print(f"{sub_package_name} has been successfully installed.")
+                                        if install_package(
+                                            sub_package_name,
+                                            sub_package_manager,
+                                            sub_package_install_command,
+                                        ):
+                                            print(
+                                                f"{sub_package_name} has been successfully installed."
+                                            )
                                         else:
-                                            print(f"Failed to install {sub_package_name}.")
+                                            print(
+                                                f"Failed to install {sub_package_name}."
+                                            )
                                     else:
-                                        print(f"No install command found for {sub_package_name}.")
+                                        print(
+                                            f"No install command found for {sub_package_name}."
+                                        )
                                 else:
-                                    print("Invalid choice. Please enter a valid number or 'exit' to finish.")
+                                    print(
+                                        "Invalid choice. Please enter a valid number or 'exit' to finish."
+                                    )
                             except (ValueError, IndexError):
-                                print("Invalid input. Please enter a number or 'exit' to finish.")
+                                print(
+                                    "Invalid input. Please enter a number or 'exit' to finish."
+                                )
                     else:
                         print("Failed to install 'appium driver'.")
 
@@ -329,7 +387,7 @@ def check_and_install_or_update(package_details):
 
 def load_packages_from_file(file_path):
     try:
-        with open(file_path, 'r') as file:
+        with open(file_path, "r") as file:
             packages = json.load(file)
         return packages
     except FileNotFoundError:
@@ -349,10 +407,12 @@ def check_and_install_env(package_file_path):
     for package_details in packages_to_install_or_update:
         success = check_and_install_or_update(package_details)
         if not success:
-            print(f"Failed to install/update {package_details['name']}. Aborting further execution.")
+            print(
+                f"Failed to install/update {package_details['name']}. Aborting further execution."
+            )
             return
 
 
 # Call the function to check and install or update the environment
 if __name__ == "__main__":
-    check_and_install_env('packages.json')
+    check_and_install_env("packages.json")
