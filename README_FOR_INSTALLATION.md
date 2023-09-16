@@ -12,12 +12,14 @@ Before running installation_script.py these need to set up manually
   - choco install python
 
 # Known Issues
-- Linux
+
+1. [x] Linux
   - Appium already installed but driver are not installed (can't handle this logic)
-- Windows
+2. [x] Windows
   - TBA
+3. [x] Common 
+  - Java & Android Update Handle
 
 # Pending Work
-- JDK, JRE & SDK install/update
-- JDK, SDK Env Setup & Validate
-- appium-doctor execute end of the script(Optional)
+- Testing On Mac
+

@@ -385,6 +385,52 @@ def check_and_install_or_update(package_details):
     return False
 
 
+def set_environment_permanently(variable_name, value):
+    system_platform = platform.system().lower()
+    if system_platform == "linux":
+        # Linux
+        with open(os.path.expanduser("~/.bashrc"), "a") as bashrc_file:
+            bashrc_file.write(f'export {variable_name}="{value}"\n')
+    elif system_platform == "windows":
+        # Windows
+        os.system(f'setx {variable_name} "{value}"')
+    elif system_platform == "darwin":
+        # Mac (macOS)
+        print("Mac variable set support not available, please set manually.")
+    else:
+        print("Unsupported operating system")
+
+
+def set_environment_variable_if_not_set(variable_name, finder_function):
+    value = os.environ.get(variable_name)
+    if value is None:  # Check if the variable is not already set
+        try:
+            value = finder_function()
+            if value:
+                os.environ[variable_name] = value
+                print(f"{variable_name} set to: {value} (temporary)")
+                set_environment_permanently(variable_name, value)
+                print(f"{variable_name} set permanently.")
+            else:
+                print(f"{variable_name} not found.")
+        except EnvironmentError as e:
+            print(f"Error: {e}")
+    else:
+        print(f"{variable_name} is already set to: {value}")
+
+
+def check_android_sdk_paths(android_home):
+    android_sdk_paths = [
+        os.path.join(android_home, "platform-tools"),
+        # Add more paths as needed
+    ]
+
+    for path in android_sdk_paths:
+        print(f"Android SDK Paths: {path}")
+        if not os.path.exists(path):
+            raise EnvironmentError(f"Android SDK path not found: {path}")
+
+
 def load_packages_from_file(file_path):
     try:
         with open(file_path, "r") as file:
@@ -395,7 +441,7 @@ def load_packages_from_file(file_path):
         return []
 
 
-def check_and_install_env(package_file_path):
+def check_and_install_dependency(package_file_path):
     system_platform = platform.system().lower()
     print(f"You're using {system_platform}")
     packages_to_install_or_update = load_packages_from_file(package_file_path)
@@ -411,8 +457,19 @@ def check_and_install_env(package_file_path):
                 f"Failed to install/update {package_details['name']}. Aborting further execution."
             )
             return
+    set_environment_variable_if_not_set("JAVA_HOME", find_java_directory())
+    set_environment_variable_if_not_set("ANDROID_HOME", find_sdk_directory)
+
+    android_home = os.environ.get("ANDROID_HOME")
+    if android_home:
+        check_android_sdk_paths(android_home)
+    subprocess.run(
+        ["appium-doctor"],
+        check=True,
+        shell=True,
+    )
 
 
 # Call the function to check and install or update the environment
 if __name__ == "__main__":
-    check_and_install_env("packages.json")
+    check_and_install_dependency("packages.json")
