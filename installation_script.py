@@ -205,6 +205,7 @@ def execute_install_or_update_command(command):
 
         # Read and print the command's output line by line
         for line in process.stdout:
+            print()
             time.sleep(1)
             print(line, end="")  # Print each line without newline
             # Update the progress bar
