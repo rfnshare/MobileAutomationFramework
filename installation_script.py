@@ -1,11 +1,57 @@
 import glob
 import json
-import os
 import re
 import shutil
 import subprocess
+import sys
+import importlib
+
+# Check and install 'tqdm' if not already installed
+try:
+    importlib.import_module("tqdm")
+except ImportError:
+    print("tqdm is not installed. Installing...")
+    try:
+        subprocess.run(
+            [sys.executable, "-m", "pip", "install", "tqdm"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=True,
+            shell=True,
+        )
+        print("tqdm has been installed.")
+    except subprocess.CalledProcessError:
+        print("Failed to install tqdm. Please install it manually.")
+        sys.exit(1)
+
+# Check and install 'colorama' if not already installed
+try:
+    importlib.import_module("colorama")
+except ImportError:
+    print("colorama is not installed. Installing...")
+    try:
+        subprocess.run(
+            [sys.executable, "-m", "pip", "install", "colorama"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=True,
+            shell=True,
+        )
+        print("colorama has been installed.")
+    except subprocess.CalledProcessError:
+        print("Failed to install colorama. Please install it manually.")
+        sys.exit(1)
+
+# The rest of your script goes here
+
 import platform
+import os
 import time
+from tqdm import tqdm
+from colorama import Fore, Style, init
+
+# Initialize colorama
+init(autoreset=True)
 
 
 class InstallationError(Exception):
@@ -120,7 +166,7 @@ def find_sdk_directory():
 def is_installed(package_name, check_commands, min_version=None):
     if package_name == "Android SDK":
         sdk_directory = find_sdk_directory()
-        print(f"SDK Path: {sdk_directory}")
+        print(f"{Fore.GREEN}SDK Path: {sdk_directory}{Style.RESET_ALL}")
         if sdk_directory is None:
             return False, None
         else:
@@ -143,72 +189,46 @@ def is_installed(package_name, check_commands, min_version=None):
     return False, None  # Return False if no version information is found
 
 
-def update_package(package_name, package_manager, sub_package_manager, update_commands):
-    converted_package = re.sub(r"[^a-zA-Z0-9]", "", package_name.lower())
-    print(f"{package_name} updating with {package_manager}...")
-    # Try to update using the primary package manager
-    if package_manager in update_commands:
-        try:
-            subprocess.run(
-                update_commands[package_manager],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                check=True,
-                shell=True,
-            )
-            return True
-        except subprocess.CalledProcessError:
-            pass  # Continue to the next update attempt
+def execute_install_or_update_command(command):
+    try:
+        process = subprocess.Popen(
+            command,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            shell=True,
+            bufsize=1,  # Line-buffered output
+            universal_newlines=True,  # Output as text (str), not bytes
+        )
 
-    # Try to update using the fallback sub_package_manager
-    if sub_package_manager in update_commands:
-        try:
-            subprocess.run(
-                update_commands[sub_package_manager],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                check=True,
-                shell=True,
-            )
-            return True
-        except subprocess.CalledProcessError:
-            pass  # Both update attempts failed
+        # Read and print the command's output line by line
+        for line in process.stdout:
+            time.sleep(1)
+            print(line, end="")  # Print each line without newline
 
-    return False
+        # Wait for the command to complete
+        process.wait()
+
+        # Check the return code to determine success or failure
+        return process.returncode == 0
+
+    except subprocess.CalledProcessError:
+        return False
 
 
-def install_package(package_name, package_manager, install_commands):
-    if package_manager in install_commands:
-        try:
-            process = subprocess.Popen(
-                install_commands[package_manager],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                shell=True,
-                bufsize=1,  # Line-buffered output
-                universal_newlines=True,  # Output as text (str), not bytes
-            )
+def update_or_install_package(package_name, package_manager, sub_package_manager, commands):
+    if package_manager in commands:
+        print(f"{package_name} {package_manager}...")
+        return execute_install_or_update_command(commands[package_manager])
 
-            # Read and print the command's output line by line
-            for line in process.stdout:
-                time.sleep(1)
-                print(line, end="")  # Print each line without newline
+    if sub_package_manager in commands:
+        print(f"{package_name} {sub_package_manager}...")
+        return execute_install_or_update_command(commands[sub_package_manager])
 
-            # Wait for the command to complete
-            process.wait()
-
-            # Check the return code to determine success or failure
-            if process.returncode == 0:
-                return True
-            else:
-                return False
-        except subprocess.CalledProcessError:
-            return False
     return False
 
 
 def handle_sub_package(
-    sub_package_name, install_command, update_command, uninstall_command
+        sub_package_name, install_command, update_command, uninstall_command
 ):
     # Install the sub-package
     try:
@@ -235,9 +255,9 @@ def handle_sub_package(
                 check=True,
                 shell=True,
             )
-            print(f"{sub_package_name} has been updated to the latest version.")
+            print(f"{Fore.GREEN}{sub_package_name} has been updated to the latest version.{Style.RESET_ALL}")
         except subprocess.CalledProcessError:
-            print(f"An error occurred while updating {sub_package_name}.")
+            print(f"{Fore.RED}An error occurred while updating {sub_package_name}.{Style.RESET_ALL}")
 
     # Uninstall the sub-package (if an uninstallation command is provided)
     if uninstall_command:
@@ -274,47 +294,47 @@ def check_and_install_or_update(package_details):
     )
     if is_installed_result:
         if package_name == "Appium":
-            print(f"{package_name} is already installed.")
-            appium_driver_list_output = execute_command("appium driver list")
-            if appium_driver_list_output:
-                print(appium_driver_list_output)
+            print(f"{Fore.GREEN}{package_name} is already installed.{Style.RESET_ALL}")
+            # appium_driver_list_output = execute_command("appium driver list")
+            # if appium_driver_list_output:
+            #     print(appium_driver_list_output)
         elif package_name == "JAVA":
             path = find_java_directory()
-            print(f"JAVA Path: {path}")
-            print(f"{package_name} is already installed.")
+            print(f"{Fore.GREEN}JAVA Path: {path}{Style.RESET_ALL}")
+            print(f"{Fore.GREEN}{package_name} is already installed.{Style.RESET_ALL}")
         else:
-            print(f"{package_name} is already installed.")
+            print(f"{Fore.GREEN}{package_name} is already installed.{Style.RESET_ALL}")
         return True
     # try to update the package if the user chooses to
     if installed_version is not None and not is_installed_result:
         update_choice = (
             input(
-                f"{package_name} is below the required minimum version {min_version}. Do you want to update it? (yes/no): "
+                f"{Fore.YELLOW}{package_name} is below the required minimum version {min_version}. Do you want to update it? (yes/no): {Style.RESET_ALL}"
             )
             .strip()
             .lower()
         )
         if update_choice in {"yes", "y"}:
-            if update_package(
-                package_name, package_manager, sub_package_manager, update_commands
+            if update_or_install_package(
+                    package_name, package_manager, sub_package_manager, update_commands
             ):
-                print(f"{package_name} has been updated to the latest version.")
+                print(f"{Fore.GREEN}{package_name} has been updated to the latest version.{Style.RESET_ALL}")
                 return True
         else:
-            print(f"Operation canceled. Please update {package_name} and try again.")
+            print(f"{Fore.RED}Operation canceled. Please update {package_name} and try again.{Style.RESET_ALL}")
             return False  # Return failure status
     print(
-        f"{package_name} is not installed. Attempting installation using {package_manager}..."
+        f"{Fore.YELLOW}{package_name} is not installed. Attempting installation using {package_manager}...{Style.RESET_ALL}"
     )
 
-    if install_package(package_name, package_manager, install_commands):
+    if update_or_install_package(package_name, package_manager, sub_package_manager, install_commands):
         if package_name == "Appium" and package_manager == "npm":
             appium_driver_list_output = execute_command("appium driver list")
             if appium_driver_list_output:
                 print(appium_driver_list_output)
 
                 install_appium_driver = (
-                    input("Do you want to install 'appium driver'? (yes/no): ")
+                    input(f"{Fore.YELLOW}Do you want to install 'appium driver'? (yes/no): {Style.RESET_ALL}")
                     .strip()
                     .lower()
                 )
@@ -327,7 +347,7 @@ def check_and_install_or_update(package_details):
                         check=True,
                         shell=True,
                     )
-                    print("'appium driver' has been successfully installed.")
+                    print(f"{Fore.GREEN}'appium driver' has been successfully installed.{Style.RESET_ALL}")
 
                     # Ask the user to choose sub-packages to install
                     print(f"Available sub-packages for {package_name}:")
@@ -337,7 +357,7 @@ def check_and_install_or_update(package_details):
                         while True:
                             try:
                                 user_choice = input(
-                                    f"Choose a sub-package to install (1-{len(sub_packages)}) or 'exit' to finish: "
+                                    f"{Fore.YELLOW}Choose a sub-package to install (1-{len(sub_packages)}) or 'exit' to finish: {Style.RESET_ALL}"
                                 ).strip()
                                 if user_choice.lower() == "exit":
                                     break
@@ -352,17 +372,18 @@ def check_and_install_or_update(package_details):
 
                                     if sub_package_install_command:
                                         print(f"Installing {sub_package_name}...")
-                                        if install_package(
-                                            sub_package_name,
-                                            sub_package_manager,
-                                            sub_package_install_command,
+                                        if update_or_install_package(
+                                                sub_package_name,
+                                                package_manager,
+                                                sub_package_manager,
+                                                sub_package_install_command,
                                         ):
                                             print(
-                                                f"{sub_package_name} has been successfully installed."
+                                                f"{Fore.GREEN}{sub_package_name} has been successfully installed.{Style.RESET_ALL}"
                                             )
                                         else:
                                             print(
-                                                f"Failed to install {sub_package_name}."
+                                                f"{Fore.RED}Failed to install {sub_package_name}.{Style.RESET_ALL}"
                                             )
                                     else:
                                         print(
@@ -370,18 +391,18 @@ def check_and_install_or_update(package_details):
                                         )
                                 else:
                                     print(
-                                        "Invalid choice. Please enter a valid number or 'exit' to finish."
+                                        f"{Fore.LIGHTRED_EX}Invalid choice. Please enter a valid number or 'exit' to finish.{Style.RESET_ALL}"
                                     )
                             except (ValueError, IndexError):
                                 print(
-                                    "Invalid input. Please enter a number or 'exit' to finish."
+                                    f"{Fore.LIGHTRED_EX}Invalid input. Please enter a number or 'exit' to finish.{Style.RESET_ALL}"
                                 )
                     else:
                         print("Failed to install 'appium driver'.")
 
         return True
 
-    print(f"Failed to install or update {package_name} using {package_manager}")
+    print(f"{Fore.RED}Failed to install or update {package_name} using {package_manager}{Style.RESET_ALL}")
     return False
 
 
@@ -396,7 +417,7 @@ def set_environment_permanently(variable_name, value):
         os.system(f'setx {variable_name} "{value}"')
     elif system_platform == "darwin":
         # Mac (macOS)
-        print("Mac variable set support not available, please set manually.")
+        print(f"{Fore.RED}Mac variable set support not available, please set manually.{Style.RESET_ALL}")
     else:
         print("Unsupported operating system")
 
@@ -416,7 +437,7 @@ def set_environment_variable_if_not_set(variable_name, finder_function):
         except EnvironmentError as e:
             print(f"Error: {e}")
     else:
-        print(f"{variable_name} is already set to: {value}")
+        print(f"{Fore.GREEN}{variable_name} is already set to: {value}{Style.RESET_ALL}")
 
 
 def check_android_sdk_paths(android_home):
@@ -426,7 +447,7 @@ def check_android_sdk_paths(android_home):
     ]
 
     for path in android_sdk_paths:
-        print(f"Android SDK Paths: {path}")
+        print(f"{Fore.GREEN}Android SDK Paths: {path}{Style.RESET_ALL}")
         if not os.path.exists(path):
             raise EnvironmentError(f"Android SDK path not found: {path}")
 
@@ -442,24 +463,38 @@ def load_packages_from_file(file_path):
 
 
 def check_and_install_dependency(package_file_path):
-    system_platform = platform.system().lower()
-    print(f"You're using {system_platform}")
+    system_platform = platform.system()
+    print(f"You're using {Fore.GREEN}{system_platform}{Style.RESET_ALL}")
     packages_to_install_or_update = load_packages_from_file(package_file_path)
 
     if not packages_to_install_or_update:
         print("No packages found in the file.")
         return
+    total_packages = len(packages_to_install_or_update)
 
-    for package_details in packages_to_install_or_update:
+    # Create a tqdm progress bar
+    progress_bar = tqdm(
+        packages_to_install_or_update,
+        total=total_packages,
+        ncols=100,  # Adjust the width of the progress bar as needed
+        ascii=True,  # Use ASCII characters for the progress bar
+        dynamic_ncols=True,  # Allow dynamic resizing of the progress bar
+    )
+
+    for package_details in progress_bar:
+        print()
         success = check_and_install_or_update(package_details)
+
         if not success:
             print(
-                f"Failed to install/update {package_details['name']}. Aborting further execution."
+                f"{Fore.RED}Failed to install/update {package_details['name']}. Aborting further execution.{Style.RESET_ALL}"
             )
             return
+
+    # Finish the progress bar
+    progress_bar.close()
     set_environment_variable_if_not_set("JAVA_HOME", find_java_directory())
     set_environment_variable_if_not_set("ANDROID_HOME", find_sdk_directory)
-
     android_home = os.environ.get("ANDROID_HOME")
     if android_home:
         check_android_sdk_paths(android_home)
