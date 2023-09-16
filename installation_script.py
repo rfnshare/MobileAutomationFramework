@@ -5,48 +5,49 @@ import shutil
 import subprocess
 import sys
 import importlib
+import platform
+import os
+import time
+
+
+def install_package(package_name):
+    print(f"{package_name} is not installed. Installing...")
+    try:
+        # Determine the appropriate package manager based on the platform
+        if platform.system() == "Linux":
+            package_manager = "pip3"
+        elif platform.system() == "Darwin":  # macOS
+            package_manager = "pip"
+        elif platform.system() == "Windows":
+            package_manager = "pip.exe"
+        else:
+            print("Unsupported operating system")
+            sys.exit(1)
+
+        subprocess.run(
+            [package_manager, "install", package_name],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=True,
+        )
+        print(f"{package_name} has been installed.")
+    except subprocess.CalledProcessError:
+        print(f"Failed to install {package_name}. Please install it manually.")
+        sys.exit(1)
+
 
 # Check and install 'tqdm' if not already installed
 try:
     importlib.import_module("tqdm")
 except ImportError:
-    print("tqdm is not installed. Installing...")
-    try:
-        subprocess.run(
-            [sys.executable, "-m", "pip", "install", "tqdm"],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            check=True,
-            shell=True,
-        )
-        print("tqdm has been installed.")
-    except subprocess.CalledProcessError:
-        print("Failed to install tqdm. Please install it manually.")
-        sys.exit(1)
+    install_package("tqdm")
 
 # Check and install 'colorama' if not already installed
 try:
     importlib.import_module("colorama")
 except ImportError:
-    print("colorama is not installed. Installing...")
-    try:
-        subprocess.run(
-            [sys.executable, "-m", "pip", "install", "colorama"],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            check=True,
-            shell=True,
-        )
-        print("colorama has been installed.")
-    except subprocess.CalledProcessError:
-        print("Failed to install colorama. Please install it manually.")
-        sys.exit(1)
+    install_package("colorama")
 
-# The rest of your script goes here
-
-import platform
-import os
-import time
 from tqdm import tqdm
 from colorama import Fore, Style, init
 
