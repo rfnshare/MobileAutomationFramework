@@ -93,19 +93,19 @@
     },
   {
         "name": "JAVA",
-        "check_commands": ["javac --version"],
+        "check_commands": ["java --version"],
         "install_commands": {
-            "brew": "brew install adoptopenjdk11",
+            "brew": "brew install java",
             "choco": "choco install openjdk -y",
             "apt": "sudo apt-get install openjdk-11-jdk"
         },
         "update_commands": {
-            "brew": "brew upgrade adoptopenjdk11",
+            "brew": "brew upgrade java",
             "choco": "choco upgrade openjdk -y",
             "apt": "sudo apt upgrade openjdk-11-jdk"
         },
         "uninstall_commands": {
-            "brew": "brew uninstall adoptopenjdk11",
+            "brew": "brew uninstall java",
             "choco": "choco uninstall openjdk -y",
             "apt": "sudo apt-get remove openjdk-11-jdk"
         },
@@ -130,5 +130,19 @@
             "apt": "sudo apt-get remove android-sdk"
         },
         "min_version": ""
+    },
+  {
+        "name": "Appium Doctor",
+        "check_commands": ["appium-doctor --version"],
+        "install_commands": {
+            "npm": "npm install -g appium-doctor"
+        },
+        "update_commands": {
+            "npm": "npm install -g appium-doctor"
+        },
+        "uninstall_commands": {
+            "npm": "npm uninstall -g appium-doctor"
+        },
+        "min_version": "1.0.0"
     }
 ]
