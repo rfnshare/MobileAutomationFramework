@@ -200,10 +200,18 @@ def execute_install_or_update_command(command):
             universal_newlines=True,  # Output as text (str), not bytes
         )
 
+        # Create a progress bar using tqdm
+        progress_bar = tqdm(total=100, unit="%", ncols=100, dynamic_ncols=True)
+
         # Read and print the command's output line by line
         for line in process.stdout:
             time.sleep(1)
             print(line, end="")  # Print each line without newline
+            # Update the progress bar
+            progress_bar.update(1)
+
+        # Close the progress bar
+        progress_bar.close()
 
         # Wait for the command to complete
         process.wait()
