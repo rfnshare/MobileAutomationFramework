@@ -95,17 +95,17 @@
         "name": "JAVA",
         "check_commands": ["java --version"],
         "install_commands": {
-            "brew": "brew install java",
+            "brew": "brew install openjdk",
             "choco": "choco install openjdk -y",
             "apt": "sudo apt-get install openjdk-11-jdk"
         },
         "update_commands": {
-            "brew": "brew upgrade java",
+            "brew": "brew upgrade openjdk",
             "choco": "choco upgrade openjdk -y",
             "apt": "sudo apt upgrade openjdk-11-jdk"
         },
         "uninstall_commands": {
-            "brew": "brew uninstall java",
+            "brew": "brew uninstall openjdk",
             "choco": "choco uninstall openjdk -y",
             "apt": "sudo apt-get remove openjdk-11-jdk"
         },

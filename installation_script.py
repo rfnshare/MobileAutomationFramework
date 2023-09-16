@@ -68,7 +68,7 @@ def execute_command(command):
 def find_java_directory():
     # Define search patterns for JDK installation directories
     jdk_patterns = {
-        "posix": ["/usr/lib/jvm/java-*", "/home/linuxbrew/.linuxbrew/Celler/openjdk/*"],
+        "posix": ["/usr/lib/jvm/java-*", "/home/linuxbrew/.linuxbrew/opt/openjdk/bin"],
         "nt": [r"C:\Program Files\Java\jdk-*", r"C:\Program Files\OpenJDK\jdk-*"],
     }
 
@@ -280,7 +280,7 @@ def check_and_install_or_update(package_details):
                 print(appium_driver_list_output)
         elif package_name == "JAVA":
             path = find_java_directory()
-            print(f"JDK Path: {path}")
+            print(f"JAVA Path: {path}")
             print(f"{package_name} is already installed.")
         else:
             print(f"{package_name} is already installed.")
