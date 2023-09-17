@@ -192,34 +192,14 @@ def is_installed(package_name, check_commands, min_version=None):
 
 def execute_install_or_update_command(command):
     try:
-        process = subprocess.Popen(
-            command,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            shell=True,
-            bufsize=1,  # Line-buffered output
-            universal_newlines=True,  # Output as text (str), not bytes
-        )
-
-        # Create a progress bar using tqdm
-        progress_bar = tqdm(total=100, unit="%", ncols=100, dynamic_ncols=True)
-
-        # Read and print the command's output line by line
-        for line in process.stdout:
-            print()
-            time.sleep(1)
-            print(line, end="")  # Print each line without newline
-            # Update the progress bar
-            progress_bar.update(1)
-
-        # Close the progress bar
-        progress_bar.close()
-
-        # Wait for the command to complete
-        process.wait()
-
-        # Check the return code to determine success or failure
-        return process.returncode == 0
+        subprocess.run(
+                command,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=True,
+                shell=True,
+            )
+        return True
 
     except subprocess.CalledProcessError:
         return False
