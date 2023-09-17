@@ -16,7 +16,7 @@ def install_package(package_name):
         # Determine the appropriate package manager based on the platform
         if platform.system() == "Linux":
             package_manager = "pip3" if shutil.which("pip3") else subprocess.run(
-                ["sudo","apt", "install", "python3-pip"], check=True)
+                ["sudo", "apt", "install", "python3-pip"], check=True)
         elif platform.system() == "Darwin":  # macOS
             package_manager = "pip"
         elif platform.system() == "Windows":
@@ -192,17 +192,22 @@ def is_installed(package_name, check_commands, min_version=None):
 
 
 def execute_install_or_update_command(command):
+    # Capture the error output and log it
     try:
-        subprocess.run(
+        completed_process = subprocess.run(
             command,
             stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
             check=True,
             shell=True,
+            universal_newlines=True,
+            cwd=os.getcwd(),
         )
-        return True
 
-    except subprocess.CalledProcessError:
+    except subprocess.CalledProcessError as e:
+        # If the installation or update fails, log the error
+        error_message = e.stdout
+        log_error(command, error_message)
         return False
 
 
@@ -451,6 +456,19 @@ def load_packages_from_file(file_path):
     except FileNotFoundError:
         print(f"File not found: {file_path}")
         return []
+
+
+def log_error(package_name, error_message):
+    # Create a log directory if it doesn't exist
+    log_dir = "installation_logs"
+    os.makedirs(log_dir, exist_ok=True)
+
+    # Define the log file path
+    log_file = os.path.join(log_dir, f"{package_name}_install_error.log")
+
+    # Write the error message to the log file
+    with open(log_file, "w") as log:
+        log.write(error_message)
 
 
 def check_and_install_dependency(package_file_path):
