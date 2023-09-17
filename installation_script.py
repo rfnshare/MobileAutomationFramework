@@ -191,10 +191,10 @@ def is_installed(package_name, check_commands, min_version=None):
     return False, None  # Return False if no version information is found
 
 
-def execute_install_or_update_command(command):
+def execute_install_or_update_command(command, package_name):
     # Capture the error output and log it
     try:
-        completed_process = subprocess.run(
+        subprocess.run(
             command,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
@@ -207,14 +207,14 @@ def execute_install_or_update_command(command):
     except subprocess.CalledProcessError as e:
         # If the installation or update fails, log the error
         error_message = e.stdout
-        log_error(command, error_message)
+        log_error(package_name, error_message)
         return False
 
 
 def update_or_install_package(package_name, package_manager, sub_package_manager, commands):
     if package_manager in commands:
         print(f"{package_name} {package_manager}...")
-        return execute_install_or_update_command(commands[package_manager])
+        return execute_install_or_update_command(commands[package_manager], package_name)
 
     if sub_package_manager in commands:
         print(f"{package_name} {sub_package_manager}...")
