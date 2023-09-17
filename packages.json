@@ -45,7 +45,7 @@
         "install_commands": {
             "brew": "brew install node",
             "choco": "choco install nodejs -y",
-            "apt": "sudo apt-get install nodejs"
+            "apt": "sudo apt install nodejs"
         },
         "update_commands": {
             "brew": "brew upgrade node",
