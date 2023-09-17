@@ -18,8 +18,12 @@ Before running installation_script.py these need to set up manually
 2. [x] Windows
   - TBA
 3. [x] Common 
-  - Java & Android Update Handle
+  - Java Install Handle, Update Handle
+  - Although Java install, it is trying to install again.
+  - Can't find JAVA Path with immediate install, throwing error when set env.
+  - Android Update Handle
 
 # Pending Work
 - Testing On Mac
+- Add progress bar/showing progress for installation/Update/Uninstall (Need Common Function)
 
