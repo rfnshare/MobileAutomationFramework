@@ -19,6 +19,7 @@ Before running installation_script.py these need to set up manually
 
 1. [x] Linux
   - Appium already installed but driver are not installed (can't handle this logic)
+  - if pip not install in linux, after pip install, tqdm import error although tqdm installed.
 2. [x] Windows
   - TBA
 3. [x] Common 
