@@ -77,7 +77,7 @@ def get_package_manager():
         sub_package_manager = "npm"
     elif system_platform == "linux":
         sub_package_manager = "npm"
-        package_manager = "brew" if shutil.which("brew") else "apt"
+        package_manager = ["brew", "apt"]
     elif system_platform == "darwin":
         package_manager = "brew"
         sub_package_manager = "npm"
@@ -203,7 +203,7 @@ def execute_install_or_update_command(command, package_name):
             universal_newlines=True,
             cwd=os.getcwd(),
         )
-
+        return True
     except subprocess.CalledProcessError as e:
         # If the installation or update fails, log the error
         error_message = e.stdout
@@ -211,15 +211,17 @@ def execute_install_or_update_command(command, package_name):
         return False
 
 
-def update_or_install_package(package_name, package_manager, sub_package_manager, commands):
-    if package_manager in commands:
-        print(f"{package_name} {package_manager}...")
-        return execute_install_or_update_command(commands[package_manager], package_name)
-
-    if sub_package_manager in commands:
-        print(f"{package_name} {sub_package_manager}...")
-        return execute_install_or_update_command(commands[sub_package_manager])
-
+def update_or_install_package(package_name, package_managers, sub_package_managers, commands):
+    for package_manager in package_managers:
+        if package_manager in commands:
+            print(f"{package_name} {package_manager}...")
+            if execute_install_or_update_command(commands[package_manager], package_name):
+                return True  # Return True on success
+    for sub_package_manager in sub_package_managers:
+        if sub_package_manager in commands:
+            print(f"{package_name} {sub_package_manager}...")
+            if execute_install_or_update_command(commands[sub_package_manager], package_name):
+                return True  # Return True on success
     return False
 
 
@@ -496,7 +498,7 @@ def check_and_install_dependency(package_file_path):
 
         if not success:
             print(
-                f"{Fore.RED}Failed to install/update {package_details['name']}. Aborting further execution.{Style.RESET_ALL}"
+                f"{Fore.RED}Failed to install/update {package_details['name']}. See Installation Logs. Aborting further execution.{Style.RESET_ALL}"
             )
             return
 
