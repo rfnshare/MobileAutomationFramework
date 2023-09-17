@@ -26,9 +26,11 @@ Before running installation_script.py these need to set up manually
   - Java Install Handle, Update Handle
   - Although Java install, it is trying to install again.
   - Can't find JAVA Path with immediate install, throwing error when set env.
-  - Android Update Handle
+  - Android Install, Update Handle
 
 # Pending Work
 - Testing On Mac
 - Add progress bar/showing progress for installation/Update/Uninstall (Need Common Function)
+- Multiple Install Manager not working
+- Printing Info when install
 
