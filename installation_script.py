@@ -16,7 +16,7 @@ def install_package(package_name):
         # Determine the appropriate package manager based on the platform
         if platform.system() == "Linux":
             package_manager = "pip3" if shutil.which("pip3") else subprocess.run(
-                ["apt", "install", "python3-pip"], check=True)
+                ["sudo","apt", "install", "python3-pip"], check=True)
         elif platform.system() == "Darwin":  # macOS
             package_manager = "pip"
         elif platform.system() == "Windows":
