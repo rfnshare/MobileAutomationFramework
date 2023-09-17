@@ -15,7 +15,8 @@ def install_package(package_name):
     try:
         # Determine the appropriate package manager based on the platform
         if platform.system() == "Linux":
-            package_manager = "pip3"
+            package_manager = "pip3" if shutil.which("pip3") else subprocess.run(
+                ["apt", "install", "python3-pip"], check=True)
         elif platform.system() == "Darwin":  # macOS
             package_manager = "pip"
         elif platform.system() == "Windows":
@@ -193,12 +194,12 @@ def is_installed(package_name, check_commands, min_version=None):
 def execute_install_or_update_command(command):
     try:
         subprocess.run(
-                command,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                check=True,
-                shell=True,
-            )
+            command,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=True,
+            shell=True,
+        )
         return True
 
     except subprocess.CalledProcessError:
