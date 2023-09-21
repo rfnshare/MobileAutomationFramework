@@ -77,7 +77,7 @@ def get_package_manager():
         sub_package_manager = "npm"
     elif system_platform == "linux":
         sub_package_manager = "npm"
-        package_manager = ["brew", "apt"]
+        package_manager = "brew" if shutil.which("brew") else "apt"
     elif system_platform == "darwin":
         package_manager = "brew"
         sub_package_manager = "npm"
