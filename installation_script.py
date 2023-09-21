@@ -501,7 +501,7 @@ def check_and_install_dependency(package_file_path):
 
     # Finish the progress bar
     progress_bar.close()
-    set_environment_variable_if_not_set("JAVA_HOME", find_java_directory())
+    set_environment_variable_if_not_set("JAVA_HOME", find_java_directory)
     set_environment_variable_if_not_set("ANDROID_HOME", find_sdk_directory)
     android_home = os.environ.get("ANDROID_HOME")
     if android_home:
