@@ -73,32 +73,29 @@ class PackageManagerNotFound(Exception):
 def get_package_manager():
     system_platform = platform.system().lower()
     if system_platform == "windows":
-        package_manager = "choco"
-        sub_package_manager = "npm"
+        package_manager = ["choco", "npm"]
     elif system_platform == "linux":
-        sub_package_manager = "npm"
-        package_manager = "brew" if shutil.which("brew") else "apt"
+        package_manager = ["brew", "apt", "npm"]
     elif system_platform == "darwin":
-        package_manager = "brew"
-        sub_package_manager = "npm"
+        package_manager = ["brew", "npm"]
     else:
         raise InstallationError("Unsupported operating system")
 
     # Check if the selected package manager is available in the system
     if package_manager is None:
         raise PackageManagerNotFound("apt, brew, or npm")
-
-    try:
-        subprocess.run(
-            [package_manager, "--version"],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            check=True,
-            shell=system_platform == "windows",  # Use shell=True only for Windows
-        )
-        return package_manager, sub_package_manager
-    except subprocess.CalledProcessError:
-        raise PackageManagerNotFound(package_manager)
+    return package_manager
+    # try:
+    #     subprocess.run(
+    #         [package_manager, "--version"],
+    #         stdout=subprocess.PIPE,
+    #         stderr=subprocess.PIPE,
+    #         check=True,
+    #         shell=system_platform == "windows",  # Use shell=True only for Windows
+    #     )
+    #     return package_manager, sub_package_manager
+    # except subprocess.CalledProcessError:
+    #     raise PackageManagerNotFound(package_manager)
 
 
 def execute_command(command):
@@ -211,17 +208,15 @@ def execute_install_or_update_command(command, package_name):
         return False
 
 
-def update_or_install_package(package_name, package_managers, sub_package_managers, commands):
-    for package_manager in package_managers:
-        if package_manager in commands:
-            print(f"{package_name} {package_manager}...")
-            if execute_install_or_update_command(commands[package_manager], package_name):
+def update_or_install_package(package_name, commands):
+    os_package_manager = get_package_manager()
+    for package_manager, command in commands.items():
+        if package_manager in os_package_manager:
+            print(f"{package_name} installing/updating using {package_manager}...")
+            if execute_install_or_update_command(command, package_name):
                 return True  # Return True on success
-    for sub_package_manager in sub_package_managers:
-        if sub_package_manager in commands:
-            print(f"{package_name} {sub_package_manager}...")
-            if execute_install_or_update_command(commands[sub_package_manager], package_name):
-                return True  # Return True on success
+            else:
+                print(f"Unable to install/update with {package_manager} package manager. Trying with the next package manager...")
     return False
 
 
@@ -282,8 +277,7 @@ def check_and_install_or_update(package_details):
     min_version = package_details.get("min_version", None)
     sub_packages = package_details.get("sub_packages", [])
 
-    package_managers_order = ["brew", "choco", "apt", "npm"]
-    package_manager, sub_package_manager = get_package_manager()
+    # package_manager, sub_package_manager = get_package_manager()
     installed = False
 
     # Check if the package is already installed
@@ -314,7 +308,7 @@ def check_and_install_or_update(package_details):
         )
         if update_choice in {"yes", "y"}:
             if update_or_install_package(
-                    package_name, package_manager, sub_package_manager, update_commands
+                    package_name, update_commands
             ):
                 print(f"{Fore.GREEN}{package_name} has been updated to the latest version.{Style.RESET_ALL}")
                 return True
@@ -322,11 +316,11 @@ def check_and_install_or_update(package_details):
             print(f"{Fore.RED}Operation canceled. Please update {package_name} and try again.{Style.RESET_ALL}")
             return False  # Return failure status
     print(
-        f"{Fore.YELLOW}{package_name} is not installed. Attempting installation using {package_manager}...{Style.RESET_ALL}"
+        f"{Fore.YELLOW}{package_name} is not installed. Attempting installation...{Style.RESET_ALL}"
     )
 
-    if update_or_install_package(package_name, package_manager, sub_package_manager, install_commands):
-        if package_name == "Appium" and package_manager == "npm":
+    if update_or_install_package(package_name, install_commands):
+        if package_name == "Appium":
             appium_driver_list_output = execute_command("appium driver list")
             if appium_driver_list_output:
                 print(appium_driver_list_output)
@@ -372,8 +366,6 @@ def check_and_install_or_update(package_details):
                                         print(f"Installing {sub_package_name}...")
                                         if update_or_install_package(
                                                 sub_package_name,
-                                                package_manager,
-                                                sub_package_manager,
                                                 sub_package_install_command,
                                         ):
                                             print(
@@ -400,7 +392,7 @@ def check_and_install_or_update(package_details):
 
         return True
 
-    print(f"{Fore.RED}Failed to install or update {package_name} using {package_manager}{Style.RESET_ALL}")
+    print(f"{Fore.RED}Failed to install or update {package_name} ...{Style.RESET_ALL}")
     return False
 
 
