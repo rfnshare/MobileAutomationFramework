@@ -21,7 +21,7 @@ Before running installation_script.py these need to set up manually
   - Appium already installed but driver are not installed (can't handle this logic)
   - if pip not install in linux, after pip install, tqdm import error although tqdm installed.
 2. [x] Windows
-  - TBA
+  - Unable to generate install log file.
 3. [x] Common 
   - Java Install Handle, Update Handle
   - Although Java install, it is trying to install again.
