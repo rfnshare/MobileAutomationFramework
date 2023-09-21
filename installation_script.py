@@ -188,7 +188,7 @@ def is_installed(package_name, check_commands, min_version=None):
     return False, None  # Return False if no version information is found
 
 
-def execute_install_or_update_command(command, package_name):
+def execute_command_print(command, package_name):
     # Capture the error output and log it
     try:
         process = subprocess.Popen(
@@ -213,15 +213,16 @@ def execute_install_or_update_command(command, package_name):
         return False
 
 
-def update_or_install_package(package_name, commands):
+def update_or_install_or_uninstall_package(package_name, commands):
     os_package_manager = get_package_manager()
     for package_manager, command in commands.items():
         if package_manager in os_package_manager:
-            print(f"{package_name} installing/updating using {package_manager}...")
-            if execute_install_or_update_command(command, package_name):
+            print(f"{package_name} executing using {package_manager}...")
+            if execute_command_print(command, package_name):
                 return True  # Return True on success
             else:
-                print(f"Unable to install/update with {package_manager} package manager. Trying with the next package manager...")
+                print(f"Unable to executing with {package_manager} package manager. Trying with the next package "
+                      f"manager...")
     return False
 
 
@@ -312,7 +313,7 @@ def check_and_install_or_update(package_details):
             .lower()
         )
         if update_choice in {"yes", "y"}:
-            if update_or_install_package(
+            if update_or_install_or_uninstall_package(
                     package_name, update_commands
             ):
                 print(f"{Fore.GREEN}{package_name} has been updated to the latest version.{Style.RESET_ALL}")
@@ -324,7 +325,7 @@ def check_and_install_or_update(package_details):
         f"{Fore.YELLOW}{package_name} is not installed. Attempting installation...{Style.RESET_ALL}"
     )
 
-    if update_or_install_package(package_name, install_commands):
+    if update_or_install_or_uninstall_package(package_name, install_commands):
         if package_name == "Appium":
             appium_driver_list_output = execute_command("appium driver list")
             if appium_driver_list_output:
@@ -369,7 +370,7 @@ def check_and_install_or_update(package_details):
 
                                     if sub_package_install_command:
                                         print(f"Installing {sub_package_name}...")
-                                        if update_or_install_package(
+                                        if update_or_install_or_uninstall_package(
                                                 sub_package_name,
                                                 sub_package_install_command,
                                         ):
