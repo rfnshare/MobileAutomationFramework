@@ -191,16 +191,21 @@ def is_installed(package_name, check_commands, min_version=None):
 def execute_install_or_update_command(command, package_name):
     # Capture the error output and log it
     try:
-        subprocess.run(
+        process = subprocess.Popen(
             command,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
-            check=True,
             shell=True,
             universal_newlines=True,
             cwd=os.getcwd(),
         )
-        return True
+        # Print the output lines in real-time
+        for line in process.stdout:
+            print(line, end='')  # Print without a newline
+
+        process.wait()  # Wait for the command to finish
+        if process.returncode == 0:
+            return True
     except subprocess.CalledProcessError as e:
         # If the installation or update fails, log the error
         error_message = e.stdout
