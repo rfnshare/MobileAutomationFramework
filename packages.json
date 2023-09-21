@@ -5,17 +5,17 @@
         "install_commands": {
             "brew": "brew install git",
             "choco": "choco install git.install -y",
-            "apt": "sudo apt-get install git"
+            "apt": "sudo apt-get install git -y"
         },
         "update_commands": {
             "brew": "brew upgrade git",
             "choco": "choco upgrade git -y",
-            "apt": "sudo apt upgrade git"
+            "apt": "sudo apt upgrade git -y"
         },
         "uninstall_commands": {
             "brew": "brew uninstall git",
             "choco": "choco uninstall git -y",
-            "apt": "sudo apt-get remove git"
+            "apt": "sudo apt-get remove git -y"
         },
         "min_version": "2.0.0"
     },
@@ -25,17 +25,17 @@
         "install_commands": {
             "brew": "brew install python3",
             "choco": "choco install python -y",
-            "apt": "sudo apt-get install python3"
+            "apt": "sudo apt-get install python3 -y"
         },
         "update_commands": {
             "brew": "brew upgrade python3",
             "choco": "choco upgrade python -y",
-            "apt": "sudo apt upgrade python3"
+            "apt": "sudo apt upgrade python3 -y"
         },
         "uninstall_commands": {
             "brew": "brew uninstall python3",
             "choco": "choco uninstall python -y",
-            "apt": "sudo apt-get remove python3"
+            "apt": "sudo apt-get remove python3 -y"
         },
         "min_version": "3.8.0"
     },
@@ -45,17 +45,17 @@
         "install_commands": {
             "brew": "brew install node",
             "choco": "choco install nodejs -y",
-            "apt": "sudo apt install nodejs"
+            "apt": "sudo apt install nodejs -y"
         },
         "update_commands": {
             "brew": "brew upgrade node",
             "choco": "choco upgrade nodejs -y",
-            "apt": "sudo apt upgrade nodejs"
+            "apt": "sudo apt upgrade nodejs -y"
         },
         "uninstall_commands": {
             "brew": "brew uninstall node",
             "choco": "choco uninstall nodejs -y",
-            "apt": "sudo apt-get remove nodejs"
+            "apt": "sudo apt-get remove nodejs -y"
         },
         "min_version": "18.0.0"
     },
@@ -97,17 +97,17 @@
         "install_commands": {
             "brew": "brew install openjdk",
             "choco": "choco install openjdk -y",
-            "apt": "sudo apt-get install openjdk-11-jdk"
+            "apt": "sudo apt-get install openjdk-11-jdk -y"
         },
         "update_commands": {
             "brew": "brew upgrade openjdk",
             "choco": "choco upgrade openjdk -y",
-            "apt": "sudo apt upgrade openjdk-11-jdk"
+            "apt": "sudo apt upgrade openjdk-11-jdk -y"
         },
         "uninstall_commands": {
             "brew": "brew uninstall openjdk",
             "choco": "choco uninstall openjdk -y",
-            "apt": "sudo apt-get remove openjdk-11-jdk"
+            "apt": "sudo apt-get remove openjdk-11-jdk -y"
         },
         "min_version": "11.0.0"
     },
@@ -117,17 +117,17 @@
         "install_commands": {
             "brew": "brew install android-sdk",
             "choco": "choco install android-sdk -y",
-            "apt": "sudo apt-get install android-sdk"
+            "apt": "sudo apt-get install android-sdk -y"
         },
         "update_commands": {
             "brew": "brew upgrade android-sdk",
             "choco": "choco upgrade android-sdk -y",
-            "apt": "sudo apt upgrade android-sdk"
+            "apt": "sudo apt upgrade android-sdk -y"
         },
         "uninstall_commands": {
             "brew": "brew uninstall android-sdk",
             "choco": "choco uninstall android-sdk -y",
-            "apt": "sudo apt-get remove android-sdk"
+            "apt": "sudo apt-get remove android-sdk -y"
         },
         "min_version": ""
     },
