@@ -1,3 +1,4 @@
+import argparse
 import glob
 import json
 import re
@@ -274,7 +275,7 @@ def handle_sub_package(
             print(f"An error occurred while uninstalling {sub_package_name}.")
 
 
-def check_and_install_or_update(package_details):
+def check_and_install_or_update_or_uninstall(package_details, flag):
     package_name = package_details["name"]
     check_commands = package_details["check_commands"]
     install_commands = package_details["install_commands"]
@@ -284,12 +285,22 @@ def check_and_install_or_update(package_details):
     sub_packages = package_details.get("sub_packages", [])
 
     # package_manager, sub_package_manager = get_package_manager()
-    installed = False
-
     # Check if the package is already installed
     is_installed_result, installed_version = is_installed(
         package_name, check_commands, min_version
     )
+    if flag:
+        try:
+            if is_installed_result:
+                update_or_install_or_uninstall_package(package_name, uninstall_commands)
+            else:
+                print(f"{package_name} is not there... ")
+            return True
+        except:
+            # raise InstallationOrUninstallError({package_name}, f"{Fore.RED}Failed to uninstall{Style.RESET_ALL}")
+            print(f"{Fore.RED}Failed to uninstall {package_name} ...{Style.RESET_ALL}")
+            return False
+
     if is_installed_result:
         if package_name == "Appium":
             print(f"{Fore.GREEN}{package_name} is already installed.{Style.RESET_ALL}")
@@ -471,19 +482,27 @@ def log_error(package_name, error_message):
         log.write(error_message)
 
 
-def check_and_install_dependency(package_file_path):
+def check_and_install_or_uninstall_dependency(package_file_path):
+    uninstall = False
+    parser = argparse.ArgumentParser(description="Check and install or uninstall dependencies.")
+    parser.add_argument("-u", "--uninstall", action="store_true",
+                        help="Uninstall dependencies instead of installing/updating")
+
+    args = parser.parse_args()
+    if args.uninstall:
+        uninstall = True
     system_platform = platform.system()
     print(f"You're using {Fore.GREEN}{system_platform}{Style.RESET_ALL}")
-    packages_to_install_or_update = load_packages_from_file(package_file_path)
+    packages_to_install_or_update_or_uninstall = load_packages_from_file(package_file_path)
 
-    if not packages_to_install_or_update:
+    if not packages_to_install_or_update_or_uninstall:
         print("No packages found in the file.")
         return
-    total_packages = len(packages_to_install_or_update)
+    total_packages = len(packages_to_install_or_update_or_uninstall)
 
     # Create a tqdm progress bar
     progress_bar = tqdm(
-        packages_to_install_or_update,
+        packages_to_install_or_update_or_uninstall,
         total=total_packages,
         ncols=100,  # Adjust the width of the progress bar as needed
         ascii=True,  # Use ASCII characters for the progress bar
@@ -492,28 +511,31 @@ def check_and_install_dependency(package_file_path):
 
     for package_details in progress_bar:
         print()
-        success = check_and_install_or_update(package_details)
+        success = check_and_install_or_update_or_uninstall(package_details, uninstall)
 
         if not success:
             print(
-                f"{Fore.RED}Failed to install/update {package_details['name']}. See Installation Logs. Aborting further execution.{Style.RESET_ALL}"
+                f"{Fore.RED}Failed to install/update/uninstall {package_details['name']}. See Logs. Aborting further "
+                f"execution.{Style.RESET_ALL}"
             )
             return
 
     # Finish the progress bar
     progress_bar.close()
-    set_environment_variable_if_not_set("JAVA_HOME", find_java_directory)
-    set_environment_variable_if_not_set("ANDROID_HOME", find_sdk_directory)
-    android_home = os.environ.get("ANDROID_HOME")
-    if android_home:
-        check_android_sdk_paths(android_home)
-    subprocess.run(
-        ["appium-doctor"],
-        check=True,
-        shell=True,
-    )
+    if not uninstall:
+        set_environment_variable_if_not_set("JAVA_HOME", find_java_directory)
+        set_environment_variable_if_not_set("ANDROID_HOME", find_sdk_directory)
+        android_home = os.environ.get("ANDROID_HOME")
+        if android_home:
+            check_android_sdk_paths(android_home)
+        subprocess.run(
+            ["appium-doctor"],
+            check=True,
+            shell=True,
+        )
+
 
 
 # Call the function to check and install or update the environment
 if __name__ == "__main__":
-    check_and_install_dependency("packages.json")
+    check_and_install_or_uninstall_dependency("packages.json")
