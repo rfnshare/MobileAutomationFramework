@@ -340,76 +340,60 @@ def check_and_install_or_update_or_uninstall(package_details, flag):
 
     if update_or_install_or_uninstall_package(package_name, install_commands):
         if package_name == "Appium":
-            appium_driver_list_output = execute_command("appium driver list")
-            if appium_driver_list_output:
-                print(appium_driver_list_output)
-
-                install_appium_driver = (
-                    input(f"{Fore.YELLOW}Do you want to install 'appium driver'? (yes/no): {Style.RESET_ALL}")
-                    .strip()
-                    .lower()
+            # Execute 'appium driver list' and show its output
+            appium_driver_list_output = subprocess.check_output(
+                "appium driver list",
+                stderr=subprocess.STDOUT,
+                shell=True,
+                text=True,
+            )
+            print("Available Appium drivers:")
+            print(appium_driver_list_output)
+            # Ask the user if they want to install 'appium driver'
+            install_appium_driver = input(
+                "Do you want to install 'appium driver'? (yes/no): ").strip().lower()
+            if install_appium_driver in {"yes", "y"}:
+                print("Installing 'appium driver'...")
+                subprocess.run(
+                    install_commands.get("appium driver", ""),
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    check=True,
+                    shell=True,
                 )
-                if install_appium_driver in {"yes", "y"}:
-                    print("Installing 'appium driver'...")
-                    subprocess.run(
-                        install_commands.get("appium driver", ""),
-                        stdout=subprocess.PIPE,
-                        stderr=subprocess.PIPE,
-                        check=True,
-                        shell=True,
-                    )
-                    print(f"{Fore.GREEN}'appium driver' has been successfully installed.{Style.RESET_ALL}")
+                print("'appium driver' has been successfully installed.")
 
-                    # Ask the user to choose sub-packages to install
-                    print(f"Available sub-packages for {package_name}:")
-                    for i, sub_package in enumerate(sub_packages, start=1):
-                        print(f"{i}. {sub_package['name']}")
+                # Ask the user to choose sub-packages to install
+                print(f"Available sub-packages for {package_name}:")
+                for i, sub_package in enumerate(sub_packages, start=1):
+                    print(f"{i}. {sub_package['name']}")
 
-                        while True:
-                            try:
-                                user_choice = input(
-                                    f"{Fore.YELLOW}Choose a sub-package to install (1-{len(sub_packages)}) or 'exit' to finish: {Style.RESET_ALL}"
-                                ).strip()
-                                if user_choice.lower() == "exit":
-                                    break
+                while True:
+                    try:
+                        user_choice = input(
+                            f"Choose a sub-package to install (1-{len(sub_packages)}) or 'exit' to finish: ").strip()
+                        if user_choice.lower() == 'exit':
+                            break  # Exit the loop if the user chooses to finish
 
-                                user_choice = int(user_choice)
-                                if 1 <= user_choice <= len(sub_packages):
-                                    selected_sub_package = sub_packages[user_choice - 1]
-                                    sub_package_name = selected_sub_package["name"]
-                                    sub_package_install_command = (
-                                        selected_sub_package.get("install_command")
-                                    )
+                        user_choice = int(user_choice)
+                        if 1 <= user_choice <= len(sub_packages):
+                            selected_sub_package = sub_packages[user_choice - 1]
+                            sub_package_name = selected_sub_package["name"]
+                            sub_package_install_command = selected_sub_package.get("install_command")
 
-                                    if sub_package_install_command:
-                                        print(f"Installing {sub_package_name}...")
-                                        if update_or_install_or_uninstall_package(
-                                                sub_package_name,
-                                                sub_package_install_command,
-                                        ):
-                                            print(
-                                                f"{Fore.GREEN}{sub_package_name} has been successfully installed.{Style.RESET_ALL}"
-                                            )
-                                        else:
-                                            print(
-                                                f"{Fore.RED}Failed to install {sub_package_name}.{Style.RESET_ALL}"
-                                            )
-                                    else:
-                                        print(
-                                            f"No install command found for {sub_package_name}."
-                                        )
-                                else:
-                                    print(
-                                        f"{Fore.LIGHTRED_EX}Invalid choice. Please enter a valid number or 'exit' to finish.{Style.RESET_ALL}"
-                                    )
-                            except (ValueError, IndexError):
-                                print(
-                                    f"{Fore.LIGHTRED_EX}Invalid input. Please enter a number or 'exit' to finish.{Style.RESET_ALL}"
-                                )
-                    else:
-                        print("Failed to install 'appium driver'.")
+                            # Install the selected sub-package using the handle_sub_package function
+                            handle_sub_package(
+                                sub_package_name,
+                                sub_package_install_command,
+                                None,  # No update command for sub-packages
+                                None,  # No uninstall command for sub-packages
+                            )
 
-        return True
+                        else:
+                            print("Invalid choice. Please enter a valid number or 'exit' to finish.")
+                    except (ValueError, IndexError):
+                        print("Invalid input. Please enter a number or 'exit' to finish.")
+        return True  # Return success status
 
     print(f"{Fore.RED}Failed to install or update {package_name} ...{Style.RESET_ALL}")
     return False
