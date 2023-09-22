@@ -14,17 +14,6 @@ import time
 def install_package(package_name):
     print(f"{package_name} is not installed. Installing...")
     try:
-        # # Determine the appropriate package manager based on the platform
-        # if platform.system() == "Linux":
-        #     package_manager = "pip3" if shutil.which("pip3") else subprocess.run(
-        #         ["sudo", "apt", "install", "python3-pip"], check=True)
-        # elif platform.system() == "Darwin":  # macOS
-        #     package_manager = "pip"
-        # elif platform.system() == "Windows":
-        #     package_manager = "pip.exe"
-        # else:
-        #     print("Unsupported operating system")
-        #     sys.exit(1)
         package_manager = "pip"
         subprocess.run(
             [package_manager, "install", package_name],
@@ -57,20 +46,6 @@ from colorama import Fore, Style, init
 init(autoreset=True)
 
 
-class InstallationError(Exception):
-    def __init__(self, package, message):
-        self.package = package
-        self.message = message
-        super().__init__(self.message)
-
-
-class PackageManagerNotFound(Exception):
-    def __init__(self, package_manager):
-        self.package_manager = package_manager
-        self.message = f"{package_manager} package manager not found. Please install it and try again."
-        super().__init__(self.message)
-
-
 def get_package_manager():
     system_platform = platform.system().lower()
     if system_platform == "windows":
@@ -80,42 +55,20 @@ def get_package_manager():
     elif system_platform == "darwin":
         package_manager = ["brew", "npm"]
     else:
-        raise InstallationError("Unsupported operating system")
-
-    # Check if the selected package manager is available in the system
-    if package_manager is None:
-        raise PackageManagerNotFound("apt, brew, or npm")
-    return package_manager
-    # try:
-    #     subprocess.run(
-    #         [package_manager, "--version"],
-    #         stdout=subprocess.PIPE,
-    #         stderr=subprocess.PIPE,
-    #         check=True,
-    #         shell=system_platform == "windows",  # Use shell=True only for Windows
-    #     )
-    #     return package_manager, sub_package_manager
-    # except subprocess.CalledProcessError:
-    #     raise PackageManagerNotFound(package_manager)
-
-
-def execute_command(command):
-    try:
-        return subprocess.check_output(
-            command,
-            stderr=subprocess.STDOUT,
-            shell=True,
-            text=True,
-        )
-    except subprocess.CalledProcessError:
+        print("Unsupported operating system")
         return None
+    return package_manager
 
 
 def find_java_directory():
     # Define search patterns for JDK installation directories
     jdk_patterns = {
         "posix": ["/usr/lib/jvm/java-*", "/home/linuxbrew/.linuxbrew/opt/java/bin"],
-        "nt": [r"C:\Program Files\Java\jdk-*", r"C:\Program Files\OpenJDK\jdk-*", r"C:\Program Files (x86)\Java\jdk-*"],
+        "nt": [
+            r"C:\Program Files\Java\jdk-*",
+            r"C:\Program Files\OpenJDK\jdk-*",
+            r"C:\Program Files (x86)\Java\jdk-*",
+        ],
     }
 
     current_os = os.name
@@ -172,7 +125,15 @@ def is_installed(package_name, check_commands, min_version=None):
         else:
             return True, None
     for check_command in check_commands:
-        version_output = execute_command(check_command)
+        try:
+            version_output = subprocess.check_output(
+                check_command,
+                stderr=subprocess.STDOUT,
+                shell=True,
+                text=True,
+            )
+        except:
+            version_output = None
         if version_output:
             pattern = r"(\d+\.\d+(\.\d+)?)"
             match = re.search(pattern, version_output.strip())
@@ -189,7 +150,7 @@ def is_installed(package_name, check_commands, min_version=None):
     return False, None  # Return False if no version information is found
 
 
-def execute_command_print(command, package_name):
+def execute_command(command, package_name):
     # Capture the error output and log it
     try:
         process = subprocess.Popen(
@@ -202,14 +163,16 @@ def execute_command_print(command, package_name):
         )
         # Print the output lines in real-time
         for line in process.stdout:
-            print(line, end='')  # Print without a newline
+            print(line, end="")  # Print without a newline
 
         process.wait()  # Wait for the command to finish
 
         if process.returncode == 0:
             return True
         else:
-            error_message = f"Command '{command}' failed with return code {process.returncode}"
+            error_message = (
+                f"Command '{command}' failed with return code {process.returncode}"
+            )
             log_error(package_name, error_message)
             raise subprocess.CalledProcessError(process.returncode, command)
     except subprocess.CalledProcessError as e:
@@ -224,17 +187,21 @@ def update_or_install_or_uninstall_package(package_name, commands):
     for package_manager, command in commands.items():
         if package_manager in os_package_manager:
             print(f"{package_name} executing using {package_manager}...")
-            if execute_command_print(command, package_name):
-                print(f"{Fore.LIGHTGREEN_EX} Successfully installed {package_name} using {package_manager}...{Style.RESET_ALL}")
+            if execute_command(command, package_name):
+                print(
+                    f"{Fore.LIGHTGREEN_EX} Successfully installed {package_name} using {package_manager}...{Style.RESET_ALL}"
+                )
                 return True  # Return True on success
             else:
-                print(f"Unable to executing with {package_manager} package manager. Trying with the next package "
-                      f"manager...")
+                print(
+                    f"Unable to executing with {package_manager} package manager. Trying with the next package "
+                    f"manager..."
+                )
     return False
 
 
 def handle_sub_package(
-        sub_package_name, install_command, update_command, uninstall_command
+    sub_package_name, install_command, update_command, uninstall_command
 ):
     # Install the sub-package
     try:
@@ -261,9 +228,13 @@ def handle_sub_package(
                 check=True,
                 shell=True,
             )
-            print(f"{Fore.GREEN}{sub_package_name} has been updated to the latest version.{Style.RESET_ALL}")
+            print(
+                f"{Fore.GREEN}{sub_package_name} has been updated to the latest version.{Style.RESET_ALL}"
+            )
         except subprocess.CalledProcessError:
-            print(f"{Fore.RED}An error occurred while updating {sub_package_name}.{Style.RESET_ALL}")
+            print(
+                f"{Fore.RED}An error occurred while updating {sub_package_name}.{Style.RESET_ALL}"
+            )
 
     # Uninstall the sub-package (if an uninstallation command is provided)
     if uninstall_command:
@@ -281,7 +252,7 @@ def handle_sub_package(
             print(f"An error occurred while uninstalling {sub_package_name}.")
 
 
-def check_and_install_or_update_or_uninstall(package_details, flag):
+def check_and_install_or_update_or_uninstall(package_details, uninstall_flag):
     package_name = package_details["name"]
     check_commands = package_details["check_commands"]
     install_commands = package_details["install_commands"]
@@ -290,12 +261,11 @@ def check_and_install_or_update_or_uninstall(package_details, flag):
     min_version = package_details.get("min_version", None)
     sub_packages = package_details.get("sub_packages", [])
 
-    # package_manager, sub_package_manager = get_package_manager()
     # Check if the package is already installed
     is_installed_result, installed_version = is_installed(
         package_name, check_commands, min_version
     )
-    if flag:
+    if uninstall_flag:
         try:
             if is_installed_result:
                 update_or_install_or_uninstall_package(package_name, uninstall_commands)
@@ -311,30 +281,20 @@ def check_and_install_or_update_or_uninstall(package_details, flag):
         if package_name == "JAVA":
             path = find_java_directory()
             print(f"{Fore.GREEN}JAVA Path: {path}{Style.RESET_ALL}")
-            print(f"{Fore.GREEN}{package_name} is already installed. Version: {installed_version}{Style.RESET_ALL}")
+            print(
+                f"{Fore.GREEN}{package_name} is already installed. Version: {installed_version}{Style.RESET_ALL}"
+            )
         else:
-            print(f"{Fore.GREEN}{package_name} is already installed. Version: {installed_version}{Style.RESET_ALL}")
+            print(
+                f"{Fore.GREEN}{package_name} is already installed. Version: {installed_version}{Style.RESET_ALL}"
+            )
         return True
     # try to update the package if the user chooses to
     if installed_version is not None and not is_installed_result:
-        print(f"{Fore.RED}Your minimum requirement version is {min_version}. Please update/uninstall {package_name} manually and try again or remove min version from package.json.{Style.RESET_ALL}")
+        print(
+            f"{Fore.RED}Your minimum requirement version is {min_version}. Please update/uninstall {package_name} manually and try again or remove min version from package.json.{Style.RESET_ALL}"
+        )
         return False
-        # update_choice = (
-        #     input(
-        #         f"{Fore.YELLOW}{package_name} is below the required minimum version {min_version}. Do you want to update it? (yes/no): {Style.RESET_ALL}"
-        #     )
-        #     .strip()
-        #     .lower()
-        # )
-        # if update_choice in {"yes", "y"}:
-        #     if update_or_install_or_uninstall_package(
-        #             package_name, update_commands
-        #     ):
-        #         print(f"{Fore.GREEN}{package_name} has been updated to the latest version.{Style.RESET_ALL}")
-        #         return True
-        # else:
-        #     print(f"{Fore.RED}Operation canceled. Please update {package_name} and try again.{Style.RESET_ALL}")
-        #     return False  # Return failure status
     print(
         f"{Fore.YELLOW}{package_name} is not installed. Attempting installation...{Style.RESET_ALL}"
     )
@@ -354,8 +314,11 @@ def check_and_install_or_update_or_uninstall(package_details, flag):
             print("Available Appium drivers:")
             print(appium_driver_list_output)
             # Ask the user if they want to install 'appium driver'
-            install_appium_driver = input(
-                "Do you want to install 'appium driver'? (yes/no): ").strip().lower()
+            install_appium_driver = (
+                input("Do you want to install 'appium driver'? (yes/no): ")
+                .strip()
+                .lower()
+            )
             if install_appium_driver in {"yes", "y"}:
                 print("Installing 'appium driver'...")
                 subprocess.run(
@@ -375,15 +338,18 @@ def check_and_install_or_update_or_uninstall(package_details, flag):
                 while True:
                     try:
                         user_choice = input(
-                            f"Choose a sub-package to install (1-{len(sub_packages)}) or 'exit' to finish: ").strip()
-                        if user_choice.lower() == 'exit':
+                            f"Choose a sub-package to install (1-{len(sub_packages)}) or 'exit' to finish: "
+                        ).strip()
+                        if user_choice.lower() == "exit":
                             break  # Exit the loop if the user chooses to finish
 
                         user_choice = int(user_choice)
                         if 1 <= user_choice <= len(sub_packages):
                             selected_sub_package = sub_packages[user_choice - 1]
                             sub_package_name = selected_sub_package["name"]
-                            sub_package_install_command = selected_sub_package.get("install_command")
+                            sub_package_install_command = selected_sub_package.get(
+                                "install_command"
+                            )
 
                             # Install the selected sub-package using the handle_sub_package function
                             handle_sub_package(
@@ -394,9 +360,13 @@ def check_and_install_or_update_or_uninstall(package_details, flag):
                             )
 
                         else:
-                            print("Invalid choice. Please enter a valid number or 'exit' to finish.")
+                            print(
+                                "Invalid choice. Please enter a valid number or 'exit' to finish."
+                            )
                     except (ValueError, IndexError):
-                        print("Invalid input. Please enter a number or 'exit' to finish.")
+                        print(
+                            "Invalid input. Please enter a number or 'exit' to finish."
+                        )
         return True  # Return success status
 
     print(f"{Fore.RED}Failed to install or update {package_name} ...{Style.RESET_ALL}")
@@ -414,7 +384,9 @@ def set_environment_permanently(variable_name, value):
         os.system(f'setx {variable_name} "{value}"')
     elif system_platform == "darwin":
         # Mac (macOS)
-        print(f"{Fore.RED}Mac variable set support not available, please set manually.{Style.RESET_ALL}")
+        print(
+            f"{Fore.RED}Mac variable set support not available, please set manually.{Style.RESET_ALL}"
+        )
     else:
         print("Unsupported operating system")
 
@@ -434,7 +406,9 @@ def set_environment_variable_if_not_set(variable_name, finder_function):
         except EnvironmentError as e:
             print(f"Error: {e}")
     else:
-        print(f"{Fore.GREEN}{variable_name} is already set to: {value}{Style.RESET_ALL}")
+        print(
+            f"{Fore.GREEN}{variable_name} is already set to: {value}{Style.RESET_ALL}"
+        )
 
 
 def check_android_sdk_paths(android_home):
@@ -474,16 +448,24 @@ def log_error(package_name, error_message):
 
 def check_and_install_or_uninstall_dependency(package_file_path):
     uninstall = False
-    parser = argparse.ArgumentParser(description="Check and install or uninstall dependencies.")
-    parser.add_argument("-u", "--uninstall", action="store_true",
-                        help="Uninstall dependencies instead of installing/updating")
+    parser = argparse.ArgumentParser(
+        description="Check and install or uninstall dependencies."
+    )
+    parser.add_argument(
+        "-u",
+        "--uninstall",
+        action="store_true",
+        help="Uninstall dependencies instead of installing/updating",
+    )
 
     args = parser.parse_args()
     if args.uninstall:
         uninstall = True
     system_platform = platform.system()
     print(f"You're using {Fore.GREEN}{system_platform}{Style.RESET_ALL}")
-    packages_to_install_or_update_or_uninstall = load_packages_from_file(package_file_path)
+    packages_to_install_or_update_or_uninstall = load_packages_from_file(
+        package_file_path
+    )
 
     if not packages_to_install_or_update_or_uninstall:
         print("No packages found in the file.")
@@ -523,7 +505,6 @@ def check_and_install_or_uninstall_dependency(package_file_path):
             check=True,
             shell=True,
         )
-
 
 
 # Call the function to check and install or update the environment
