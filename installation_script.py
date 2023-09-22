@@ -9,11 +9,13 @@ import importlib
 import platform
 import os
 import time
+
 # NULL output device for disabling print output of pip installs
 try:
-    from subprocess import DEVNULL # py3k
+    from subprocess import DEVNULL  # py3k
 except ImportError:
     import os
+
     DEVNULL = open(os.devnull, 'wb')
 
 
@@ -111,7 +113,7 @@ def find_sdk_directory():
     elif system == "Windows":
         possible_paths = [
             f"{home_dir}\\AppData\\Local\\Android\\Sdk",  # Default SDK path on Windows
-            "C:\\Android\\android-sdk",
+            "C:\\Android\\android-sdk"
         ]
     else:
         print("Unsupported operating system.")
@@ -120,8 +122,8 @@ def find_sdk_directory():
     for path in possible_paths:
         if os.path.exists(path):
             return path
-        else:
-            raise EnvironmentError("No Android SDK installations found matching the patterns.")
+
+    return None
 
 
 def is_installed(package_name, check_commands, min_version=None):
@@ -145,15 +147,18 @@ def is_installed(package_name, check_commands, min_version=None):
         if version_output:
             pattern = r"(\d+\.\d+(\.\d+)?)"
             match = re.search(pattern, version_output.strip())
-            installed_version = match.group(1)
+            if match is not None:
+                installed_version = match.group(1)
+                if min_version:
+                    installed_version_u = list(map(int, installed_version.split(".")))
+                    min_version_u = list(map(int, min_version.split(".")))
 
-            if min_version:
-                installed_version_u = list(map(int, installed_version.split(".")))
-                min_version_u = list(map(int, min_version.split(".")))
-
-                if installed_version_u < min_version_u:
-                    return False, installed_version  # Return the installed version
-            return True, installed_version  # Return the installed version
+                    if installed_version_u < min_version_u:
+                        return False, installed_version  # Return the installed version
+                return True, installed_version  # Return the installed version
+            else:
+                print(f"{Fore.LIGHTYELLOW_EX}Unable to extract version number for {package_name}...{Style.RESET_ALL}")
+                return True, None
 
     return False, None  # Return False if no version information is found
 
@@ -209,7 +214,7 @@ def update_or_install_or_uninstall_package(package_name, commands):
 
 
 def handle_sub_package(
-    sub_package_name, install_command, update_command, uninstall_command
+        sub_package_name, install_command, update_command, uninstall_command
 ):
     # Install the sub-package
     try:
