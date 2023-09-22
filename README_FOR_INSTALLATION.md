@@ -6,6 +6,8 @@ Before running installation_script.py these need to set up manually
   - sudo apt install git
 - Install Homebrew (Package Manager) For Linux & macOS
   - /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+- Install pip3, if pip3 is not there
+  - sudo apt install python3-pip
 
 # For Windows
 - Install chocolatey
