@@ -14,18 +14,18 @@ import time
 def install_package(package_name):
     print(f"{package_name} is not installed. Installing...")
     try:
-        # Determine the appropriate package manager based on the platform
-        if platform.system() == "Linux":
-            package_manager = "pip3" if shutil.which("pip3") else subprocess.run(
-                ["sudo", "apt", "install", "python3-pip"], check=True)
-        elif platform.system() == "Darwin":  # macOS
-            package_manager = "pip"
-        elif platform.system() == "Windows":
-            package_manager = "pip.exe"
-        else:
-            print("Unsupported operating system")
-            sys.exit(1)
-
+        # # Determine the appropriate package manager based on the platform
+        # if platform.system() == "Linux":
+        #     package_manager = "pip3" if shutil.which("pip3") else subprocess.run(
+        #         ["sudo", "apt", "install", "python3-pip"], check=True)
+        # elif platform.system() == "Darwin":  # macOS
+        #     package_manager = "pip"
+        # elif platform.system() == "Windows":
+        #     package_manager = "pip.exe"
+        # else:
+        #     print("Unsupported operating system")
+        #     sys.exit(1)
+        package_manager = "pip"
         subprocess.run(
             [package_manager, "install", package_name],
             stdout=subprocess.PIPE,
@@ -205,11 +205,16 @@ def execute_command_print(command, package_name):
             print(line, end='')  # Print without a newline
 
         process.wait()  # Wait for the command to finish
+
         if process.returncode == 0:
             return True
+        else:
+            error_message = f"Command '{command}' failed with return code {process.returncode}"
+            log_error(package_name, error_message)
+            raise subprocess.CalledProcessError(process.returncode, command)
     except subprocess.CalledProcessError as e:
         # If the installation or update fails, log the error
-        error_message = e.stdout
+        error_message = e.stdout or str(e)
         log_error(package_name, error_message)
         return False
 
@@ -459,7 +464,7 @@ def log_error(package_name, error_message):
     log_dir = "installation_logs"
     os.makedirs(log_dir, exist_ok=True)
 
-    # Define the log file path
+    # Define the log file path using os.path.join to handle platform-specific separators
     log_file = os.path.join(log_dir, f"{package_name}_install_error.log")
 
     # Write the error message to the log file
