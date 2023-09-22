@@ -220,6 +220,7 @@ def update_or_install_or_uninstall_package(package_name, commands):
         if package_manager in os_package_manager:
             print(f"{package_name} executing using {package_manager}...")
             if execute_command_print(command, package_name):
+                print(f"{Fore.LIGHTGREEN_EX} Successfully installed {package_name} using {package_manager}...{Style.RESET_ALL}")
                 return True  # Return True on success
             else:
                 print(f"Unable to executing with {package_manager} package manager. Trying with the next package "
@@ -334,7 +335,10 @@ def check_and_install_or_update_or_uninstall(package_details, flag):
     )
 
     if update_or_install_or_uninstall_package(package_name, install_commands):
-        if package_name == "Appium":
+        is_installed_result, installed_version = is_installed(
+            package_name, check_commands
+        )
+        if package_name == "Appium" and installed_version >= "2.0.0":
             # Execute 'appium driver list' and show its output
             appium_driver_list_output = subprocess.check_output(
                 "appium driver list",
