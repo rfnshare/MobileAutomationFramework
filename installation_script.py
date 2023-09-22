@@ -316,22 +316,24 @@ def check_and_install_or_update_or_uninstall(package_details, flag):
         return True
     # try to update the package if the user chooses to
     if installed_version is not None and not is_installed_result:
-        update_choice = (
-            input(
-                f"{Fore.YELLOW}{package_name} is below the required minimum version {min_version}. Do you want to update it? (yes/no): {Style.RESET_ALL}"
-            )
-            .strip()
-            .lower()
-        )
-        if update_choice in {"yes", "y"}:
-            if update_or_install_or_uninstall_package(
-                    package_name, update_commands
-            ):
-                print(f"{Fore.GREEN}{package_name} has been updated to the latest version.{Style.RESET_ALL}")
-                return True
-        else:
-            print(f"{Fore.RED}Operation canceled. Please update {package_name} and try again.{Style.RESET_ALL}")
-            return False  # Return failure status
+        print(f"{Fore.RED}Your minimum requirement version is {min_version}. Please update/uninstall {package_name} manually and try again or remove min version from package.json.{Style.RESET_ALL}")
+        return False
+        # update_choice = (
+        #     input(
+        #         f"{Fore.YELLOW}{package_name} is below the required minimum version {min_version}. Do you want to update it? (yes/no): {Style.RESET_ALL}"
+        #     )
+        #     .strip()
+        #     .lower()
+        # )
+        # if update_choice in {"yes", "y"}:
+        #     if update_or_install_or_uninstall_package(
+        #             package_name, update_commands
+        #     ):
+        #         print(f"{Fore.GREEN}{package_name} has been updated to the latest version.{Style.RESET_ALL}")
+        #         return True
+        # else:
+        #     print(f"{Fore.RED}Operation canceled. Please update {package_name} and try again.{Style.RESET_ALL}")
+        #     return False  # Return failure status
     print(
         f"{Fore.YELLOW}{package_name} is not installed. Attempting installation...{Style.RESET_ALL}"
     )

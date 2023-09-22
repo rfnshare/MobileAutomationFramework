@@ -22,7 +22,10 @@ Before running installation_script.py these need to set up manually
   - if pip not install in linux, after pip install, tqdm import error although tqdm installed.
 2. [x] Windows
   - Unable to generate install log file.
-3. [x] Common 
+3. [x] Mac
+  - Unable to generate install log file.
+4. [x] Common 
+  - Need to handle update in different way. Remove existing in any way then install again.
   - Java Install Handle, Update Handle
   - Although Java install, it is trying to install again.
   - Can't find JAVA Path with immediate install, throwing error when set env.
