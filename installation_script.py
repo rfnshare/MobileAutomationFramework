@@ -9,21 +9,29 @@ import importlib
 import platform
 import os
 import time
+# NULL output device for disabling print output of pip installs
+try:
+    from subprocess import DEVNULL # py3k
+except ImportError:
+    import os
+    DEVNULL = open(os.devnull, 'wb')
 
 
 def install_package(package_name):
-    print(f"{package_name} is not installed. Installing...")
     try:
-        package_manager = "pip"
-        subprocess.run(
-            [package_manager, "install", package_name],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            check=True,
-        )
-        print(f"{package_name} has been installed.")
-    except subprocess.CalledProcessError:
-        print(f"Failed to install {package_name}. Please install it manually.")
+        print("module_installer: Installing module: %s" % package_name)
+        subprocess.check_call([
+            sys.executable,
+            "-m",
+            "pip",
+            "install",
+            "--trusted-host=pypi.org",
+            "--trusted-host=pypi.python.org",
+            "--trusted-host=files.pythonhosted.org",
+            package_name
+        ], stderr=DEVNULL, stdout=DEVNULL, )
+    except:
+        print("module_installer: Failed to install module: %s" % package_name)
         sys.exit(1)
 
 
@@ -112,8 +120,8 @@ def find_sdk_directory():
     for path in possible_paths:
         if os.path.exists(path):
             return path
-
-    return None
+        else:
+            raise EnvironmentError("No Android SDK installations found matching the patterns.")
 
 
 def is_installed(package_name, check_commands, min_version=None):
