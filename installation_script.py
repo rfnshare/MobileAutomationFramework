@@ -302,17 +302,12 @@ def check_and_install_or_update_or_uninstall(package_details, flag):
             return False
 
     if is_installed_result:
-        if package_name == "Appium":
-            print(f"{Fore.GREEN}{package_name} is already installed.{Style.RESET_ALL}")
-            # appium_driver_list_output = execute_command("appium driver list")
-            # if appium_driver_list_output:
-            #     print(appium_driver_list_output)
-        elif package_name == "JAVA":
+        if package_name == "JAVA":
             path = find_java_directory()
             print(f"{Fore.GREEN}JAVA Path: {path}{Style.RESET_ALL}")
-            print(f"{Fore.GREEN}{package_name} is already installed.{Style.RESET_ALL}")
+            print(f"{Fore.GREEN}{package_name} is already installed. Version: {installed_version}{Style.RESET_ALL}")
         else:
-            print(f"{Fore.GREEN}{package_name} is already installed.{Style.RESET_ALL}")
+            print(f"{Fore.GREEN}{package_name} is already installed. Version: {installed_version}{Style.RESET_ALL}")
         return True
     # try to update the package if the user chooses to
     if installed_version is not None and not is_installed_result:
