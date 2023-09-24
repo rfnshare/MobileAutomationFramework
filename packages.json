@@ -59,17 +59,20 @@
         },
         "min_version": "18.0.0"
     },
-     {
+    {
         "name": "Appium",
         "check_commands": ["appium --version"],
         "install_commands": {
-            "npm": "npm install -g appium"
+            "npm": "npm install -g appium",
+            "sudo_npm": "sudo npm install -g appium"
         },
         "update_commands": {
-            "npm": "npm install -g appium"
+            "npm": "npm install -g appium",
+            "sudo_npm": "sudo npm install -g appium"
         },
         "uninstall_commands": {
-            "npm": "npm uninstall -g appium"
+            "npm": "npm uninstall -g appium",
+            "sudo_npm": "sudo npm uninstall -g appium"
         },
         "min_version": "2.0.0",
         "sub_packages": [
@@ -77,23 +80,23 @@
                 "name": "uiautomator2",
                 "install_command": "appium driver install uiautomator2"
             },
-          {
+            {
                 "name": "xcuitest",
                 "install_command": "appium driver install xcuitest"
-          },
-          {
+            },
+            {
                 "name": "gecko",
                 "install_command": "appium driver install gecko"
-          },
-          {
+            },
+            {
                 "name": "chromium",
                 "install_command": "appium driver install chromium"
-          }
+            }
         ]
     },
-  {
+    {
         "name": "JAVA",
-        "check_commands": ["java --version"],
+        "check_commands": ["java --version", "java -version"],
         "install_commands": {
             "brew": "brew install openjdk",
             "choco": "choco install openjdk -y",
@@ -111,7 +114,7 @@
         },
         "min_version": "11.0.0"
     },
-  {
+    {
         "name": "Android SDK",
         "check_commands": [],
         "install_commands": {
@@ -131,7 +134,7 @@
         },
         "min_version": ""
     },
-  {
+    {
         "name": "Appium Doctor",
         "check_commands": ["appium-doctor --version"],
         "install_commands": {
