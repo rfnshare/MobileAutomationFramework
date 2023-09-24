@@ -1,11 +1,14 @@
 Before running installation_script.py these need to set up manually
-# For Linux & macOS
+# For Linux
 - Install Curl
   - sudo apt install curl   
 - Install Git, pip3 [Install pip3, if pip3 is not there]
   - sudo apt install git, sudo apt install python3-pip
 - Install Homebrew (Package Manager) For Linux & macOS
   - /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+#  For macOS
+- TBA
 
 # For Windows
 - Install chocolatey
@@ -14,6 +17,7 @@ Before running installation_script.py these need to set up manually
   - choco install git -y
 - Install Python
   - choco install python -y
+- Install Windows Terminal [Recommended From Store]
 
 # Known Issues
 
@@ -21,7 +25,7 @@ Before running installation_script.py these need to set up manually
   - Appium 2.0 already installed but driver are not installed (can't handle this logic)
   - tqdm import error although tqdm installed.
 2. [x] Windows
-  - TBA
+  - Powershell throw error after node install, can't detect node after immediate install
 3. [x] Mac
   - Add JAVA & Android Path into functions
 4. [x] Common
