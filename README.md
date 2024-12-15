@@ -207,7 +207,7 @@ Abdullah Al Faroque - [@rfnshare](https://twitter.com/rfnshare) - aalfaroque@gma
 [contributors-url]: https://github.com/rfnshare/MobileAutomationFramework/graphs/contributors
 [forks-shield]: https://img.shields.io/badge/froks-4-blue?style=for-the-badge
 [forks-url]: https://github.com/rfnshare/MobileAutomationFramework/network/members
-[stars-shield]: https://img.shields.io/badge/stars-3-red?style=for-the-badge
+[stars-shield]: https://img.shields.io/badge/stars-8-red?style=for-the-badge
 [stars-url]: https://github.com/rfnshare/MobileAutomationFramework/stargazers
 [issues-shield]: https://img.shields.io/badge/issues-0-success?style=for-the-badge
 [issues-url]: https://github.com/rfnshare/MobileAutomationFramework/issues
