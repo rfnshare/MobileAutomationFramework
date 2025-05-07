@@ -4,7 +4,7 @@ import subprocess
 from pathlib import Path
 import socket
 import mysql.connector
-from androguard.core.bytecodes.apk import APK
+from androguard.core.apk import APK
 from mysql.connector import Error
 
 
